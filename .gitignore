@@ -1,0 +1,38 @@
+# visual studio user file
+x64/
+*.user
+*.vs
+*.suo
+*.csproj
+*.DotSettings
+*.recipe
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+# Executables
+*.exe
+*.out
+*.app

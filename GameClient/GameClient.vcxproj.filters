@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\GameManager">
+      <UniqueIdentifier>{f719478b-bad2-44d2-a53c-e5625be7e03e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component">
+      <UniqueIdentifier>{0f1fe710-7256-4e0c-bc2f-cd66e5d514f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Scene">
+      <UniqueIdentifier>{f4fe76d3-6edb-4d2a-ad68-d5564f8f0dcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\AI">
+      <UniqueIdentifier>{b6bf3055-15fd-4fdc-befd-c0a403936bdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\Keyinput">
+      <UniqueIdentifier>{e7082ad1-e513-4d75-a040-3b1a44d10385}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Scene\intro">
+      <UniqueIdentifier>{6c66b294-6e2d-45e5-af55-b696ee34abf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Scene\inGame">
+      <UniqueIdentifier>{e93e28d7-0fc6-4289-b4a5-74957091c4b2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameClient.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>소스 파일\GameManager</Filter>
+    </ClInclude>
+    <ClInclude Include="AI.h">
+      <Filter>소스 파일\Component\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyInput.h">
+      <Filter>소스 파일\Component\Keyinput</Filter>
+    </ClInclude>
+    <ClInclude Include="intro.h">
+      <Filter>소스 파일\Scene\intro</Filter>
+    </ClInclude>
+    <ClInclude Include="inGame.h">
+      <Filter>소스 파일\Scene\inGame</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameClient.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>소스 파일\GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="AI.cpp">
+      <Filter>소스 파일\Component\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyInput.cpp">
+      <Filter>소스 파일\Component\Keyinput</Filter>
+    </ClCompile>
+    <ClCompile Include="intro.cpp">
+      <Filter>소스 파일\Scene\intro</Filter>
+    </ClCompile>
+    <ClCompile Include="inGame.cpp">
+      <Filter>소스 파일\Scene\inGame</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GameClient.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="GameClient.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
