@@ -5,19 +5,25 @@ cbuffer cbPerObject : register(b0)
     float4x4 gTexTransform : packoffset(c8);
 };
 
+cbuffer cbShadow : register(b1)
+{
+    float4x4 gShadowTransform : packoffset(c0);
+};
+
 struct VertexIn
 {
     float3 PosL     : POSITION;
-    float3 NormalL  : NORMAL;
     float2 Tex      : TEXCOORD;
+    float3 NormalL  : NORMAL;
     float3 TangentL : TANGENT;
 };
 
 struct VertexOut
 {
     float4 PosW : SV_POSITION;
-    float3 NormalW : NORMALW;
     float2 Tex : TEXCOORD;
+    float3 NormalW : NORMALW;
+    float3 ShadowPosH : POS_SHADOW;
     
     float3x3 TBN : TANGENT;
 };
@@ -44,6 +50,10 @@ VertexOut main(VertexIn vin)
     float3 B = cross(N, T);
     
     vout.TBN = float3x3(T, B, N);
+    
+    float4 Shadow = mul(gShadowTransform, float4(vin.PosL, 1.0f));
+    
+    vout.ShadowPosH = Shadow.xyz / Shadow.w;
     
     return vout;
 }

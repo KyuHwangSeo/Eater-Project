@@ -28,12 +28,12 @@ RenderManager::RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* fac
 	m_Farward = new ForwardPass();
 	//m_Deferred = new DeferredPass();
 	//m_Light = new LightPass();
-	//m_Shadow = new ShadowPass();
+	m_Shadow = new ShadowPass();
 
 	m_RenderPassList.push_back(m_Farward);
 	//m_RenderPassList.push_back(m_Deferred);
 	//m_RenderPassList.push_back(m_Light);
-	//m_RenderPassList.push_back(m_Shadow);
+	m_RenderPassList.push_back(m_Shadow);
 }
 
 RenderManager::~RenderManager()
@@ -85,7 +85,23 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 
 void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
+	m_Shadow->BeginRender();
 
+	while (meshList->size() != 0)
+	{
+		MeshData* mesh = meshList->front();
+
+		switch (mesh->ObjType)
+		{
+		case OBJECT_TYPE::Base:
+		case OBJECT_TYPE::Skinning:
+			m_Shadow->Update(mesh, global);
+			m_Shadow->Render(mesh);
+			break;
+		}
+
+		meshList->pop();
+	}
 }
 
 void RenderManager::SSAORender()

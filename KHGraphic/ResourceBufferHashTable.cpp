@@ -1,8 +1,8 @@
 #include "ResourceBufferHashTable.h"
 #include "ConstantBufferDefine.h"
-#include "SamplerStateDefine.h"
-#include "ShaderResourceViewDefine.h"
-#include "UnorderedAccessViewDefine.h"
+#include "SamplerBufferDefine.h"
+#include "ShaderResourceBufferDefine.h"
+#include "UnorderedAccessBufferDefine.h"
 
 #define ADD_CONSTANT_BUFFER(ClassName) g_CBuffer_HashTable.insert(std::make_pair(ClassName::GetName(), ClassName::GetHashCode()));
 #define ADD_SAMPLER_STATE(ClassName) g_Sampler_HashTable.insert(std::make_pair(ClassName::GetName(), ClassName::GetHashCode()));
@@ -19,6 +19,7 @@ void ShaderResourceHashTable::Initialize()
 {
 	// Constant Buffer Hash Table Create..
 	ADD_CONSTANT_BUFFER(cbPerObject)
+	ADD_CONSTANT_BUFFER(cbShadowObject)
 	ADD_CONSTANT_BUFFER(cbLights)
 	ADD_CONSTANT_BUFFER(cbMaterial)
 	ADD_CONSTANT_BUFFER(cbCamera)
@@ -36,6 +37,7 @@ void ShaderResourceHashTable::Initialize()
 
 	// Sampler State Hash Table Create..
 	//ADD_SAMPLER_STATE(gShadowSam)
+	ADD_SAMPLER_STATE(gShadowSam)
 	ADD_SAMPLER_STATE(samWrapMinLinear)
 	ADD_SAMPLER_STATE(samWrapAnisotropic)
 	ADD_SAMPLER_STATE(samClampMinLinear)

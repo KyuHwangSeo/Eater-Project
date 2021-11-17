@@ -28,6 +28,10 @@ public:
 	static void Reset();
 
 public:
+	//virtual void Awake() abstract;
+	//virtual void Update() abstract;
+
+public:
 	eLightType GetType() { return m_LightType; }
 
 protected:

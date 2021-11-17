@@ -30,6 +30,11 @@ CONSTANT_BUFFER(cbPerObject)
 	//DirectX::SimpleMath::Matrix gWorldInvTransposeView;
 };
 
+CONSTANT_BUFFER(cbShadowObject)
+{
+	DirectX::SimpleMath::Matrix gWorldViewProj;
+};
+
 CONSTANT_BUFFER(cbLights)
 {
 	DirectionalLightData gDirLights[3];

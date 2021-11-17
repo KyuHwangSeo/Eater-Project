@@ -64,6 +64,8 @@ public:
 	
 private:
 	std::vector<GameObject*> ObjectList;
+	std::vector<GameObject*> DontDeleteList;
+	
 	std::queue<GameObject*> DeleteList;
 
 	///그래픽엔진쪽으로 던저줄 데이터들

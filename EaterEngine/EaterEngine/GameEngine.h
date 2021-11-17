@@ -83,6 +83,5 @@ private:
 	int WinSizeWidth;	//윈도우 사이즈 가로
 	int WinSizeHeight;	//윈도우 사이즈 세로
 	bool ConsoleDebug;
-private:
 };
 

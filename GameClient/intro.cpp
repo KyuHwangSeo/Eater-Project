@@ -24,6 +24,7 @@ void intro::Awake()
 	//LoadMesh("Skinning");
 	//LoadMesh("Enemy");
 	//LoadMesh("box");
+	LoadMesh("Field");
 	LoadTesture("WoodCrate01");
 
 	///카메라
@@ -31,12 +32,25 @@ void intro::Awake()
 	testobj->AddComponent<Keyinput>();
 	testobj->AddComponent<Camera>();
 
+	/// Light
+	testobj = Instance();
+	testobj->AddComponent<DirectionLight>();
+
+	testobj = Instance("obj1");
+	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
+	//testobj->AddComponent<AI>();
+	testobj->GetTransform()->Position = { 0 ,0, 0 };
+	testobj->GetTransform()->Scale = { 1 , 1, 1 };
+
 	testobj = Instance("obj");
 	testobj->AddComponent<MeshFilter>()->SetMeshName("Player");
 	//testobj->AddComponent<AI>();
 	testobj->GetTransform()->Position = { 0 ,0, 0 };
 	testobj->GetTransform()->Scale = { 1 , 1, 1 };
-	testobj->GetTransform()->Rotation = { 90 ,0,0 };
+	testobj->GetTransform()->Rotation = { 45 ,0,0 };
+
+
+	//testobj->GetTransform()->Rotation = { 90 ,0,0 };
 	//매쉬 필터로 매쉬의 정보만 읽은 오브젝트
 	
 	//

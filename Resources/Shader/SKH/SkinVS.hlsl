@@ -5,29 +5,35 @@ cbuffer cbPerObject : register(b0)
     float4x4 gTexTransform : packoffset(c8);
 };
 
-cbuffer cbSkinned : register(b3)
+cbuffer cbSkinned : register(b1)
 {
     float4x4 gBoneTransforms[96];
 };
 
+cbuffer cbShadow : register(b2)
+{
+    float4x4 gShadowTransform : packoffset(c0);
+};
+
 struct VertexIn
 {
-    float3 PosL : POSITION;
-    float3 NormalL : NORMAL;
-    float2 Tex : TEXCOORD;
-    float3 TangentL : TANGENT;
-    
     uint4 BoneIndices1 : BONEINDICES1;
     uint4 BoneIndices2 : BONEINDICES2;
     float4 BoneWeights1 : WEIGHTS1;
     float4 BoneWeights2 : WEIGHTS2;
+    
+    float3 PosL : POSITION;
+    float2 Tex : TEXCOORD;
+    float3 NormalL : NORMAL;
+    float3 TangentL : TANGENT;
 };
 
 struct VertexOut
 {
     float4 PosW : SV_POSITION;
-    float3 NormalW : NORMALW;
     float2 Tex : TEXCOORD;
+    float3 NormalW : NORMALW;
+    float3 ShadowPosH : POS_SHADOW;
     
     float3x3 TBN : TANGENT;
 };
@@ -72,6 +78,10 @@ VertexOut main(VertexIn vin)
     float3 B = cross(N, T);
     
     vout.TBN = float3x3(T, B, N);
+    
+    float4 Shadow = mul(gShadowTransform, float4(posL, 1.0f));
+    
+    vout.ShadowPosH = Shadow.xyz / Shadow.w;
     
     return vout;
 }

@@ -70,7 +70,10 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	//그래픽 엔진 생성
 	//pTest_Engine = new DH3DEngine();
 
+	MeshFilter::SetManager(mObjectManager, mMaterialManager);
+	Light::SetManager(mLightManager);
 
+	CreateObject();
 
 	//매니저들 초기화
 	BaseManager::Initialize();
@@ -82,8 +85,6 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mTimeManager->Initialize();
 	mLightManager->Initialize();
 
-	MeshFilter::SetManager(mObjectManager, mMaterialManager);
-	Light::SetManager(mLightManager);
 
 	//처음시작하기전 엔진의 구조간략설명
 
@@ -95,7 +96,7 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mGraphicManager->PushEngine<HsGraphic>("형선");
 	mGraphicManager->PushEngine<DH3DEngine>("동혁");
 	mGraphicManager->PushEngine<KHGraphic>("규황");
-	mGraphicManager->ChoiceEngine("형선");
+	mGraphicManager->ChoiceEngine("규황");
 	/////////////////////////////////////////////////////////////////
 
 
@@ -288,6 +289,7 @@ float GameEngine::GetdeltaTime()
 
 void GameEngine::CreateObject()
 {
-	GameObject* light = Instance();
-	light->AddComponent<DirectionLight>();
+	//GameObject* light = Instance();
+	//light->AddComponent<DirectionLight>();
+	
 }

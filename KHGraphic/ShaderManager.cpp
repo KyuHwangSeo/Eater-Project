@@ -102,6 +102,9 @@ void ShaderManager::CreateShader()
 	LoadShader(eShaderType::VERTEX, "SkinVS.cso");
 	LoadShader(eShaderType::PIXEL, "ForwardPS.cso");
 
+	LoadShader(eShaderType::VERTEX, "ShadowMeshVS.cso");
+	LoadShader(eShaderType::VERTEX, "ShadowSkinVS.cso");
+
 	//// Global Forward Shader
 	//LoadShader(eShaderType::VERTEX, "FinalVS.cso");
 	//LoadShader(eShaderType::PIXEL, "FinalPS.cso");

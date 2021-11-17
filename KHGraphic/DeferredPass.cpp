@@ -14,7 +14,7 @@
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
-#include "ShaderResourceViewDefine.h"
+#include "ShaderResourceBufferDefine.h"
 
 DeferredPass::DeferredPass()
 {

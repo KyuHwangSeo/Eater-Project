@@ -11,11 +11,14 @@ public:
 	void Release() override;
 
 	void BeginRender();
-	void Render(DirectX::XMMATRIX view, DirectX::XMMATRIX proj, DirectX::XMMATRIX world, ID3D11Buffer* vb, ID3D11Buffer* ib, UINT size, UINT offset, UINT indexCount);
+	void Update(MeshData* mesh, GlobalData* global);
+	void Render(MeshData* mesh);
 
 private:
 	VertexShader* m_MeshShadowVS;
 	VertexShader* m_SkinShadowVS;
+
+	PixelShader* m_ForwardPS;
 
 	DepthStencilView* m_ShadowDepthStencilView;
 	
@@ -23,6 +26,8 @@ private:
 
 	ID3D11DepthStencilView* m_ShadowDSV;
 	ID3D11ShaderResourceView* m_ShadowSRV;
+
+	ID3D11RasterizerState* m_RasterizerState;
 
 	D3D11_VIEWPORT* m_ShadowViewport;
 };

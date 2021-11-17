@@ -16,7 +16,7 @@
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
-#include "ShaderResourceViewDefine.h"
+#include "ShaderResourceBufferDefine.h"
 
 ForwardPass::ForwardPass()
 {
@@ -85,12 +85,12 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	Matrix world = mesh->mWorld;
 	Matrix view = *global->mViewMX;
 	Matrix proj = *global->mProj;
+	Matrix shadowTrans = *global->mShadowTrans;
 	Vector3 eye(view._41, view._42, view._43);
 	LightData* lightData = global->mLightData;
+	ID3D11ShaderResourceView* diffuse_srv = nullptr;
+	ID3D11ShaderResourceView* normal_srv = nullptr;
 
-	//ID3D11ShaderResourceView* diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Diffuse->TextureBufferPointer);
-	//ID3D11ShaderResourceView* normal_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Normal->TextureBufferPointer);
-	
 	switch (mesh->ObjType)
 	{
 	case OBJECT_TYPE::Base:
@@ -98,44 +98,15 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		cbPerObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldViewProj = world * view * proj;
+
+		cbShadow shadowBuf;
+		shadowBuf.gShadowTransform = world * shadowTrans;
+
 		m_MeshVS->SetConstantBuffer(objectBuf);
+		m_MeshVS->SetConstantBuffer(shadowBuf);
 
 		// Vertex Shader Update..
 		m_MeshVS->Update();
-
-		cbLights lightBuf;
-		lightBuf.gPointLightCount = lightData->gPointLightCount;
-		lightBuf.gSpotLightCount = lightData->gSpotLightCount;
-
-		lightBuf.gDirLights[0] = *lightData->DirLights[0];
-
-		for (int p = 0; p < lightBuf.gPointLightCount; p++)
-		{
-			lightBuf.gPointLights[p] = *lightData->PointLights[p];
-		}
-		for (int s = 0; s < lightBuf.gSpotLightCount; s++)
-		{
-			lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
-		}
-
-		cbCamera cameraBuf;
-		cameraBuf.gEyePosW = eye;
-
-		cbMaterial matBuf;
-		for (int i = 0; i < 5; i++)
-		{
-			matBuf.gMaterials[i] = global->mMatData[i];
-		}
-
-		m_ForwardPS->SetConstantBuffer(lightBuf);
-		m_ForwardPS->SetConstantBuffer(cameraBuf);
-		m_ForwardPS->SetConstantBuffer(matBuf);
-
-		//m_ForwardPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
-		//m_ForwardPS->SetShaderResourceView<gNormalMap>(&normal_srv);
-
-		// Pixel Shader Update..
-		m_ForwardPS->Update();
 	}
 		break;
 	case OBJECT_TYPE::Skinning:
@@ -143,56 +114,70 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		cbPerObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldViewProj = world * view * proj;
-		m_SkinVS->SetConstantBuffer(objectBuf);
 
 		cbSkinned skinBuf;
 		for (int i = 0; i < mesh->BoneOffsetTM.size(); i++)
 		{
 			skinBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
 		}
+
+		cbShadow shadowBuf;
+		shadowBuf.gShadowTransform = world * shadowTrans;
+
+		m_SkinVS->SetConstantBuffer(objectBuf);
 		m_SkinVS->SetConstantBuffer(skinBuf);
+		m_SkinVS->SetConstantBuffer(shadowBuf);
 
 		// Vertex Shader Update..
 		m_SkinVS->Update();
-
-		cbLights lightBuf;
-		lightBuf.gPointLightCount = lightData->gPointLightCount;
-		lightBuf.gSpotLightCount = lightData->gSpotLightCount;
-
-		lightBuf.gDirLights[0] = *lightData->DirLights[0];
-
-		for (int p = 0; p < lightBuf.gPointLightCount; p++)
-		{
-			lightBuf.gPointLights[p] = *lightData->PointLights[p];
-		}
-		for (int s = 0; s < lightBuf.gSpotLightCount; s++)
-		{
-			lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
-		}
-
-		cbCamera cameraBuf;
-		cameraBuf.gEyePosW = eye;
-		
-		cbMaterial matBuf;
-		for (int i = 0; i < 5; i++)
-		{
-			matBuf.gMaterials[i] = global->mMatData[i];
-		}
-
-		m_ForwardPS->SetConstantBuffer(lightBuf);
-		m_ForwardPS->SetConstantBuffer(cameraBuf);
-		m_ForwardPS->SetConstantBuffer(matBuf);
-
-		//m_ForwardPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
-		//m_ForwardPS->SetShaderResourceView<gNormalMap>(&normal_srv);
-
-		// Pixel Shader Update..
-		m_ForwardPS->Update();
 	}
 		break;
 	default:
 		break;
 	}
+
+	cbLights lightBuf;
+	lightBuf.gPointLightCount = lightData->gPointLightCount;
+	lightBuf.gSpotLightCount = lightData->gSpotLightCount;
+
+	lightBuf.gDirLights[0] = *lightData->DirLights[0];
+
+	for (int p = 0; p < lightBuf.gPointLightCount; p++)
+	{
+		lightBuf.gPointLights[p] = *lightData->PointLights[p];
+	}
+	for (int s = 0; s < lightBuf.gSpotLightCount; s++)
+	{
+		lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
+	}
+
+	cbCamera cameraBuf;
+	cameraBuf.gEyePosW = eye;
+
+	cbMaterial matBuf;
+	for (int i = 0; i < 5; i++)
+	{
+		matBuf.gMaterials[i] = global->mMatData[i];
+	}
+
+	m_ForwardPS->SetConstantBuffer(lightBuf);
+	m_ForwardPS->SetConstantBuffer(cameraBuf);
+	m_ForwardPS->SetConstantBuffer(matBuf);
+
+	if (mesh->Diffuse)
+	{
+		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Diffuse->TextureBufferPointer);
+	}
+	if (mesh->Normal)
+	{
+		normal_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Normal->TextureBufferPointer);
+	}
+
+	m_ForwardPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
+	m_ForwardPS->SetShaderResourceView<gNormalMap>(&normal_srv);
+
+	// Pixel Shader Update..
+	m_ForwardPS->Update();
 }
 
 void ForwardPass::Render(MeshData* mesh)
