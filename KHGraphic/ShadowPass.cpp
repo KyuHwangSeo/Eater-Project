@@ -135,7 +135,7 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 	{
 	case OBJECT_TYPE::Base:
 	{
-		cbShadowObject shadowBuf;
+		CB_ShadowObject shadowBuf;
 		shadowBuf.gWorldViewProj = world * view * proj;
 
 		m_MeshShadowVS->SetConstantBuffer(shadowBuf);
@@ -145,10 +145,10 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 	break;
 	case OBJECT_TYPE::Skinning:
 	{
-		cbShadowObject shadowBuf;
+		CB_ShadowObject shadowBuf;
 		shadowBuf.gWorldViewProj = world * view * proj;
 
-		cbSkinned skinBuf;
+		CB_Skinned skinBuf;
 		for (int i = 0; i < mesh->BoneOffsetTM.size(); i++)
 		{
 			skinBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];

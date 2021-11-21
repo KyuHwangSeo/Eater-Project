@@ -270,6 +270,9 @@
     <ClInclude Include="ForwardPass.h">
       <Filter>소스 파일\RendererPass\Forward</Filter>
     </ClInclude>
+    <ClInclude Include="SingleTon.h">
+      <Filter>소스 파일\Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Graphic.cpp">

@@ -123,7 +123,7 @@ template<typename T>
 inline void ShaderBase::SetConstantBuffer(T cBuffer)
 {
 	// 해당 Value 찾기..
-	std::unordered_map<Hash_Code, ConstantBuffer*>::iterator it = m_ConstantBufferList.find(typeid(T).hash_code());
+	std::unordered_map<Hash_Code, ConstantBuffer*>::iterator it = m_ConstantBufferList.find(T::GetHashCode());
 
 	// 해당 Key에 대한 Value가 없다면..
 	if (it == m_ConstantBufferList.end()) return;

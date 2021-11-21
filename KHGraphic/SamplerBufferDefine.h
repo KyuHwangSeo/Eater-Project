@@ -1,7 +1,8 @@
 #pragma once
 #include "ClassType.h"
 
-#define SAMPLER_STATE(ClassName) CREATE_EMPTY_CLASS(ClassName)
+#define ADD_SAMPLER_STATE(ClassName) static bool sampler_##ClassName = ShaderResourceHashTable::GetInstance()->Push<ClassName>(ShaderResourceHashTable::BufferType::SAMPLER, #ClassName, ClassName::GetHashCode());
+#define SAMPLER_STATE(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_SAMPLER_STATE(ClassName)
 
 /// <summary>
 /// SamplerState Resource Struct

@@ -15,7 +15,7 @@ cbuffer cbCamera : register(b1)
     float3 gEyePosW : packoffset(c0);
 };
 
-cbuffer cbMaterial : register(b2)
+cbuffer cbMaterials : register(b2)
 {
     Material gMaterials[5];
 }

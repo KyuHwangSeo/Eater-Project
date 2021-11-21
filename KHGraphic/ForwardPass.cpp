@@ -95,11 +95,11 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	{
 	case OBJECT_TYPE::Base:
 	{
-		cbPerObject objectBuf;
+		CB_Object objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldViewProj = world * view * proj;
 
-		cbShadow shadowBuf;
+		CB_Shadow shadowBuf;
 		shadowBuf.gShadowTransform = world * shadowTrans;
 
 		m_MeshVS->SetConstantBuffer(objectBuf);
@@ -111,17 +111,17 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		break;
 	case OBJECT_TYPE::Skinning:
 	{
-		cbPerObject objectBuf;
+		CB_Object objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldViewProj = world * view * proj;
 
-		cbSkinned skinBuf;
+		CB_Skinned skinBuf;
 		for (int i = 0; i < mesh->BoneOffsetTM.size(); i++)
 		{
 			skinBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
 		}
 
-		cbShadow shadowBuf;
+		CB_Shadow shadowBuf;
 		shadowBuf.gShadowTransform = world * shadowTrans;
 
 		m_SkinVS->SetConstantBuffer(objectBuf);
@@ -136,25 +136,25 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		break;
 	}
 
-	cbLights lightBuf;
+	CB_Lights lightBuf;
 	lightBuf.gPointLightCount = lightData->gPointLightCount;
 	lightBuf.gSpotLightCount = lightData->gSpotLightCount;
 
 	lightBuf.gDirLights[0] = *lightData->DirLights[0];
 
-	for (int p = 0; p < lightBuf.gPointLightCount; p++)
+	for (UINT p = 0; p < lightBuf.gPointLightCount; p++)
 	{
 		lightBuf.gPointLights[p] = *lightData->PointLights[p];
 	}
-	for (int s = 0; s < lightBuf.gSpotLightCount; s++)
+	for (UINT s = 0; s < lightBuf.gSpotLightCount; s++)
 	{
 		lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
 	}
 
-	cbCamera cameraBuf;
+	CB_Camera cameraBuf;
 	cameraBuf.gEyePosW = eye;
 
-	cbMaterial matBuf;
+	CB_Materials matBuf;
 	for (int i = 0; i < 5; i++)
 	{
 		matBuf.gMaterials[i] = global->mMatData[i];

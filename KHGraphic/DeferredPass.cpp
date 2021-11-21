@@ -196,13 +196,13 @@ void DeferredPass::BeginRender()
 void DeferredPass::Render(DirectX::XMMATRIX view, DirectX::XMMATRIX proj, DirectX::XMMATRIX world, ID3D11Buffer* vb, ID3D11Buffer* ib, UINT size, UINT offset, UINT indexCount)
 {
 	// Shader Update
-	cbPerObject objData;
-	objData.gWorld = world;
+	//cbPerObject objData;
+	//objData.gWorld = world;
 
-	m_MeshVS->SetConstantBuffer(objData);
+	//m_MeshVS->SetConstantBuffer(objData);
 
 	// Vertex Shader Update..
-	m_MeshVS->Update();
+	//m_MeshVS->Update();
 
 	// 
 	//m_DeferredPS->SetShaderResourceView<gDiffuseMap>(nullptr);

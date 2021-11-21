@@ -21,6 +21,7 @@ VertexShader::~VertexShader()
 void VertexShader::LoadShader(std::string fileName)
 {
 	ID3D11ShaderReflection* pReflector = nullptr;
+	ShaderResourceHashTable* resource_table = ShaderResourceHashTable::GetInstance();
 
 	size_t cbuffer_register_slot = 0;	// ConstantBuffer Max Register Slot
 	size_t sampler_register_slot = 0;	// Sampler Max Register Slot
@@ -90,7 +91,7 @@ void VertexShader::LoadShader(std::string fileName)
 		// 현 InputLayout 데이터 삽입..
 		inputLayoutDesc.push_back(elementDesc);
 	}
-
+	
 	// Shader InputLayout 생성..
 	HR(g_Device->CreateInputLayout(&inputLayoutDesc[0], (UINT)inputLayoutDesc.size(), &vS[0], size, &m_InputLayout));
 
@@ -115,7 +116,7 @@ void VertexShader::LoadShader(std::string fileName)
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
 			// Constant Buffer Hash Code..
-			hash_key = ShaderResourceHashTable::FindHashCode(ShaderResourceHashTable::BufferType::CBUFFER, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::CBUFFER, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
@@ -124,7 +125,6 @@ void VertexShader::LoadShader(std::string fileName)
 			m_ConstantBufferList.insert(std::make_pair(hash_key, new ConstantBuffer(bindDesc.Name, cbuffer_register_slot, &cBuffer)));
 		}
 	}
-
 
 	/// Shader Resource Reflection
 	// Shader Resource..
@@ -139,7 +139,7 @@ void VertexShader::LoadShader(std::string fileName)
 		case D3D_SIT_TEXTURE:
 		{
 			// SRV Hash Code..
-			hash_key = ShaderResourceHashTable::FindHashCode(ShaderResourceHashTable::BufferType::SRV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::SRV, bindDesc.Name);
 
 			// SRV Register Slot Number..
 			srv_register_slot = bindDesc.BindPoint;
@@ -151,7 +151,7 @@ void VertexShader::LoadShader(std::string fileName)
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = ShaderResourceHashTable::FindHashCode(ShaderResourceHashTable::BufferType::SAMPLER, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::SAMPLER, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;

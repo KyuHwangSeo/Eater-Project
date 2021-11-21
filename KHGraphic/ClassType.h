@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "ResourceBufferHashTable.h"
 
 #define CREATE_CLASS(ClassName) struct ClassName : public ClassType<ClassName>
 #define CREATE_EMPTY_CLASS(ClassName) struct ClassName : public ClassType<ClassName> {};
@@ -11,7 +12,7 @@
 /// - 모든 Shader Resource의 기반이 되는 Base Class
 /// - Shader Reflection을 통해 Resource의 이름을 비교해야 하기 때문에 Struct 이름만 가져오는 함수 보유
 ///
-///
+
 template <typename T>
 struct ClassType
 {
@@ -28,5 +29,10 @@ struct ClassType
 	static size_t GetHashCode()
 	{
 		return typeid(T).hash_code();
+	}
+
+	static size_t GetSize()
+	{
+		return sizeof(T);
 	}
 };

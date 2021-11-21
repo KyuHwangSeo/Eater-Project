@@ -1,4 +1,4 @@
-cbuffer cbPerObject : register(b0)
+cbuffer cbObject : register(b0)
 {
     float4x4 gWorld : packoffset(c0);
     float4x4 gWorldViewProj : packoffset(c4);
