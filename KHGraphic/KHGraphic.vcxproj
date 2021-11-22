@@ -221,7 +221,6 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="ShaderResourceBufferDefine.h" />
     <ClInclude Include="ShaderTypes.h" />
     <ClInclude Include="ShadowPass.h" />
-    <ClInclude Include="SingleTon.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="ToolKitDefine.h" />
     <ClInclude Include="UnorderedAccessBufferDefine.h" />

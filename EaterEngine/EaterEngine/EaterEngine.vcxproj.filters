@@ -43,9 +43,6 @@
     <Filter Include="소스 파일\Component\MeshFilter">
       <UniqueIdentifier>{e1a8f83a-9fbe-41b2-bcaf-4aaa827116a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\EnumClass">
-      <UniqueIdentifier>{4e9cbd6d-d9e3-42b2-a57f-b5fc7614531f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Component\Collider">
       <UniqueIdentifier>{d34d8a60-5880-4358-a416-fe8f2edab2e9}</UniqueIdentifier>
     </Filter>
@@ -82,9 +79,6 @@
     <Filter Include="소스 파일\Component\SkinningFilter">
       <UniqueIdentifier>{0db28258-c4dd-46c9-b56d-fa34d7f861c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Component\Animation">
-      <UniqueIdentifier>{5d4d878e-6e04-41e7-a1e6-ee77e43803d7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Manager\BaseManager">
       <UniqueIdentifier>{7515b128-a908-4f50-9f37-1bebd61f2db9}</UniqueIdentifier>
     </Filter>
@@ -99,6 +93,15 @@
     </Filter>
     <Filter Include="소스 파일\Component\Material">
       <UniqueIdentifier>{f9010fdf-b65c-4b72-ae7a-ada064a4240d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\EnumClass">
+      <UniqueIdentifier>{4e9cbd6d-d9e3-42b2-a57f-b5fc7614531f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\AnimationController">
+      <UniqueIdentifier>{85dbf900-b15b-4f04-8aa6-98d8c0e0cc7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\Animator">
+      <UniqueIdentifier>{5d4d878e-6e04-41e7-a1e6-ee77e43803d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +128,6 @@
     </ClInclude>
     <ClInclude Include="LoadManager.h">
       <Filter>소스 파일\Manager\LoadManager</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineData.h">
-      <Filter>소스 파일\Data</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine.h">
       <Filter>소스 파일\Engine\GameEngine</Filter>
@@ -165,9 +165,6 @@
     <ClInclude Include="Export\SkinningFilter.h">
       <Filter>소스 파일\Component\SkinningFilter</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>소스 파일\Component\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="Export\ResourcesData.h">
       <Filter>소스 파일\Data</Filter>
     </ClInclude>
@@ -189,8 +186,17 @@
     <ClInclude Include="Export\Light.h">
       <Filter>소스 파일\Component\Light</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Library\inc\EngineData.h">
+      <Filter>소스 파일\Data</Filter>
+    </ClInclude>
     <ClInclude Include="Export\MeshFilter.h">
-      <Filter>소스 파일\Component\SkinningFilter</Filter>
+      <Filter>소스 파일\Component\MeshFilter</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\Animator.h">
+      <Filter>소스 파일\Component\Animator</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\AnimationController.h">
+      <Filter>소스 파일\Component\AnimationController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -248,9 +254,6 @@
     <ClCompile Include="SkinningFilter.cpp">
       <Filter>소스 파일\Component\SkinningFilter</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>소스 파일\Component\Animation</Filter>
-    </ClCompile>
     <ClCompile Include="BaseManager.cpp">
       <Filter>소스 파일\Manager\BaseManager</Filter>
     </ClCompile>
@@ -265,6 +268,12 @@
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>소스 파일\Component\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>소스 파일\Component\Animator</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationController.cpp">
+      <Filter>소스 파일\Component\AnimationController</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

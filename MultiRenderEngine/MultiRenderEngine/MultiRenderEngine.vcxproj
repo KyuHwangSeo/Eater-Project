@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InputLayoutData.h" />
+    <ClInclude Include="MacroDefine.h" />
+    <ClInclude Include="MultiRenderDefine.h" />
     <ClInclude Include="MultiRenderEngine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -133,18 +136,19 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Library\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\Library\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Library\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy/Y "$(TargetDir)*.lib"   "$(SolutionDir)..\Library\lib"
-copy/Y "$(TargetDir)*.dll"   "$(SolutionDir)..\Library\lib"
-copy /Y "$(ProjectDir)MultiRenderEngine.h" "$(SolutionDir)..\Library\inc"</Command>
+      <Command>copy/Y "$(TargetDir)*.lib"   "$(SolutionDir)Library\lib"
+copy/Y "$(TargetDir)*.dll"   "$(SolutionDir)Library\lib"
+copy /Y "$(ProjectDir)MultiRenderEngine.h" "$(SolutionDir)Library\inc"
+copy /Y "$(ProjectDir)MultiRenderDefine.h" "$(SolutionDir)Library\inc"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -158,7 +162,7 @@ copy /Y "$(ProjectDir)MultiRenderEngine.h" "$(SolutionDir)..\Library\inc"</Comma
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Library\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,12 +170,13 @@ copy /Y "$(ProjectDir)MultiRenderEngine.h" "$(SolutionDir)..\Library\inc"</Comma
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\Library\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Library\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy/Y "$(TargetDir)*.lib"   "$(SolutionDir)..\Library\lib"
-copy/Y "$(TargetDir)*.dll"   "$(SolutionDir)..\Library\lib"
-copy /Y "$(ProjectDir)MultiRenderEngine.h" "$(SolutionDir)..\Library\inc"</Command>
+      <Command>copy/Y "$(TargetDir)*.lib"   "$(SolutionDir)Library\lib"
+copy/Y "$(TargetDir)*.dll"   "$(SolutionDir)Library\lib"
+copy /Y "$(ProjectDir)MultiRenderEngine.h" "$(SolutionDir)Library\inc"
+copy /Y "$(ProjectDir)MultiRenderDefine.h" "$(SolutionDir)Library\inc"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

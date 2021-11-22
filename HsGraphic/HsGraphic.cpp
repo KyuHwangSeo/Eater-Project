@@ -1,4 +1,5 @@
 #include "GraphicsEngine.h"
+#include "GraphicDebugManager.h"
 #include "HsGraphic.h"
 #include "HsEngineHelper.h"
 #include "ParserData.h"
@@ -21,7 +22,7 @@ HsGraphic::HsGraphic()
 	DeviceContext		= nullptr;
 	mRenderTargetView	= nullptr;
 	mDepthStencilView	= nullptr;
-	mScreenViewport		= D3D11_VIEWPORT();
+	mScreenViewport		= nullptr;
 	mSwapChain			= nullptr;
 
 	//윈도우 사이즈
@@ -39,24 +40,7 @@ HsGraphic::~HsGraphic()
 
 void HsGraphic::Initialize(HWND _hWnd, int screenWidth, int screenHeight)
 {
-	hwnd = _hWnd;
-	WinSizeX = screenWidth;
-	WinSizeY = screenHeight;
-
-	//엔진 디바이스를 생성
-	CreateDevice();
-
-	//랜더타겟과 상태를 생성
-	CreateRenderTarget();
-
-	//매니저들 생성
-	mShaderManager = new ShaderManager();		//쉐이더를 가져오고 저장하는 클래스
-	mRenderManager = new RenderingManager();	//랜더링을 해주는 클래스
 	
-
-	//매니저들 초기화
-	mShaderManager->Initialize(Device, DeviceContext);
-	mRenderManager->Initialize(Device, DeviceContext, mShaderManager);
 }
 
 Indexbuffer* HsGraphic::CreateIndexBuffer(ParserData::Mesh* mModel)
@@ -122,47 +106,6 @@ ID3D11RenderTargetView* HsGraphic::GetEngineRTV()
 ID3D11DepthStencilView* HsGraphic::GetEngineDSV()
 {
 	return mDepthStencilView;
-}
-
-void HsGraphic::CreateRenderTarget()
-{
-	//D3D에 연결된 랜더타겟과 뎁스스텐실 을 생성한다
-	
-	ID3D11Texture2D* backBuffer;
-	mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
-	Device->CreateRenderTargetView(backBuffer, 0, &mRenderTargetView);
-	backBuffer->Release();
-
-	ID3D11Texture2D* mDepthStencilBuffer = nullptr;
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Width = WinSizeX;						//텍스쳐의 너비 (텍셀단위) 텍셀??
-	depthStencilDesc.Height = WinSizeY;						//텍스쳐의 높이 (텍셀단위) 텍셀??
-	depthStencilDesc.MipLevels = 1;							//밉맵수준의 개수
-	depthStencilDesc.ArraySize = 1;							//택스처 배열의 텍스처 개수*깊이*스텐실 버퍼의 경우 텍스처 하나만필요
-
-	//텍셀의 형식을 뜻하는 필드로 DXGI_FORMAT 열거형의 값들 중 하나를 지정한다
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = 1;					//SampleDesc = 다중표본 개수와 품질수듄을 서술하는 구조체
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;			//텍스처의 용도를 뜻하는 필드
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;	//자원을 파이프라인에 어떤식으로 묶을것인지
-	depthStencilDesc.CPUAccessFlags = 0;					//CPU가 자원을 접근하는 방식을 결정하는 플래그를 지정
-	depthStencilDesc.MiscFlags = 0;
-
-
-	Device->CreateTexture2D(&depthStencilDesc, 0, &mDepthStencilBuffer);
-	Device->CreateDepthStencilView(mDepthStencilBuffer, 0, &mDepthStencilView);
-	DeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
-
-	//ViewPort
-	mScreenViewport.TopLeftX = 0;
-	mScreenViewport.TopLeftY = 0;
-	mScreenViewport.Width = static_cast<float>(WinSizeX);
-	mScreenViewport.Height = static_cast<float>(WinSizeY);
-	mScreenViewport.MinDepth = 0.0f;
-	mScreenViewport.MaxDepth = 1.0f;
-
-	DeviceContext->RSSetViewports(1, &mScreenViewport);
 }
 
 void HsGraphic::CreateDevice()
@@ -271,12 +214,9 @@ void HsGraphic::CreateDevice()
 
 void HsGraphic::BeginRender()
 {
-	//엔진 랜더링 시작
-	float DeepDarkGray[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	DeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+	XMVECTORF32 DeepDarkGray = { 0, 0, 0, 1.0f };
 	DeviceContext->ClearRenderTargetView(mRenderTargetView, DeepDarkGray);
 	DeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	DeviceContext->RSSetViewports(1, &mScreenViewport);
 }
 
 void HsGraphic::EndRender()
@@ -321,7 +261,7 @@ Vertexbuffer* HsGraphic::CreateBasicVertexBuffer(ParserData::Mesh* mModel)
 	//////////////////////////////////////////////////
 	
 
-	return vertexbuffer;
+	return nullptr;
 }
 
 Vertexbuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
@@ -340,21 +280,28 @@ Vertexbuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
 	{
 		ParserData::Vertex* One = mModel->m_VertexList[i];
 
-		temp[i].Pos		= One->m_Pos;
-		temp[i].Nomal	= One->m_Normal;
-		temp[i].Tex		= { One->m_U ,One->m_V };
+		temp[i].Pos = One->m_Pos;
+		temp[i].Nomal = One->m_Normal;
+		temp[i].Tex = { One->m_U ,One->m_V };
 		temp[i].Tangent = One->m_Tanget;
 
-		
-		int Count =  (int)One->m_BoneIndices.size();
+
+		int Count = (int)One->m_BoneWeights.size();
 		for (int j = 0; j < Count; j++)
 		{
-			temp[i].BoneWeights[j] = One->m_BoneWeights[j];
-			temp[i].BoneIndex[j] = One->m_BoneIndices[j];
-
+			if (j <= 3)
+			{
+				temp[i].BoneWeights01[j] = One->m_BoneWeights[j];
+				temp[i].BoneIndex01[j] = One->m_BoneIndices[j];
+			}
+			else
+			{
+				temp[i].BoneWeights02[j - 4] = One->m_BoneWeights[j];
+				temp[i].BoneIndex02[j - 4] = One->m_BoneIndices[j];
+			}
 		}
-	}
 
+	}
 
 
 	//버퍼 생성
@@ -418,7 +365,7 @@ void HsGraphic::OnReSize(int Change_Width, int Change_Height)
 	//뎁스스텐실 삭제
 	if (mDepthStencilView != nullptr)
 	{
-		mDepthStencilView->Release();	
+		mDepthStencilView->Release();
 		mDepthStencilView = nullptr;
 	}
 
@@ -427,17 +374,19 @@ void HsGraphic::OnReSize(int Change_Width, int Change_Height)
 	mSwapChain->ResizeBuffers(1, WinSizeX, WinSizeY, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 	//뎁스스텐실 랜더타겟 재생성
-	CreateRenderTarget();
+	//CreateRenderTarget();
 
 	//재설정
 	DeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
-	DeviceContext->RSSetViewports(1, &mScreenViewport);
+	DeviceContext->RSSetViewports(1, mScreenViewport);
 }
 
 void HsGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
-	BeginRender();
+	//멀티 랜더링 엔진에서 받아온 DSV, RTV, VPT로 그릴준비
+	//BeginRender();
 
+	DeviceContext->RSSetViewports(1, mScreenViewport);
 
 	while (meshList->size() != 0)
 	{
@@ -449,6 +398,9 @@ void HsGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 			case OBJECT_TYPE::Camera: //카메라 오브젝트
 			{
 				mRenderManager->CameraUpdate(global);
+				#ifdef _DEBUG
+				mRenderManager->DebugUpdate();
+				#endif
 				break;
 			}
 
@@ -465,21 +417,54 @@ void HsGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 				mRenderManager->Rendering(Mesh, RenderingManager::ShaderType::BASIC);
 				break;
 			}
+
+			case OBJECT_TYPE::Bone: //기본 매쉬
+			{
+				mRenderManager->BoneUpdate(Mesh);
+				//mRenderManager->Rendering(Mesh, RenderingManager::ShaderType::BASIC);
+				break;
+			}
 		}
 
 
 		//사용한것은 뺴준다
 		meshList->pop();
 	}
-
-
-	EndRender();
 }
 
 void HsGraphic::Delete()
 {
 	mWireframe->Release();
 	mSolid->Release();
+}
+
+void HsGraphic::SetViewPort(void* VPT, int Change_Width, int Change_Height)
+{
+	//랜더타겟과 뎁스스텐실 뷰포트를 받아온다
+	mScreenViewport		= reinterpret_cast<D3D11_VIEWPORT*>(VPT);
+
+	WinSizeX = Change_Width;
+	WinSizeY = Change_Height;
+}
+	
+void HsGraphic::SetDevice(void* mDevie, void* mDevieContext)
+{
+	//디바이스와 컨텍스트를 받아온다 
+	Device			= reinterpret_cast<ID3D11Device*>(mDevie);
+	DeviceContext	= reinterpret_cast<ID3D11DeviceContext*>(mDevieContext);
+
+
+	//디바이스와 컨텍스트를 받은 동시에 각종 매니저 초기화
+	mShaderManager = new ShaderManager();
+	mShaderManager->Initialize(Device, DeviceContext);
+
+	//디버깅 매니저 초기화
+	mDebugManager = new GraphicDebugManager();
+	mDebugManager->Initialize(Device, DeviceContext);
+
+	//랜더링 매니저 초기화
+	mRenderManager = new RenderingManager();
+	mRenderManager->Initialize(Device, DeviceContext, mShaderManager, mDebugManager);
 }
 
 

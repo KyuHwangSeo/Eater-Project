@@ -37,6 +37,10 @@ public:
 	/// 랜더링을 한다 매쉬 랜더데이터 리스트, 글로벌 데이터
 	DHENGINE_DLL void Render(std::queue<MeshData*>* meshList, GlobalData* global);
 
+	DHENGINE_DLL void SetViewPort(void* VPT, int Change_Width, int Change_Height);
+	DHENGINE_DLL void SetDevice(void* Devie, void* DevieContext);
+
+
 	/// 엔진내부에서 관리하면 좋은 변수들?
 private:
 	/// View Mat
@@ -65,7 +69,6 @@ public:
 		DirectX::SimpleMath::Vector3 Pos;
 		DirectX::SimpleMath::Vector3 Normal;
 		DirectX::SimpleMath::Vector2 Tex;
-		DirectX::SimpleMath::Vector3 BiNormal;
 		DirectX::SimpleMath::Vector3 Tangent;
 	};
 	/// 초기 생성자.

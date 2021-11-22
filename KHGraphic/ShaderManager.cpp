@@ -1,11 +1,11 @@
 #include "DirectDefine.h"
-#include "ShaderManagerBase.h"
 #include "ShaderBase.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "ComputeShader.h"
+#include "windows.h"
+#include "ShaderManagerBase.h"
 #include "ShaderManager.h"
-#include "ShaderTypes.h"
 #include "ResourceBufferHashTable.h"
 
 using namespace Microsoft::WRL;
@@ -30,7 +30,8 @@ void ShaderManager::Initialize(Microsoft::WRL::ComPtr<ID3D11Device> device, Micr
 	CreateShader();
 
 	// Shader Hash Table Reset..
-	ShaderResourceHashTable::GetInstance()->Reset();
+	ShaderResourceHashTable* table = ShaderResourceHashTable::GetInstance();
+	table->Destroy();
 }
 
 void ShaderManager::Release()

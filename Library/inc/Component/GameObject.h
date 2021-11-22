@@ -59,7 +59,6 @@ public:
 public:
 	std::string Name;			//이름
 	int			Tag;			//테그
-	bool		IsDelete;		//삭제 여부
 protected:
 	bool IsActive;				//기능 중지여부
 	unsigned int FunctionMask;	//어떤 함수포인터에 넣었는지 여부

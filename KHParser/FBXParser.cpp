@@ -478,8 +478,11 @@ bool FBXParser::ProcessBoneWeights(fbxsdk::FbxNode* node, std::vector<BoneWeight
 
 				DirectX::SimpleMath::Matrix offsetMatrix = clusterMatrix * clusterlinkMatrix.Invert() * geometryMatrix;
 
+				boneMesh->m_BoneIndex = skinMesh->m_BoneMeshList.size();
+
 				skinMesh->m_BoneTMList.emplace_back(offsetMatrix);
 				skinMesh->m_BoneMeshList.emplace_back(boneMesh);
+
 
 				int c = cluster->GetControlPointIndicesCount();
 				for (int j = 0; j < cluster->GetControlPointIndicesCount(); ++j)
@@ -487,7 +490,7 @@ bool FBXParser::ProcessBoneWeights(fbxsdk::FbxNode* node, std::vector<BoneWeight
 					int m_Index = cluster->GetControlPointIndices()[j];
 					double weight = cluster->GetControlPointWeights()[j];
 
-					//if (weight == 0) continue;
+					if (weight == 0) continue;
 
 					skinBoneWeights[m_Index].AddBoneWeight(clusterIndex, (float)weight);
 				}
@@ -590,6 +593,7 @@ void FBXParser::OptimizeData()
 	{
 		OptimizeVertex(m_Model->m_MeshList[i]);
 	}
+
 }
 
 void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)

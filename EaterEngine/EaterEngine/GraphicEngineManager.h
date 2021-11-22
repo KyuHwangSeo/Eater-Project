@@ -8,10 +8,11 @@
 ///	여러개의 그래픽엔진을 쉽게 사용하기위해 만든 그래픽엔진 관리 매니저.
 /// </summary>
 
+class ObjectManager;
 class MeshData;
 class GlobalData;
 class GraphicEngine;
-
+class MultiRenderEngine;
 class Indexbuffer;
 class Vertexbuffer;
 class TextureBuffer;
@@ -27,20 +28,9 @@ class GraphicEngineManager
 public:
 	GraphicEngineManager();
 	~GraphicEngineManager();
-
-
-	//사용할 그래픽엔진을 리스트에 넣는다
-	template<typename T>
-	void PushEngine(std::string Name);
-
-	void Update();
-	//모든 그래픽 엔진 초기화
-	void EngineAllInitialize(HWND Hwnd,int WinSizeWidth,int WinSizeHeight);
-	//사용할 그래픽엔진 선택
-	void ChoiceEngine(std::string Name);
 public:
 	//선택한 그래픽엔진을 초기화
-	void Initialize(HWND Hwnd, int WinSizeWidth, int WinSizeHeight);
+	void Initialize(HWND Hwnd, int WinSizeWidth, int WinSizeHeight,ObjectManager* GM);
 
 	//선택한 그래픽엔진 랜더링
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global);
@@ -60,20 +50,17 @@ public:
 	//선택한 그래픽 엔진으로 Resize
 	void OnReSize(int Change_Width, int Change_Height);
 
-	//모든 엔진 삭제
-	void Delete();
+	//엔진을 넣어준다
+	void PushEngine(int Number, GraphicEngine* Engine, std::string Name);
+
+	void SplitWindow(int X, int Y);
 private:
-	//현재 선택된 그래픽 엔진
-	GraphicEngine* NowEngine;
+	MultiRenderEngine* MultiEngine;
+
+	ObjectManager* ObjManager;
 
 	std::string EngineName;
 	//그래픽 엔진들을 관리할 리스트
 	std::map<std::string,GraphicEngine*> GEngineList;
 };
 
-template<typename T>
-inline void GraphicEngineManager::PushEngine(std::string Name)
-{
-	T* temp = new T();
-	GEngineList.insert({Name,temp});
-}

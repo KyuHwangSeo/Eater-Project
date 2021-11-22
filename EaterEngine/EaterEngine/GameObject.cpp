@@ -4,7 +4,6 @@
 #include "ObjectManager.h"
 GameObject::GameObject()
 {
-	IsDelete = true;	//삭제 여부
 	Tag	= 0;			//테그
 	IsActive = true;	//모든 컨퍼넌트 사용여부
 	Name = "GameObject";
@@ -20,7 +19,11 @@ GameObject::~GameObject()
 
 void GameObject::SetActive(bool active)
 {
-	IsActive = active;
+	std::vector<Component*>::iterator it = ComponentList.begin();
+	for (it; it != ComponentList.end(); it++)
+	{
+		(*it)->Enabled = active;
+	}
 }
 
 GameObject* GameObject::GetChild(std::string Name)

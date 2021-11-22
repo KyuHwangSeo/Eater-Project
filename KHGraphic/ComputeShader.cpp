@@ -67,7 +67,7 @@ void ComputeShader::LoadShader(std::string fileName)
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
 			// Constant Buffer Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::CBUFFER, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(BufferType::CBUFFER, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
@@ -90,7 +90,7 @@ void ComputeShader::LoadShader(std::string fileName)
 		case D3D_SIT_TEXTURE:
 		{
 			// SRV Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::SRV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(BufferType::SRV, bindDesc.Name);
 
 			// SRV Register Slot Number..
 			srv_register_slot = bindDesc.BindPoint;
@@ -102,7 +102,7 @@ void ComputeShader::LoadShader(std::string fileName)
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::SAMPLER, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(BufferType::SAMPLER, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;
@@ -114,7 +114,7 @@ void ComputeShader::LoadShader(std::string fileName)
 		case D3D_SIT_UAV_RWTYPED:
 		{
 			// UAV Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::UAV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(BufferType::UAV, bindDesc.Name);
 
 			// UAV Register Slot Number..
 			uav_register_slot = bindDesc.BindPoint;

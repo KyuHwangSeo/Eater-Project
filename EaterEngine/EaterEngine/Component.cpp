@@ -1,6 +1,10 @@
 #include "Component.h"
+#include "TimeManager.h"
+#include "KeyinputManager.h"
 #include "GameObject.h"
 
+TimeManager* Component::mTimeManager = nullptr;
+KeyinputManager* Component::mKeyInputManger = nullptr;
 Component::Component()
 {
 	gameobject = nullptr;
@@ -26,5 +30,11 @@ size_t Component::GetComponentType()
 void Component::SetObject(GameObject* obj)
 {
 	gameobject = obj;
+}
+
+void Component::SetManager(TimeManager* time, KeyinputManager* key)
+{
+	mTimeManager = time;
+	mKeyInputManger = key;
 }
 

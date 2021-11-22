@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_map>
-#include "SingleTon.h"
+//#include "SingleTon.h"
 
 typedef size_t Hash_Code;
 
@@ -12,16 +12,20 @@ typedef size_t Hash_Code;
 /// - 동적으로 해당 Resource Class 선언과 동시에 Hash Table에 올리고싶지만 아직은 방법이 떠오르지 않는다..
 ///   일단 Initalize부분에 귀찮더라도 해당 Resource Class를 올려두자..
 
-class ShaderResourceHashTable : public Singleton<ShaderResourceHashTable>
+enum class BufferType
+{
+	CBUFFER,
+	SAMPLER,
+	SRV,
+	UAV
+};
+
+class ShaderResourceHashTable
 {
 public:
-	enum class BufferType
-	{
-		CBUFFER,
-		SAMPLER,
-		SRV,
-		UAV
-	};
+	static ShaderResourceHashTable* GetInstance();
+
+	static ShaderResourceHashTable* instance;
 
 public:
 	// ConstantBuffer Hash Table..
@@ -33,14 +37,15 @@ public:
 	// UnorderedAccessView Hash Table..
 	std::unordered_map<std::string, Hash_Code> g_UAV_HashTable;
 
-	// Hash Table Reset 함수..
-	void Reset();
-
+public:
 	// Hash Code Push 함수..
 	template<typename T> bool Push(BufferType type, std::string name, Hash_Code hash_code);
 
 	// 해당 Hash Code 반환 함수..
 	size_t FindHashCode(BufferType type, std::string cBufName);
+
+	// Hash Table Reset 함수..
+	void Destroy();
 
 private:
 	// Hash Code Push Check 함수..
@@ -48,21 +53,21 @@ private:
 };
 
 template<typename T>
-bool ShaderResourceHashTable::Push(BufferType type, std::string name, Hash_Code hash_code)
+inline bool ShaderResourceHashTable::Push(BufferType type, std::string name, Hash_Code hash_code)
 {
 	switch (type)
 	{
-	case ShaderResourceHashTable::BufferType::CBUFFER:
+	case BufferType::CBUFFER:
 		return CheckHashCode(g_CBuffer_HashTable, name, hash_code);
-	case ShaderResourceHashTable::BufferType::SAMPLER:
+	case BufferType::SAMPLER:
 		return CheckHashCode(g_Sampler_HashTable, name, hash_code);
-	case ShaderResourceHashTable::BufferType::SRV:
+	case BufferType::SRV:
 		return CheckHashCode(g_SRV_HashTable, name, hash_code);
-	case ShaderResourceHashTable::BufferType::UAV:
+	case BufferType::UAV:
 		return CheckHashCode(g_UAV_HashTable, name, hash_code);
 	default:
 		break;
 	}
 
-	return false;
+	return true;
 }

@@ -20,13 +20,14 @@ void ShaderManager::Initialize(ID3D11Device* mDevice, ID3D11DeviceContext* mDevi
 	Device = mDevice;
 	DeviceContext = mDeviceContext;
 
-	ShaderPath = "../Resources/Shader/HS/";
+	ShaderPath = "../Resources/Shader/KHS/";
 
 	//»ùÇÃ·¯ »ý¼º
 	CreateSampler();
 
-	LoadShader("texture_vs.hlsl","texture_ps.hlsl","texture");
-	LoadShader("Skinning_vs.hlsl","Skinning_ps.hlsl","Skinning");
+	LoadShader("texture_vs.hlsl"	,"texture_ps.hlsl"	,"texture");
+	LoadShader("Skinning_vs.hlsl"	,"Skinning_ps.hlsl"	,"Skinning");
+	LoadShader("Debug_vs.hlsl"		,"Debug_ps.hlsl"	,"Debug");
 
 
 	ReFlector->Release();
@@ -80,10 +81,10 @@ bool ShaderManager::CreateSampler()
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.BorderColor[0] = 0.0f;
+	samplerDesc.BorderColor[1] = 0.0f;
+	samplerDesc.BorderColor[2] = 0.0f;
+	samplerDesc.BorderColor[3] = 0.0f;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 

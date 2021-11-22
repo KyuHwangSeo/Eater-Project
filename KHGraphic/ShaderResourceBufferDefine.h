@@ -1,7 +1,7 @@
 #pragma once
 #include "ClassType.h"
 
-#define ADD_SHADER_RESOURCE_VIEW(ClassName) static bool srv_##ClassName = ShaderResourceHashTable::GetInstance()->Push<ClassName>(ShaderResourceHashTable::BufferType::SRV, #ClassName, ClassName::GetHashCode());
+#define ADD_SHADER_RESOURCE_VIEW(ClassName) static bool srv_##ClassName = ShaderResourceHashTable::GetInstance()->Push<ClassName>(BufferType::SRV, #ClassName, ClassName::GetHashCode());
 #define SHADER_RESOURCE_VIEW(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_SHADER_RESOURCE_VIEW(ClassName)
 
 /// <summary>

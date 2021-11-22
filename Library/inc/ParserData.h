@@ -134,6 +134,8 @@ namespace ParserData
 		bool m_IsSkinningObject;
 		bool m_IsBone;
 
+		int m_BoneIndex;
+
 		DirectX::SimpleMath::Matrix m_WorldTM;		// Mesh WorldTM
 		DirectX::SimpleMath::Matrix m_LocalTM;		// Mesh LocalTM
 

@@ -53,7 +53,7 @@ void EndEngine()
 
  void LoadMesh(std::string mMeshName, bool Scale,bool LoadAnime)
 {
-	gGameEngine->LoadMesh(mMeshName);
+	gGameEngine->LoadMesh(mMeshName,Scale,LoadAnime);
 }
 
 ///로드 관련

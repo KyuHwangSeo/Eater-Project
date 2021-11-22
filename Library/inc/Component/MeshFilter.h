@@ -33,6 +33,8 @@ public:
 public:
 	//메쉬의 이름을 넣으면 데이터 로드
 	EATER_ENGINEDLL void SetMeshName(std::string mMeshName);
+	EATER_ENGINEDLL void SetTextureName(std::string mTextureName);
+	EATER_ENGINEDLL void SetNormalTextureName(std::string mTextureName);
 
 	static void SetManager(ObjectManager* obj, MaterialManager* mat);
 private:
@@ -51,8 +53,11 @@ private:
 	static ObjectManager* OBJ_Manager;
 	static MaterialManager* MAT_Manager;
 private:
-	bool isLoad;			//매쉬 로드여부
-	std::string MeshName;	//로드한 매쉬 이름
+	bool isLoadMesh;			//매쉬 로드여부
+	bool isLoadTexture;			//텍스쳐 로드 여부
+
+	std::string MeshName;		//로드한 매쉬 이름
+	std::string TextureName;	//로드한 텍스쳐 이름
 
 	std::vector<Transform*> BoneList;
 	std::vector<DirectX::SimpleMath::Matrix> BoneOffsetList;

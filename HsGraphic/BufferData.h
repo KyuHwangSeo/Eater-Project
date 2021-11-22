@@ -13,11 +13,13 @@ struct CameraBuffer
 struct ObjectBuffer
 {
 	DirectX::XMMATRIX world;
+	DirectX::XMMATRIX TexMatrix;
 };
 
 //½ºÅ°´× ¹öÆÛ
 struct SkinningBuffer
 {
 	DirectX::XMMATRIX world;
+	DirectX::XMMATRIX TexMatrix;
 	DirectX::XMMATRIX BoneOffset[96];
 };

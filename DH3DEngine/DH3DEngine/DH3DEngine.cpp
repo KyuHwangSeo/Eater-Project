@@ -23,8 +23,7 @@ void DH3DEngine::Initialize(HWND _hWnd, int screenWidth, int screenHeight)
 	g_Screen_Width = screenWidth;
 	g_Screen_Height = screenHeight;
 	CreateGraphicResource();
-	Effects::InitAll(DX11_Device);
-	InputLayouts::InitAll(DX11_Device);
+
 }
 
 void DH3DEngine::CreateGraphicResource()
@@ -266,8 +265,6 @@ void DH3DEngine::CreateGraphicResource()
 	// Render State
 	CreateRenderStates();
 
-	m_AxisGrid = new AxisGrid(DX11_Device, DX11_Device_Context, DX11_Raster_State);
-
 	SetDebug(true, 50);
 }
 
@@ -275,9 +272,9 @@ void DH3DEngine::SetDebug(bool _Is_Debug, int _Grid_Num)
 {
 	Is_Debug = _Is_Debug;
 
-	// 해당 디버그 모드에서의 Grid 개수지정. default = 50
-	_Grid_Num = 150;
-	m_AxisGrid->Initialize(_Grid_Num);
+	/// 해당 디버그 모드에서의 Grid 개수지정. default = 50
+	//_Grid_Num = 150;
+	//m_AxisGrid->Initialize(_Grid_Num);
 }
 
 void DH3DEngine::BeginDraw()
@@ -300,7 +297,8 @@ void DH3DEngine::BeginDraw()
 
 void DH3DEngine::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
-	BeginDraw();
+	DX11_Device_Context->RSSetViewports(1, &DX11_View_Port);
+
 	View_Mat = DirectX::SimpleMath::Matrix(*global->mViewMX);
 	Proj_Mat = DirectX::SimpleMath::Matrix(*global->mProj);
 
@@ -315,7 +313,7 @@ void DH3DEngine::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 		meshList->pop();
 
 		/// 오브젝트들을 그린다. (Draw Primitive)
-		if (_Mesh_Data->ObjType != OBJECT_TYPE::Skinning)
+		if (_Mesh_Data->ObjType != OBJECT_TYPE::Base)
 		{
 			continue;
 		}
@@ -401,7 +399,22 @@ void DH3DEngine::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 	// Restore default.
 	DX11_Device_Context->RSSetState(0);
 
-	EndDraw();
+	//EndDraw();
+}
+
+void DH3DEngine::SetViewPort(void* VPT, int Change_Width, int Change_Height)
+{
+	DX11_View_Port = *(D3D11_VIEWPORT*)(VPT);
+}
+
+void DH3DEngine::SetDevice(void* Devie, void* DevieContext)
+{
+	DX11_Device = (ID3D11Device*)(Devie);
+	DX11_Device_Context = (ID3D11DeviceContext*)(DevieContext);
+	Effects::InitAll(DX11_Device);
+	InputLayouts::InitAll(DX11_Device);
+	m_AxisGrid = new AxisGrid(DX11_Device, DX11_Device_Context, DX11_Raster_State);
+	m_AxisGrid->Initialize(150);
 }
 
 void DH3DEngine::EndDraw()

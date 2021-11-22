@@ -13,10 +13,12 @@
 #include <map>
 #include "ParserData.h"
 #include "SimpleMath.h"
+
 namespace ParserData
 {
 	struct Model;
 	class Mesh;
+	struct OneAnimation;
 }
 
 
@@ -45,7 +47,8 @@ public:
 	//매쉬 가져오기
 	static ModelData* GetMesh(std::string Name);
 	//텍스쳐 가져오기
-	TextureBuffer* GetTexture(std::string Name);
+	static TextureBuffer* GetTexture(std::string Name);
+	
 
 	///Load
 	//모델 로드(스크린 이름,모델의 이름,스케일 여부,애니메이션 여부)
@@ -66,12 +69,10 @@ public:
 	//모든 매쉬정보를 삭제
 	void DeleteMeshAll();
 private:
-	//매쉬 데이터를 저장할 구조체를 만든다(재귀)
-	//LoadMeshData* CreateMesh(ParserData::Mesh* mesh, ModelData* data);
-	// 
 	//계층 구조를 타지않고 탑오브젝트들만 읽어온다
 	LoadMeshData* CreateMeshObjeect(ParserData::Mesh* mesh);
-	LoadMeshData* CreateBoneObjeect(ParserData::Mesh* mesh, ModelData* SaveData);
+	LoadMeshData* CreateBoneObjeect(ModelData* SaveData);
+
 	
 	//파싱한데이터에서 값을 변경하지않은것들을 그대로 복사함
 	void SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData);
@@ -85,6 +86,7 @@ private:
 	///리스트
 	static std::map<std::string, ModelData*>		ModelList;
 	static std::map<std::string, TextureBuffer*>	TextureList;
+	static std::map<std::string, ParserData::OneAnimation*>		AnimationList;
 private:
 	//규황이 파서
 	ModelParser* EaterParser;

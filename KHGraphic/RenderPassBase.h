@@ -30,6 +30,7 @@ public:
 
 public:
 	friend class RenderManager;
+	friend class KHGraphic;
 
 protected:
 	static Microsoft::WRL::ComPtr<ID3D11DeviceContext> g_Context;

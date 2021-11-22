@@ -17,7 +17,6 @@
 #include "ResourceFactory.h"
 
 #include "VertexDefine.h"
-#include "ResourceBufferHashTable.h"
 #include "SamplerBufferDefine.h"
 #include "ToolKitDefine.h"
 
@@ -34,6 +33,16 @@ GraphicResourceFactory::GraphicResourceFactory(D3D11Graphic* graphic)
 	m_SwapChain = graphic->GetSwapChain();
 }
 
+GraphicResourceFactory::GraphicResourceFactory(ID3D11Device** device, ID3D11DeviceContext** context)
+{
+	// Graphic Resource & Shader Manager 持失..
+	m_ShaderManager = new ShaderManager();
+	m_ResourceManager = new GraphicResourceManager();
+
+	m_Device = *device;
+	m_Context = *context;
+}
+
 GraphicResourceFactory::~GraphicResourceFactory()
 {
 
@@ -45,10 +54,10 @@ void GraphicResourceFactory::Initialize(int width, int height)
 	m_ShaderManager->Initialize(m_Device, m_Context);
 
 	// Graphic Resource Manager 段奄鉢..
-	m_ResourceManager->Initialize(m_Device, m_SwapChain);
+	m_ResourceManager->Initialize(m_Device, nullptr);
 
 	// Back Buffer 持失..
-	CreateMainRenderTarget(width, height);
+	//CreateMainRenderTarget(width, height);
 
 	/// Global Resource 持失..
 	CreateDepthStencilState();
@@ -754,6 +763,7 @@ void GraphicResourceFactory::CreateDepthStencilView(int width, int height)
 	texDesc.Height = height;
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
+	//texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	texDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;

@@ -6,7 +6,9 @@
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
+struct BufferData;
 
+class GraphicDebugManager;
 class ShaderManager;
 class TextureBase;
 class HsGraphic;
@@ -25,15 +27,12 @@ public:
 	};
 
 
-
-
-
-
-
-
 	RenderingManager();
 	~RenderingManager();
-	void Initialize(ID3D11Device* mDeviece, ID3D11DeviceContext* mDeviceContext,ShaderManager* SM);
+	void Initialize(ID3D11Device* mDeviece, ID3D11DeviceContext* mDeviceContext,
+		ShaderManager* SM,GraphicDebugManager* DM);
+
+
 	void CreateTexture();
 
 	//카메라 버퍼를 업데이트 
@@ -42,6 +41,11 @@ public:
 	void SkinningUpdate(MeshData* data);
 	//매쉬 버퍼를 업데이트
 	void MeshUpdate(MeshData* data);
+	void BoneUpdate(MeshData* data);
+
+
+	void DebugUpdate();
+
 
 	void Rendering(MeshData* data, ShaderType type);
 	void CreateRenderState();
@@ -51,8 +55,8 @@ private:
 	ID3D11DeviceContext* DeviceContext;
 
 
-	TextureBase* Post;
-	ShaderManager* mShaderManager;
+	ShaderManager*			mShaderManager;		//쉐이더 매니저
+	GraphicDebugManager*	mDebugManager;		//디버깅 매니저
 
 
 	ID3D11RasterizerState* mWireframe;
@@ -61,6 +65,7 @@ private:
 
 	ShaderData BasicMesh_SH;
 	ShaderData SknningMesh_SH;
+	ShaderData DebugMesh_SH;
 
 	ID3D11SamplerState* BasicSampler;
 };

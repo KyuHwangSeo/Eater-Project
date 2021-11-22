@@ -1,7 +1,7 @@
 #pragma once
 #include "ClassType.h"
 
-#define ADD_UNORDERED_ACCESS_VIEW(ClassName) static bool uav_##ClassName = ShaderResourceHashTable::GetInstance()->Push<ClassName>(ShaderResourceHashTable::BufferType::UAV, #ClassName, ClassName::GetHashCode());
+#define ADD_UNORDERED_ACCESS_VIEW(ClassName) static bool uav_##ClassName = ShaderResourceHashTable::GetInstance()->Push<ClassName>(BufferType::UAV, #ClassName, ClassName::GetHashCode());
 #define UNORDERED_ACCESS_VIEW(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_UNORDERED_ACCESS_VIEW(ClassName)
 
 /// <summary>

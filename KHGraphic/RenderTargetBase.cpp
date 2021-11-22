@@ -7,10 +7,7 @@
 RenderTarget::RenderTarget(eRenderTargetType type, ID3D11RenderTargetView** rtv)
 	:m_RenderTargetType(type)
 {
-	if (rtv)
-	{
-		m_RTV = *rtv;
-	}
+	if (rtv) m_RTV = *rtv;
 }
 
 RenderTarget::~RenderTarget()

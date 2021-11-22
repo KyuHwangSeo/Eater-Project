@@ -5,6 +5,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Define">
+      <UniqueIdentifier>{3514b07a-a938-4e9b-900e-18bec5576fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LayoutData">
+      <UniqueIdentifier>{3f773d62-eeb7-43f9-9fa2-10afbdfe59e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiRenderEngine.cpp">
@@ -14,6 +20,15 @@
   <ItemGroup>
     <ClInclude Include="MultiRenderEngine.h">
       <Filter>MultiRenderEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroDefine.h">
+      <Filter>Define</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiRenderDefine.h">
+      <Filter>Define</Filter>
+    </ClInclude>
+    <ClInclude Include="InputLayoutData.h">
+      <Filter>LayoutData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

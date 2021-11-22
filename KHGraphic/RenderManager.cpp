@@ -21,9 +21,7 @@
 RenderManager::RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* factory)
 {
 	// Rendering Initialize..
-	RenderPassBase::Initialize(graphic->GetContext(), factory, factory->GetResourceManager(), factory->GetShaderManager());
-
-	m_SwapChain = graphic->GetSwapChain();
+	RenderPassBase::Initialize(nullptr, factory, factory->GetResourceManager(), factory->GetShaderManager());
 
 	m_Farward = new ForwardPass();
 	//m_Deferred = new DeferredPass();
@@ -63,6 +61,8 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 	m_Farward->BeginRender();
 
+	RenderPassBase::g_Context->RSSetViewports(1, m_ViewPort);
+
 	while (meshList->size() != 0)
 	{
 		MeshData* mesh = meshList->front();
@@ -80,7 +80,7 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 	}
 
 	// 최종 출력..
-	m_SwapChain->Present(0, 0);
+	//m_SwapChain->Present(0, 0);
 }
 
 void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -116,10 +116,10 @@ void RenderManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global
 
 void RenderManager::OnResize(int width, int height)
 {
-	RenderPassBase::g_Resource->OnResize(width, height);
-
-	for (RenderPassBase* renderPass : m_RenderPassList)
-	{
-		renderPass->OnResize(width, height);
-	}
+	//RenderPassBase::g_Resource->OnResize(width, height);
+	//
+	//for (RenderPassBase* renderPass : m_RenderPassList)
+	//{
+	//	renderPass->OnResize(width, height);
+	//}
 }

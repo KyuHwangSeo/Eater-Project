@@ -39,7 +39,6 @@ public:
 public:
 	///오브젝트 관련(오브젝트 매니저)
 	GameObject* Instance(std::string ObjName = "GameObject");			//obj 생성 (빈 게임오브젝트)
-	GameObject* InstanceModel(std::string ObjName);						//obj 생성 (로드할 게임오브젝트)
 	void		Destroy(GameObject* obj);								//obj 삭제
 public:
 	///스크린 관련
@@ -83,5 +82,6 @@ private:
 	int WinSizeWidth;	//윈도우 사이즈 가로
 	int WinSizeHeight;	//윈도우 사이즈 세로
 	bool ConsoleDebug;
+private:
 };
 

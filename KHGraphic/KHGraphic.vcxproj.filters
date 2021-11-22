@@ -130,12 +130,6 @@
     <Filter Include="소스 파일\RendererPass\Forward">
       <UniqueIdentifier>{b44bbdc2-e6b9-4bff-a63c-29fd6013064c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Shader\HLSL\Forward">
-      <UniqueIdentifier>{13184832-72bd-4f5d-9444-942f736e4ef1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Shader\HLSL\Shadow">
-      <UniqueIdentifier>{d99c63cf-2801-43fc-acd1-46f6d24fa9b1}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -153,16 +147,7 @@
     <ClInclude Include="VertexShader.h">
       <Filter>소스 파일\Shader\ShaderClass\VertexShader</Filter>
     </ClInclude>
-    <ClInclude Include="UnorderedAccessBufferDefine.h">
-      <Filter>소스 파일\Shader\ShaderResource</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderResourceBufferDefine.h">
-      <Filter>소스 파일\Shader\ShaderResource</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantBufferDefine.h">
-      <Filter>소스 파일\Shader\ShaderResource</Filter>
-    </ClInclude>
-    <ClInclude Include="SamplerBufferDefine.h">
       <Filter>소스 파일\Shader\ShaderResource</Filter>
     </ClInclude>
     <ClInclude Include="ComputeShader.h">
@@ -270,8 +255,14 @@
     <ClInclude Include="ForwardPass.h">
       <Filter>소스 파일\RendererPass\Forward</Filter>
     </ClInclude>
-    <ClInclude Include="SingleTon.h">
-      <Filter>소스 파일\Define</Filter>
+    <ClInclude Include="SamplerBufferDefine.h">
+      <Filter>소스 파일\Shader\ShaderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderResourceBufferDefine.h">
+      <Filter>소스 파일\Shader\ShaderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="UnorderedAccessBufferDefine.h">
+      <Filter>소스 파일\Shader\ShaderResource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -349,20 +340,20 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Forward</Filter>
+    <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\MeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Forward</Filter>
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Forward</Filter>
+    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\ShadowMeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\ShadowSkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

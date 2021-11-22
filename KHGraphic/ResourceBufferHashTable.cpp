@@ -4,12 +4,16 @@
 #include "ShaderResourceBufferDefine.h"
 #include "UnorderedAccessBufferDefine.h"
 
-void ShaderResourceHashTable::Reset()
+ShaderResourceHashTable* ShaderResourceHashTable::instance = nullptr;
+
+ShaderResourceHashTable* ShaderResourceHashTable::GetInstance()
 {
-	g_CBuffer_HashTable.clear();
-	g_Sampler_HashTable.clear();
-	g_SRV_HashTable.clear();
-	g_UAV_HashTable.clear();
+	if (instance == nullptr)
+	{
+		instance = new ShaderResourceHashTable();
+	}
+
+	return instance;
 }
 
 size_t ShaderResourceHashTable::FindHashCode(BufferType type, std::string cBufName)
@@ -24,7 +28,6 @@ size_t ShaderResourceHashTable::FindHashCode(BufferType type, std::string cBufNa
 	
 		if (cHash == g_CBuffer_HashTable.end())
 		{
-			throw std::exception("ERROR: Can not find Constant Buffer Hash Code.\n");
 			return 0;
 		}
 	}
@@ -35,7 +38,6 @@ size_t ShaderResourceHashTable::FindHashCode(BufferType type, std::string cBufNa
 	
 		if (cHash == g_Sampler_HashTable.end())
 		{
-			throw std::exception("ERROR: Can not find Constant Buffer Hash Code.\n");
 			return 0;
 		}
 	}
@@ -46,7 +48,6 @@ size_t ShaderResourceHashTable::FindHashCode(BufferType type, std::string cBufNa
 	
 		if (cHash == g_SRV_HashTable.end())
 		{
-			throw std::exception("ERROR: Can not find Shader Resource View Hash Code.\n");
 			return 0;
 		}
 	}
@@ -57,14 +58,12 @@ size_t ShaderResourceHashTable::FindHashCode(BufferType type, std::string cBufNa
 	
 		if (cHash == g_UAV_HashTable.end())
 		{
-			throw std::exception("ERROR: Can not find Unordered Access View Hash Code.\n");
 			return 0;
 		}
 	}
 	break;
 	default:
 	{
-		throw std::exception("ERROR: Can not find Resource Type.\n");
 		return 0;
 	}
 	break;
@@ -79,8 +78,15 @@ bool ShaderResourceHashTable::CheckHashCode(std::unordered_map<std::string, Hash
 	if (table.find(name) == table.end())
 	{
 		table.insert(std::make_pair(name, hash_code));
-		return true;
 	}
 
-	return false;
+	return true;
+}
+
+void ShaderResourceHashTable::Destroy()
+{
+	g_CBuffer_HashTable.clear();
+	g_Sampler_HashTable.clear();
+	g_SRV_HashTable.clear();
+	g_UAV_HashTable.clear();
 }

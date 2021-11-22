@@ -5,10 +5,11 @@
 #include "ModelParser.h"
 #include "GraphicEngineManager.h"
 
-
+using namespace ParserData;
 
 std::map<std::string, ModelData*> LoadManager::ModelList;
 std::map<std::string, TextureBuffer*> LoadManager::TextureList;
+std::map<std::string, OneAnimation*> LoadManager::AnimationList;
 LoadManager::LoadManager()
 {
 	GEngine = nullptr;
@@ -75,37 +76,31 @@ void LoadManager::LoadMesh(std::string Name, bool Scale, bool LoadAnime)
 	{
 		//리스트에 매쉬 조사
 		ParserData::Mesh* mesh = temp->m_MeshList[i];
+
 		//최상위 매쉬가 아니라면 아무것도 하지않음
 		if (mesh->m_TopNode != true) { continue; }
 
 		//매쉬이고 스키닝 오브젝트라면
 		if (mesh->m_IsBone == false && mesh->m_IsSkinningObject == true)
 		{
+			//본과 오프셋 정보만 읽어옴 생성은 밑에서 
 			SaveMesh->BoneOffsetList = &mesh->m_BoneTMList;
 			SaveMesh->BoneList = &mesh->m_BoneMeshList;
 		}
-	}
 
-
-	for (int i = 0; i < MeshCount; i++)
-	{
-		//리스트에 매쉬 조사
-		ParserData::Mesh* mesh = temp->m_MeshList[i];
-		//최상위 매쉬가 아니라면 아무것도 하지않음
-		if (mesh->m_TopNode != true) { continue; }
-
-
-		if (mesh->m_IsBone == true)
+		//매쉬이고 탑 오브젝트라면
+		if (mesh->m_IsBone == false && mesh->m_TopNode)
 		{
-			LoadMeshData* temp = CreateBoneObjeect(mesh, SaveMesh);
-			SaveMesh->TopBoneList.push_back(temp);
-		}
-		else
-		{
-			LoadMeshData* temp = CreateMeshObjeect(mesh);
-			SaveMesh->TopMeshList.push_back(temp);
+			LoadMeshData* TopMesh = CreateMeshObjeect(mesh);
+			SaveMesh->TopMeshList.push_back(TopMesh);
 		}
 	}
+
+	//읽어온 BoneOffset 과 리스트를 기반으로 생성하고 계층구조 연결후 최상위만뽑아온다
+	LoadMeshData* TopBone = CreateBoneObjeect(SaveMesh);
+	if (TopBone != nullptr) { SaveMesh->TopBoneList.push_back(TopBone); }
+
+
 
 
 	//최상위 오브젝트의 리스트를 넣어준다
@@ -114,18 +109,23 @@ void LoadManager::LoadMesh(std::string Name, bool Scale, bool LoadAnime)
 
 void LoadManager::LoadTexture(std::string Name)
 {
-	std::string TextureName = TexturePath + Name + ".dds";
-	TextureBuffer* Tbuffer = GEngine->CreateTextureBuffer(TextureName);
+	std::string TextureName = TexturePath + Name;
 
+
+	TextureBuffer* Tbuffer = GEngine->CreateTextureBuffer(TextureName);
+	
 	if (Tbuffer == nullptr || Tbuffer->TextureBufferPointer == nullptr)
 	{
 		DebugManager::Print(TextureName, 0, 0, DebugManager::MSG_TYPE::MSG_LOAD, true);
 	}
 	else
 	{
-		std::string strTemp = "텍스쳐를 로드합니다 :" + Name;
-		DebugManager::Print(strTemp, 0, 0, DebugManager::MSG_TYPE::MSG_LOAD);
-		TextureList.insert({ Name,Tbuffer });
+		//이름은 .dds , .png 를 빼고 저장한다
+		std::string::size_type End = Name.rfind('.');
+		std::string::size_type start = 0;
+		std::string SaveName = Name.substr(start, End);
+
+		TextureList.insert({ SaveName,Tbuffer });
 	}
 }
 
@@ -150,7 +150,6 @@ void LoadManager::LoadTexturePath(std::string mPath)
 void LoadManager::DeleteMesh(std::string mMeshName)
 {
 	//메모리에 할당한 매쉬의 정보를 삭제시킴
-
 	std::map<std::string, ModelData*>::iterator temp = ModelList.find(mMeshName);
 	if (temp == ModelList.end())
 	{
@@ -181,21 +180,6 @@ LoadMeshData* LoadManager::CreateMeshObjeect(ParserData::Mesh* mesh)
 	box->VB = GEngine->CreateVertexBuffer(mesh);
 	box->VB->Count = (int)mesh->m_VertexList.size();
 
-	// Texture Buffer 삽입..
-	CMaterial* mat = mesh->m_MaterialData;
-
-	if (mat)
-	{
-		if (mat->m_IsDiffuseMap)
-		{
-			box->Diffuse = GEngine->CreateTextureBuffer(mat->m_DiffuseMap->m_BitMap);
-		}
-		if (mat->m_IsBumpMap)
-		{
-			box->Normal = GEngine->CreateTextureBuffer(mat->m_BumpMap->m_BitMap);
-		}
-	}
-
 	//자식객체가 있다면 정보읽어옴
 	int ChildCount = mesh->m_ChildList.size();
 	for (int i = 0; i < ChildCount; i++)
@@ -208,39 +192,52 @@ LoadMeshData* LoadManager::CreateMeshObjeect(ParserData::Mesh* mesh)
 	return box;
 }
 
-LoadMeshData* LoadManager::CreateBoneObjeect(ParserData::Mesh* mesh, ModelData* SaveData)
+LoadMeshData* LoadManager::CreateBoneObjeect(ModelData* SaveData)
 {
-	LoadMeshData* box = nullptr;
-	int size = SaveData->BoneList->size();
+	///읽어온 본 리스트로 본을 생성하고 BoneOffset과 연결해줌
+	if (SaveData->BoneList == nullptr) { return nullptr; }
 
-	//본리스트에 데이터가들어있지않으면 생성하지않는다
-	for (int i = 0; i < size; i++)
+	std::vector<LoadMeshData*> TempBoneList;
+	//본의 개수만큼 본을 생성시킴
+	int boneCount = SaveData->BoneList->size();
+	for (int i = 0; i < boneCount; i++)
 	{
-		if (mesh == (*SaveData->BoneList)[i])
+		//한개의 본데이터
+		ParserData::Mesh* mesh = (*SaveData->BoneList)[i];
+		LoadMeshData* data = new LoadMeshData();
+		SetData(data, mesh);
+		data->BoneOffset = &(*SaveData->BoneOffsetList)[i];
+		TempBoneList.push_back(data);
+	}
+
+	///생성된 본들을 부모자식관계로 링크시켜줌
+	LoadMeshData* TOP_BONE = nullptr;
+	for (int i = 0; i < boneCount; i++)
+	{
+		for (int j = 0; j < boneCount; j++)
 		{
-			//계층정보 받기
-			box = new LoadMeshData();
-			box->BoneNumber = (*SaveData->BoneList)[i];
-			box->BoneOffset = &(*SaveData->BoneOffsetList)[i];
+			//자기 자신과는 검사하지않는다
+			if (TempBoneList[i] == TempBoneList[j]) { continue; }
 
-			SetData(box, mesh);
+			LoadMeshData* Front = TempBoneList[i];
+			LoadMeshData* Back = TempBoneList[j];
 
-			//자식객체가 있다면 정보읽어옴
-			int ChildCount = mesh->m_ChildList.size();
-			for (int i = 0; i < ChildCount; i++)
+			//나의 부모이름이 자기자신의 이름일때 연결
+			if (Front->ParentName == Back->Name)
 			{
-				LoadMeshData* temp = CreateBoneObjeect(mesh->m_ChildList[i], SaveData);
+				Front->Parent = Back;
+				Back->Child.push_back(Front);
+			}
 
-				if (temp != nullptr)
-				{
-					box->Child.push_back(temp);
-					temp->Parent = box;
-				}
+			if (Front->Top_Object == true)
+			{
+				TOP_BONE = Front;
 			}
 		}
 	}
 
-	return box;
+	///모두 연결된 상태에서 최상위 오브젝트만 내보내준다
+	return TOP_BONE;
 }
 
 void LoadManager::SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData)
@@ -250,10 +247,25 @@ void LoadManager::SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData)
 	MeshData->Top_Object = LoadData->m_TopNode;
 	MeshData->Bone_Object = LoadData->m_IsBone;
 	MeshData->Skinning_Object = LoadData->m_IsSkinningObject;
+	MeshData->BoneIndex = LoadData->m_BoneIndex;
 
 	//기존 데이터 그냥 읽어옴
 	MeshData->Animation = LoadData->m_Animation;
 	MeshData->Material = LoadData->m_MaterialData;
+	
+	// Texture Buffer 삽입..
+	CMaterial* mat = LoadData->m_MaterialData;
+	if (mat != nullptr)
+	{
+		if (mat->m_IsDiffuseMap == true)
+		{
+			MeshData->Diffuse = GEngine->CreateTextureBuffer(mat->m_DiffuseMap->m_BitMap);
+		}
+		if (mat->m_IsBumpMap == true)
+		{
+			MeshData->Normal = GEngine->CreateTextureBuffer(mat->m_BumpMap->m_BitMap);
+		}
+	}
 
 	//매트릭스 정보 받기
 	MeshData->WorldTM = &LoadData->m_WorldTM;
