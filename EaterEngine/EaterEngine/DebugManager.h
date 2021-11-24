@@ -9,34 +9,25 @@ class KeyinputManager;
 class DebugManager
 {
 public:
-	DebugManager();
 	~DebugManager();
+	DebugManager();
 
 	enum class MSG_TYPE
 	{
 		MSG_LOAD,
 		MSG_CREATE,
+		MSG_GET,
 		MSG_DELETE,
-		MSG_ENGINE,
-		MSG_ERROR,
+		MSG_PUSH,
+		MSG_SYSTEM
 	};
 
 	void Initialize(KeyinputManager* mkeyManager,bool mDebugOn);
-	void printStart();
-	static void Print(std::string Msg,int X,int Y, MSG_TYPE type,bool Error = false);
-
-	
-	void Begin();	//콘솔창 그리기 시작
-	void End();		//콘솔창 그리기 종료
-	void Clear();	//콘솔창 클리어
-
+	static void Print(MSG_TYPE type, std::string typeData,std::string msg,bool Error);
+	static void Line();
 	void Update();
 	void Delete();
 private:
-	static HANDLE hConsole[2];
-	
-	static int ConsoleIndex;
-	bool Front = false;
-	KeyinputManager* KeyManager;
+	static HANDLE hConsole;
 	static bool DebugON;
 };

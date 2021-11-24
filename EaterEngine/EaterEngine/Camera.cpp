@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "EngineData.h"
 #include "Transform.h"
+#include "DebugManager.h"
 
 using namespace DirectX;
 std::vector<Camera*> Camera::CamList;
@@ -25,7 +26,7 @@ void Camera::Awake()
 	//오브젝트의 컨퍼넌트 가져오기
 	tranform = gameobject->transform;
 	CreateProj(1920,1080);
-	gameobject->OneMeshData->ObjType = OBJECT_TYPE::Camera;
+	gameobject->OneMeshData->ObjType = OBJECT_TYPE::CAMERA;
 }
 
 void Camera::Update()
@@ -50,7 +51,7 @@ DirectX::XMFLOAT3* Camera::GetPos()
 
 void Camera::SetSize(int Change_Width, int Change_Height)
 {
-	float Ratio = Change_Width / Change_Height;
+	float Ratio = (float)(Change_Width / Change_Height);
 
 }
 
@@ -133,7 +134,7 @@ void Camera::PushCamList()
 		MainCam = this;
 	}
 
-	int count = CamList.size();
+	int count = (int)CamList.size();
 	for (int i = 0; i < count; i++)
 	{
 		if (CamList[i] == nullptr)

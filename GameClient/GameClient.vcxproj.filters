@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\GameManager">
-      <UniqueIdentifier>{f719478b-bad2-44d2-a53c-e5625be7e03e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Component">
       <UniqueIdentifier>{0f1fe710-7256-4e0c-bc2f-cd66e5d514f8}</UniqueIdentifier>
     </Filter>
@@ -34,6 +31,9 @@
     <Filter Include="소스 파일\Scene\inGame">
       <UniqueIdentifier>{e93e28d7-0fc6-4289-b4a5-74957091c4b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Component\GameManager">
+      <UniqueIdentifier>{f719478b-bad2-44d2-a53c-e5625be7e03e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -49,7 +49,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
-      <Filter>소스 파일\GameManager</Filter>
+      <Filter>소스 파일\Component\GameManager</Filter>
     </ClInclude>
     <ClInclude Include="AI.h">
       <Filter>소스 파일\Component\AI</Filter>
@@ -69,7 +69,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>소스 파일\GameManager</Filter>
+      <Filter>소스 파일\Component\GameManager</Filter>
     </ClCompile>
     <ClCompile Include="AI.cpp">
       <Filter>소스 파일\Component\AI</Filter>

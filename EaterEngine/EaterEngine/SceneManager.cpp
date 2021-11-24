@@ -67,8 +67,8 @@ void SceneManager::SceneEnd()
 
 void SceneManager::Update()
 {
-	std::string temp = "현재 선택된 씬 :" + SceneName;
-	DebugManager::Print(temp, 80, 2, DebugManager::MSG_TYPE::MSG_ENGINE);
+	//std::string temp = "현재 선택된 씬 :" + SceneName;
+	//DebugManager::Print(temp,DebugManager::MSG_TYPE::MSG_ENGINE);
 
 	//스크린 먼저 업데이트하고 그다음 컨퍼넌트들 업데이트
 	NowScene->Update();

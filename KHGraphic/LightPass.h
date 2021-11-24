@@ -8,7 +8,9 @@ public:
 	~LightPass();
 
 public:
-	void Initialize(int width, int height) override;
+	void Create(int width, int height) override;
+	void Start() override;
+
 	void OnResize(int width, int height) override;
 	void Release() override;
 

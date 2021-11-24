@@ -21,9 +21,7 @@
 RenderManager::RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* factory)
 {
 	// Rendering Initialize..
-	RenderPassBase::Initialize(graphic->GetContext(), factory, factory->GetResourceManager(), factory->GetShaderManager());
-
-	m_SwapChain = graphic->GetSwapChain();
+	RenderPassBase::Initialize(nullptr, factory, factory->GetResourceManager(), factory->GetShaderManager());
 
 	m_Farward = new ForwardPass();
 	//m_Deferred = new DeferredPass();
@@ -43,9 +41,16 @@ RenderManager::~RenderManager()
 
 void RenderManager::Initialize(int width, int height)
 {
+	// Render Pass Resource Create..
 	for (RenderPassBase* renderPass : m_RenderPassList)
 	{
-		renderPass->Initialize(width, height);
+		renderPass->Create(width, height);
+	}
+
+	// Render Pass Resource Set..
+	for (RenderPassBase* renderPass : m_RenderPassList)
+	{
+		renderPass->Start();
 	}
 }
 
@@ -63,14 +68,16 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 	m_Farward->BeginRender();
 
+	RenderPassBase::g_Context->RSSetViewports(1, m_ViewPort);
+
 	while (meshList->size() != 0)
 	{
 		MeshData* mesh = meshList->front();
 
 		switch (mesh->ObjType)
 		{
-		case OBJECT_TYPE::Base:
-		case OBJECT_TYPE::Skinning:
+		case OBJECT_TYPE::BASE:
+		case OBJECT_TYPE::SKINNING:
 			m_Farward->Update(mesh, global);
 			m_Farward->Render(mesh);
 			break;
@@ -80,7 +87,7 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 	}
 
 	// 최종 출력..
-	m_SwapChain->Present(0, 0);
+	//m_SwapChain->Present(0, 0);
 }
 
 void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -93,8 +100,8 @@ void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* gl
 
 		switch (mesh->ObjType)
 		{
-		case OBJECT_TYPE::Base:
-		case OBJECT_TYPE::Skinning:
+		case OBJECT_TYPE::BASE:
+		case OBJECT_TYPE::SKINNING:
 			m_Shadow->Update(mesh, global);
 			m_Shadow->Render(mesh);
 			break;
@@ -116,10 +123,10 @@ void RenderManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global
 
 void RenderManager::OnResize(int width, int height)
 {
-	RenderPassBase::g_Resource->OnResize(width, height);
-
-	for (RenderPassBase* renderPass : m_RenderPassList)
-	{
-		renderPass->OnResize(width, height);
-	}
+	//RenderPassBase::g_Resource->OnResize(width, height);
+	//
+	//for (RenderPassBase* renderPass : m_RenderPassList)
+	//{
+	//	renderPass->OnResize(width, height);
+	//}
 }

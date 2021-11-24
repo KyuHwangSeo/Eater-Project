@@ -1,37 +1,54 @@
 #include "Delegate.h"
 
+Delegate_Map::Delegate_Map()
+{
+}
+
+Delegate_Map::~Delegate_Map()
+{
+}
+
+void Delegate_Map::Push(ComponentFunctionData temp)
+{
+	FunctionList.push_back(temp);
+}
+
+void Delegate_Map::Pop(Component* Key)
+{
+	int size = (int)FunctionList.size();
+	for (int i = 0; i < size; i++)
+	{
+		if (FunctionList[i].ComponentPoiner == Key)
+		{
+			FunctionList.erase(FunctionList.begin() + i);
+			break;
+		}
+	}
+}
+
+void Delegate_Map::Clear()
+{
+	FunctionList.clear();
+}
+
+void Delegate_Map::Play(bool OnePlay)
+{
+	int size = (int)FunctionList.size();
+	for (int i = 0; i < size; i++)
+	{
+		//함수포인터가 없다면 통과
+		if (FunctionList[i].FunctionPointer == nullptr) { continue; }
+		//기능을꺼놨다면 통과
+		if (*(FunctionList[i].Enabled) == false) { continue; }
 
 
-//template<typename T>
-//void Delegate_Map<T>::Push(Component* ComponentKey, std::function<void()> temp)
-//{
-//
-//}
+		//함수 실행
+		FunctionList[i].FunctionPointer();
+	}
 
-//template<typename T>
-//void Delegate_Map<T>::Push(T* ComponentKey, std::function<void()> temp)
-//{
-//	FunctionList.insert({ ComponentKey,temp });
-//}
-
-//template<typename T>
-//void Delegate_Map<T>::Pop(T* temp)
-//{
-//	FunctionList[temp] = nullptr;
-//}
-
-//template<typename T>
-//void Delegate_Map<T>::Play()
-//{
-//	//map의 처음부터 끝까지 순환
-//	std::map<T*, std::function<void()>>::iterator list = FunctionList.begin();
-//	
-//	while(list != FunctionList.end())
-//	{
-//		if (list->second != nullptr)
-//		{
-//			list->second();
-//		}
-//		++list;
-//	}
-//}
+	//한번만 실행되는 함수포인터라면 모두 실행후 삭제
+	if (OnePlay == true)
+	{
+		FunctionList.clear();
+	}
+}

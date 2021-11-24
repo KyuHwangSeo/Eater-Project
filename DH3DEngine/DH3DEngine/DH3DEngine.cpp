@@ -20,11 +20,10 @@ DH3DEngine::~DH3DEngine()
 void DH3DEngine::Initialize(HWND _hWnd, int screenWidth, int screenHeight)
 {
 	g_hWnd = _hWnd;
-	g_Screen_Width = screenWidth;
-	g_Screen_Height = screenHeight;
+	g_Screen_Width = (float)screenWidth;
+	g_Screen_Height = (float)screenHeight;
 	CreateGraphicResource();
-	Effects::InitAll(DX11_Device);
-	InputLayouts::InitAll(DX11_Device);
+
 }
 
 void DH3DEngine::CreateGraphicResource()
@@ -33,10 +32,8 @@ void DH3DEngine::CreateGraphicResource()
 	IDXGIAdapter* adapter;
 	IDXGIOutput* adapterOutput;
 	unsigned int numModes, i, numerator, denominator;
-	unsigned long long stringLength;
 	DXGI_MODE_DESC* displayModeList;
 	DXGI_ADAPTER_DESC adapterDesc;
-	int error;
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	ID3D11Texture2D* backBufferPtr;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
@@ -44,7 +41,6 @@ void DH3DEngine::CreateGraphicResource()
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
 	D3D11_VIEWPORT viewport;
-	float fieldOfView, screenAspect;
 
 	// DXGI 팩토리 생성.
 	HR(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory));
@@ -109,8 +105,8 @@ void DH3DEngine::CreateGraphicResource()
 	swapChainDesc.BufferCount = 1;
 
 	// Set the width and height of the back buffer.
-	swapChainDesc.BufferDesc.Width = g_Screen_Width;
-	swapChainDesc.BufferDesc.Height = g_Screen_Height;
+	swapChainDesc.BufferDesc.Width = (UINT)g_Screen_Width;
+	swapChainDesc.BufferDesc.Height = (UINT)g_Screen_Height;
 
 	// Set regular 32-bit surface for the back buffer.
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -168,8 +164,8 @@ void DH3DEngine::CreateGraphicResource()
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
 	// Set up the description of the depth buffer.
-	depthBufferDesc.Width = g_Screen_Width;
-	depthBufferDesc.Height = g_Screen_Height;
+	depthBufferDesc.Width = (UINT)g_Screen_Width;
+	depthBufferDesc.Height = (UINT)g_Screen_Height;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -266,8 +262,6 @@ void DH3DEngine::CreateGraphicResource()
 	// Render State
 	CreateRenderStates();
 
-	m_AxisGrid = new AxisGrid(DX11_Device, DX11_Device_Context, DX11_Raster_State);
-
 	SetDebug(true, 50);
 }
 
@@ -275,9 +269,9 @@ void DH3DEngine::SetDebug(bool _Is_Debug, int _Grid_Num)
 {
 	Is_Debug = _Is_Debug;
 
-	// 해당 디버그 모드에서의 Grid 개수지정. default = 50
-	_Grid_Num = 150;
-	m_AxisGrid->Initialize(_Grid_Num);
+	/// 해당 디버그 모드에서의 Grid 개수지정. default = 50
+	//_Grid_Num = 150;
+	//m_AxisGrid->Initialize(_Grid_Num);
 }
 
 void DH3DEngine::BeginDraw()
@@ -300,7 +294,8 @@ void DH3DEngine::BeginDraw()
 
 void DH3DEngine::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
-	BeginDraw();
+	DX11_Device_Context->RSSetViewports(1, &DX11_View_Port);
+
 	View_Mat = DirectX::SimpleMath::Matrix(*global->mViewMX);
 	Proj_Mat = DirectX::SimpleMath::Matrix(*global->mProj);
 
@@ -315,7 +310,7 @@ void DH3DEngine::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 		meshList->pop();
 
 		/// 오브젝트들을 그린다. (Draw Primitive)
-		if (_Mesh_Data->ObjType != OBJECT_TYPE::Skinning)
+		if (_Mesh_Data->ObjType != OBJECT_TYPE::BASE)
 		{
 			continue;
 		}
@@ -401,7 +396,22 @@ void DH3DEngine::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 	// Restore default.
 	DX11_Device_Context->RSSetState(0);
 
-	EndDraw();
+	//EndDraw();
+}
+
+void DH3DEngine::SetViewPort(void* VPT, int Change_Width, int Change_Height)
+{
+	DX11_View_Port = *(D3D11_VIEWPORT*)(VPT);
+}
+
+void DH3DEngine::SetDevice(void* Devie, void* DevieContext)
+{
+	DX11_Device = (ID3D11Device*)(Devie);
+	DX11_Device_Context = (ID3D11DeviceContext*)(DevieContext);
+	Effects::InitAll(DX11_Device);
+	InputLayouts::InitAll(DX11_Device);
+	m_AxisGrid = new AxisGrid(DX11_Device, DX11_Device_Context, DX11_Raster_State);
+	m_AxisGrid->Initialize(150);
 }
 
 void DH3DEngine::EndDraw()
@@ -499,8 +509,8 @@ void DH3DEngine::OnReSize(int Change_Width, int Change_Height)
 {
 
 	/// 바뀐 화면의 사이즈를 저장해 준뒤에
-	g_Screen_Width = Change_Width;
-	g_Screen_Height = Change_Height;
+	g_Screen_Width = (float)Change_Width;
+	g_Screen_Height = (float)Change_Height;
 
 	/// 화면을 나타내는 예전의 view를 삭제하고 현재것으로 새로 생성한다.
 	assert(DX11_Device_Context);
@@ -512,7 +522,7 @@ void DH3DEngine::OnReSize(int Change_Width, int Change_Height)
 	ReleaseCOM(DX11_Depth_Stencil_View);
 	ReleaseCOM(DX11_Depth_Stencil_Buffer);
 
-	HR(DX11_Swap_Chain->ResizeBuffers(1, g_Screen_Width, g_Screen_Height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+	HR(DX11_Swap_Chain->ResizeBuffers(1, (UINT)g_Screen_Width, (UINT)g_Screen_Height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	ID3D11Texture2D* backBuffer;
 	HR(DX11_Swap_Chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
 	HR(DX11_Device->CreateRenderTargetView(backBuffer, 0, &DX11_Render_Target_View));
@@ -522,8 +532,8 @@ void DH3DEngine::OnReSize(int Change_Width, int Change_Height)
 
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 
-	depthStencilDesc.Width = g_Screen_Width;
-	depthStencilDesc.Height = g_Screen_Height;
+	depthStencilDesc.Width = (UINT)g_Screen_Width;
+	depthStencilDesc.Height = (UINT)g_Screen_Height;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -614,7 +624,7 @@ Vertexbuffer* DH3DEngine::CreateVertexBuffer(ParserData::Mesh* mModel)
 	{
 		temp[i].Pos = mModel->m_VertexList[i]->m_Pos;
 		temp[i].Normal = mModel->m_VertexList[i]->m_Normal;
-		temp[i].Tex = { mModel->m_VertexList[i]->m_U ,mModel->m_VertexList[i]->m_V };
+		temp[i].Tex = mModel->m_VertexList[i]->m_UV;
 	}
 
 	D3D11_BUFFER_DESC vbd;

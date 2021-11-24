@@ -20,13 +20,14 @@ void ShaderManager::Initialize(ID3D11Device* mDevice, ID3D11DeviceContext* mDevi
 	Device = mDevice;
 	DeviceContext = mDeviceContext;
 
-	ShaderPath = "../Resources/Shader/HS/";
+	ShaderPath = "../Resources/Shader/KHS/";
 
 	//샘플러 생성
 	CreateSampler();
 
-	LoadShader("texture_vs.hlsl","texture_ps.hlsl","texture");
-	LoadShader("Skinning_vs.hlsl","Skinning_ps.hlsl","Skinning");
+	LoadShader("texture_vs.hlsl"	,"texture_ps.hlsl"	,"texture");
+	LoadShader("Skinning_vs.hlsl"	,"Skinning_ps.hlsl"	,"Skinning");
+	LoadShader("Debug_vs.hlsl"		,"Debug_ps.hlsl"	,"Debug");
 
 
 	ReFlector->Release();
@@ -80,10 +81,10 @@ bool ShaderManager::CreateSampler()
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.BorderColor[0] = 0.0f;
+	samplerDesc.BorderColor[1] = 0.0f;
+	samplerDesc.BorderColor[2] = 0.0f;
+	samplerDesc.BorderColor[3] = 0.0f;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -97,7 +98,7 @@ bool ShaderManager::CreateSampler()
 bool ShaderManager::CreateConstantBuffer()
 {
 	//변수의 타입
-	D3D_SHADER_VARIABLE_TYPE var_type;
+	//D3D_SHADER_VARIABLE_TYPE var_type;
 
 	//쉐이더의 정보를 가져온다
 	D3D11_SHADER_DESC desc;
@@ -107,7 +108,7 @@ bool ShaderManager::CreateConstantBuffer()
 	UINT CBufferCount = desc.ConstantBuffers;
 	//c버퍼를 연다!!
 	//버퍼의 개수만큼 cbuffer를 가져옴
-	for (int i = 0; i < CBufferCount; i++)
+	for (int i = 0; i < (int)CBufferCount; i++)
 	{
 		ID3D11ShaderReflectionConstantBuffer* Cbuffer = ReFlector->GetConstantBufferByIndex(i);
 		D3D11_SHADER_BUFFER_DESC buffer_Desc;
@@ -162,7 +163,7 @@ bool ShaderManager::CreateInputLayout(std::string shaderName, ID3D10Blob* vertex
 	//처음 들어가는곳은 0번쨰부터 들어가기때문에
 	int TypeSize = 0;
 
-	for (int i = 0; i < inputLayCount; i++)
+	for (int i = 0; i < (int)inputLayCount; i++)
 	{
 		//한개의 레이아웃 구조체를 생성함
 		D3D11_SIGNATURE_PARAMETER_DESC desc;
@@ -234,7 +235,7 @@ DXGI_FORMAT ShaderManager::FindFormat(int number, BYTE Mask, D3D11_SIGNATURE_PAR
 
 	if (number == D3D_REGISTER_COMPONENT_FLOAT32)
 	{
-		number + 1;
+		//number + 1;
 		switch (Mask)
 		{
 		case 0b00000001:

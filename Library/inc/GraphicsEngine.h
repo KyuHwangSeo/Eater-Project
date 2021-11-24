@@ -43,4 +43,8 @@ public:
 	virtual void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) { return; };
 	virtual void SSAORender() { return; };
 	virtual void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) { return; };
+
+	/// 랜더타겟에 해당하는 데이터를 넘겨줄것임
+	virtual void SetViewPort(void* VPT, int Change_Width, int Change_Height) { return; }; //랜더타겟뷰, 뎁스스텐실,뷰포트
+	virtual void SetDevice(void* Devie, void* DevieContext) { return; }; //디바이스,컨텍스트
 };

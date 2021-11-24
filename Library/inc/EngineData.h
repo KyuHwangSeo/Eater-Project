@@ -1,28 +1,32 @@
 #pragma once
 #include "ResourcesData.h"
 #include "ParserData.h"
+#include <functional>
 #include "LightHelper.h"
+
 
 using namespace DirectX;
 using namespace SimpleMath;
 using namespace ParserData;
 
+class Component;
 enum class OBJECT_TYPE
 {
 	///현재 기본형으로 넣어둔 오브젝트 종류
 	///나중에 필요한건 넣고 필요없는건 빼자
 	
-	Default,		//값을 넣지않았을때 기본형
-	Base,			//상속구조로 되어있는 오브젝트
-	Skinning,		//스키닝이 추가된 오브젝트
-	Bone,			//본만 있는 오브젝트
-	Camera,			//카메라 기능만 하는 오브젝트
-	Light,			//라이트 객체
-	SkyBox,			//스카이 박스
-	Texture,		//한개의 텍스쳐로된 오브젝트(페이스두개가 합쳐진 사각형 텍스쳐)
-	Debug,			//디버깅 오브젝트
-	Particle,		//파티클 오브젝트
-	Effect			//이펙트 오브젝트
+	DEFALT,		//값을 넣지않았을때 기본형
+	GAMEOBJECT,		//다른 오브젝트들을 묶어놓는 용도
+	BASE,			//상속구조로 되어있는 오브젝트
+	SKINNING,		//스키닝이 추가된 오브젝트
+	BONE,			//본만 있는 오브젝트
+	CAMERA,			//카메라 기능만 하는 오브젝트
+	LIGHT,			//라이트 객체
+	SKYBOX,			//스카이 박스
+	TEXTURE,		//한개의 텍스쳐로된 오브젝트(페이스두개가 합쳐진 사각형 텍스쳐)
+	DEBUGOBJECT,			//디버깅 오브젝트
+	PARTICLE,		//파티클 오브젝트
+	EFFECT			//이펙트 오브젝트
 };
 
 /// <summary>
@@ -34,7 +38,6 @@ public:
 	//카메라 정보들
 	DirectX::XMMATRIX* mViewMX;
 	DirectX::XMMATRIX* mProj;
-	DirectX::XMFLOAT3* mPos;
 
 	DirectX::XMMATRIX* mLightViewMX;
 	DirectX::XMMATRIX* mLightProj;
@@ -45,7 +48,7 @@ public:
 };
 
 /// <summary>
-/// 게임엔진에서 그래픽엔진으로 던저줄 한개의 매쉬 데이터
+/// 게임엔진에서 그래픽엔진으로 던저줄 한개의 메쉬 데이터
 /// </summary>
 class MeshData
 {
@@ -57,7 +60,7 @@ public:
 	}
 
 
-	OBJECT_TYPE ObjType = OBJECT_TYPE::Default;	//오브젝트 타입
+	OBJECT_TYPE ObjType = OBJECT_TYPE::DEFALT;	//오브젝트 타입
 
 	Indexbuffer*  IB = nullptr;	//인덱스 버퍼
 	Vertexbuffer* VB = nullptr;	//버텍스 버퍼
@@ -102,17 +105,19 @@ public:
 	bool Bone_Object		= false;		//본오브젝트 여부
 	bool Skinning_Object	= false;		//스키닝 오브젝트 여부
 
+	int BoneIndex = -1;						//본일경우 자신의 인덱스
+
 	std::string ParentName	= "";			//부모의 이름
 	std::string	Name		= "";			//자기자신의 이름
 
 	DirectX::SimpleMath::Matrix* WorldTM = nullptr;	//월드 매트릭스
 	DirectX::SimpleMath::Matrix* LocalTM = nullptr;	//로컬 매트릭스
 	
-	Indexbuffer*	IB = nullptr;	//인덱스 버퍼
-	Vertexbuffer*	VB = nullptr;	//버텍스 버퍼
+	Indexbuffer*	IB = nullptr;			//인덱스 버퍼
+	Vertexbuffer*	VB = nullptr;			//버텍스 버퍼
 
-	TextureBuffer* Diffuse = nullptr;	// Diffuse Texture
-	TextureBuffer* Normal = nullptr;	// NormalMap Texture
+	TextureBuffer* Diffuse = nullptr;		//Diffuse Texture
+	TextureBuffer* Normal = nullptr;		//NormalMap Texture
 
 	ParserData::CMaterial*		Material	= nullptr;	//메테리얼 정보
 	ParserData::OneAnimation*	Animation	= nullptr;	//애니메이션 정보
@@ -120,12 +125,12 @@ public:
 	std::vector<Matrix>*	BoneTMList		= nullptr;	//본 매트릭스
 	std::vector<Mesh*>*		BoneList		= nullptr;	//본 매쉬
 
-	LoadMeshData* Parent = nullptr;		//부모 매쉬
-	std::vector<LoadMeshData*> Child;	//자식 매쉬 리스트
+	LoadMeshData* Parent = nullptr;			//부모 매쉬
+	std::vector<LoadMeshData*> Child;		//자식 매쉬 리스트
 
 
-	Matrix* BoneOffset	= nullptr;	//본 매트릭스
-	Mesh*	BoneNumber	= nullptr;	//본 매쉬
+	Matrix* BoneOffset	= nullptr;			//본 매트릭스
+	Mesh*	BoneNumber	= nullptr;			//본 매쉬
 };
 
 /// <summary>
@@ -145,6 +150,32 @@ public:
 
 	std::vector<Matrix>*	BoneOffsetList	= nullptr;	//본 매트릭스
 	std::vector<Mesh*>*		BoneList		= nullptr;	//본 매쉬
+};
+
+class ModelAnimationData
+{
+public:
+	~ModelAnimationData()
+	{
+		
+	}
+
+	//한개의 모델 애니메이션 정보
+	std::vector<OneAnimation*>* AnimList;
+};
+
+//컨퍼넌트들의 함수포인터를 저장할 구조체
+class ComponentFunctionData
+{
+public:
+	//함수 활성화 여부
+	bool* Enabled = nullptr;
+
+	//함수 포인터 
+	std::function<void()> FunctionPointer;
+
+	//컨퍼넌트 포인터
+	Component* ComponentPoiner;
 };
 
 

@@ -2,11 +2,10 @@
 
 //D3D 기본 라이브러리 
 ////////////////////////////////////////////////
-
+#pragma comment(lib, "dxguid.lib") 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler") //쉐이더
-#pragma comment(lib, "dinput8")
 ////////////////////////////////////////////////
 
 //텍스쳐 불러올떄

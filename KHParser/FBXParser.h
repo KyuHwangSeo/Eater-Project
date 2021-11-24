@@ -1,7 +1,5 @@
 #pragma once
 
-typedef std::pair<std::string, ParserData::Bone> BonePair;
-
 class FBXParser : public ModelParser
 {
 public:
@@ -75,9 +73,13 @@ private:
 
 	ParserData::Mesh* m_OneMesh;					// Mesh Data Struct
 
-	std::vector<BonePair> m_AllBoneList;			// Skinning Object Bone List
+	std::vector<ParserData::Mesh*> m_AllBoneList;			// Skinning Object Bone List
 
 	ParserData::OneAnimation* m_OneAnimation;		// Object One Animation Data
+
+	int m_KeyFrames;		// Animation Total Frame
+	int m_StartTime;		// Animation Start Frame
+	float m_TickFrame;		// One Frame Time
 
 	bool m_OnlyAni = false;
 };

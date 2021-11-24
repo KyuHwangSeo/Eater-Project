@@ -26,7 +26,7 @@ DeferredPass::~DeferredPass()
 
 }
 
-void DeferredPass::Initialize(int width, int height)
+void DeferredPass::Create(int width, int height)
 {
 	// Shader ¼³Á¤..
 	m_MeshVS = g_Shader->GetShader("NormalSkinVS");
@@ -144,6 +144,11 @@ void DeferredPass::Initialize(int width, int height)
 	RESET_COM(tex2D[2]);
 	RESET_COM(tex2D[3]);
 	RESET_COM(tex2D[4]);
+}
+
+void DeferredPass::Start()
+{
+
 }
 
 void DeferredPass::OnResize(int width, int height)

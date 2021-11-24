@@ -104,8 +104,8 @@ void ASEParser::OptimizeVertex(ASEMesh* pMesh)
 			// 텍스처가 있고, 설정하지 않았으면 텍스처 u,v 설정..
 			if (pMesh->m_Mesh_NumTVertex > 0 && nowVertex->m_IsTextureSet == false)
 			{
-				nowVertex->m_U = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U;
-				nowVertex->m_V = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V;
+				nowVertex->m_UV.x = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U;
+				nowVertex->m_UV.y = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V;
 				nowVertex->m_IsTextureSet = true;
 			}
 
@@ -124,8 +124,8 @@ void ASEParser::OptimizeVertex(ASEMesh* pMesh)
 
 			if (pMesh->m_Mesh_NumTVertex > 0)
 			{
-				if ((pMesh->m_VertexList[vertexIndex]->m_U != pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U) ||
-					(pMesh->m_VertexList[vertexIndex]->m_V != pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V))
+				if ((pMesh->m_VertexList[vertexIndex]->m_UV.x != pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U) ||
+					(pMesh->m_VertexList[vertexIndex]->m_UV.y != pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V))
 				{
 					new_VertexSet = true;
 				}
@@ -144,8 +144,8 @@ void ASEParser::OptimizeVertex(ASEMesh* pMesh)
 						{
 							if (pMesh->m_Mesh_NumTVertex > 0)
 							{
-								if ((pMesh->m_VertexList[k]->m_U == pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U) &&
-									(pMesh->m_VertexList[k]->m_V == pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V))
+								if ((pMesh->m_VertexList[k]->m_UV.x == pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U) &&
+									(pMesh->m_VertexList[k]->m_UV.y == pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V))
 								{
 									pMesh->m_MeshFace[i]->m_VertexIndex[j] = (int)k;
 									new_VertexSet = false;
@@ -175,8 +175,8 @@ void ASEParser::OptimizeVertex(ASEMesh* pMesh)
 
 					if (pMesh->m_Mesh_NumTVertex > 0)
 					{
-						newVertex->m_U = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U;
-						newVertex->m_V = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V;
+						newVertex->m_UV.x = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_U;
+						newVertex->m_UV.y = pMesh->m_Mesh_TVertex[pMesh->m_MeshFace[i]->m_TFace[j]]->m_V;
 						newVertex->m_IsTextureSet = true;
 					}
 
@@ -189,19 +189,23 @@ void ASEParser::OptimizeVertex(ASEMesh* pMesh)
 	}
 
 	// Tanget 값 설정..
-	for (int i = 0; i < pMesh->m_Mesh_NumFaces; i++)
+	for (unsigned int i = 0; i < pMesh->m_MeshFace.size(); i++)
 	{
 		int index0 = pMesh->m_MeshFace[i]->m_VertexIndex[0];
 		int index1 = pMesh->m_MeshFace[i]->m_VertexIndex[1];
 		int index2 = pMesh->m_MeshFace[i]->m_VertexIndex[2];
 
-		DirectX::SimpleMath::Vector3 ep1 = pMesh->m_VertexList[index1]->m_Pos - pMesh->m_VertexList[index0]->m_Pos;
-		DirectX::SimpleMath::Vector3 ep2 = pMesh->m_VertexList[index2]->m_Pos - pMesh->m_VertexList[index0]->m_Pos;
+		Vertex* vertex0 = pMesh->m_VertexList[index0];
+		Vertex* vertex1 = pMesh->m_VertexList[index0];
+		Vertex* vertex2 = pMesh->m_VertexList[index0];
 
-		DirectX::SimpleMath::Vector2 uv1 = { pMesh->m_VertexList[index1]->m_U - pMesh->m_VertexList[index0]->m_U,
-						  pMesh->m_VertexList[index1]->m_V - pMesh->m_VertexList[index0]->m_V };
-		DirectX::SimpleMath::Vector2 uv2 = { pMesh->m_VertexList[index2]->m_U - pMesh->m_VertexList[index0]->m_U,
-						  pMesh->m_VertexList[index2]->m_V - pMesh->m_VertexList[index0]->m_V };
+		DirectX::SimpleMath::Vector3 ep1 = vertex1->m_Pos - vertex0->m_Pos;
+		DirectX::SimpleMath::Vector3 ep2 = pMesh->m_VertexList[index2]->m_Pos - vertex0->m_Pos;
+
+		DirectX::SimpleMath::Vector2 uv1 = { vertex1->m_UV.x - vertex0->m_UV.x,
+											 vertex1->m_UV.y - vertex0->m_UV.y };
+		DirectX::SimpleMath::Vector2 uv2 = { vertex2->m_UV.x - vertex0->m_UV.x,
+											 vertex2->m_UV.y - vertex0->m_UV.y };
 
 		float den = 1.0f / (uv1.x * uv2.y - uv2.x * uv1.y);
 
@@ -212,13 +216,10 @@ void ASEParser::OptimizeVertex(ASEMesh* pMesh)
 		DirectX::SimpleMath::Vector3 tangent = (ep1 * uv2.y - ep2 * uv1.y) * den;
 		tangent.Normalize();
 
-		//DirectX::SimpleMath::Vector3 binormal = (ep2 * uv1.x - ep1 * uv2.x) * den;
-		//binormal.Normalize();
-
 		// 유사 정점은 값을 누적하여 쉐이더에서 평균값을 사용하도록 하자..
-		pMesh->m_VertexList[index0]->m_Tanget += tangent;
-		pMesh->m_VertexList[index1]->m_Tanget += tangent;
-		pMesh->m_VertexList[index2]->m_Tanget += tangent;
+		vertex0->m_Tanget += tangent;
+		vertex1->m_Tanget += tangent;
+		vertex2->m_Tanget += tangent;
 	}
 
 	// 인덱스는 그냥 복사

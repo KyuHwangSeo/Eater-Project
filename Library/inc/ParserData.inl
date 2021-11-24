@@ -29,8 +29,6 @@ namespace ParserData
 	{
 		m_IsNormalSet = false;
 		m_IsTextureSet = false;
-		m_U = 0.0f;
-		m_V = 0.0f;
 	}
 
 	inline Vertex::~Vertex()
@@ -63,8 +61,8 @@ namespace ParserData
 
 	inline Bone::Bone()
 	{
-		m_BoneNumber			= 0;
-		m_parent_bone_number	= 0;
+		m_BoneNumber = 0;
+		m_parent_bone_number = 0;
 	}
 
 	inline CMaterial::CMaterial()

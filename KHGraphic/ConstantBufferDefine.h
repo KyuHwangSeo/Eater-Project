@@ -1,9 +1,9 @@
 #pragma once
 #include "SimpleMath.h"
 #include "LightHelper.h"
-#include "ClassType.h"
+#include "HashBase.h"
 
-#define ADD_CONSTANT_BUFFER(ClassName) static bool cbuffer_##ClassName = ShaderResourceHashTable::GetInstance()->Push<ClassName>(ShaderResourceHashTable::BufferType::CBUFFER, #ClassName, ClassName::GetHashCode());
+#define ADD_CONSTANT_BUFFER(ClassName) static bool cbuffer_##ClassName = ShaderResourceHashTable::Get()->Push(eResourceType::CBUFFER, #ClassName, typeid(ClassName).hash_code());
 #define CONSTANT_BUFFER(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_CONSTANT_BUFFER(ClassName)
 
 /// <summary>
@@ -148,3 +148,8 @@ struct CB_Skinned : public cbSkinned
 //{
 //	float alpha = 0.0f;
 //};
+
+
+
+/// Resource Hash 재등록 방지 Define
+RESOURCE_DEFINE(DEFINE_CBUFFER)

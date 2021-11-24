@@ -138,7 +138,7 @@ void FBXParser::SceneSetting(std::string fileName, bool scaling, bool onlyAni)
 
 	// Scene 내에서 삼각형화 할 수 있는 모든 노드를 삼각형화 시킨다..
 	// 3D Max 안에서 Editable poly 상태라면 이 작업을 안해야 한다..
-	pConverter->Triangulate(pScene, true);
+	pConverter->Triangulate(pScene, true, true);
 }
 
 void FBXParser::CreateModel()
@@ -193,7 +193,6 @@ void FBXParser::LoadNode(fbxsdk::FbxNode* node, fbxsdk::FbxNodeAttribute::EType 
 	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
 	if (nodeAttribute != nullptr)
 	{
-		FbxString nodename = node->GetName();
 		FbxNodeAttribute::EType attributeType = nodeAttribute->GetAttributeType();
 		if (attributeType == attribute)
 		{
@@ -246,24 +245,9 @@ void FBXParser::LoadAnimation(fbxsdk::FbxNode* node)
 	if (tempStart < tempStop)
 	{
 		// 구동시간 동안 총 몇 프레임이 수행될지를 keyFrames에 담아줌
-		int keyFrames = (int)((tempStop - tempStart) * (double)frameRate);
-		double ticksperFrame = (tempStop - tempStart) / keyFrames;
-
-		// 새로운 Animaiton Data 생성..
-		m_OneAnimation = new OneAnimation();
-
-		// 한 프레임 재생 시간..
-		m_OneAnimation->m_TicksPerFrame = (float)ticksperFrame;
-
-		// 애니메이션 시작 프레임..
-		m_OneAnimation->m_StartFrame = (int)(tempStart)*keyFrames;
-		m_OneAnimation->m_EndFrame = keyFrames - 1;
-
-		// 애니메이션 총 프레임..
-		m_OneAnimation->m_TotalFrame = keyFrames;
-
-		// 애니메이션 정보가 있을경우..
-		m_Model->m_isAnimation = true;
+		m_KeyFrames = (int)((tempStop - tempStart) * (double)frameRate);
+		m_TickFrame = (float)(tempStop - tempStart) / (float)m_KeyFrames;
+		m_StartTime = (int)(tempStart)*m_KeyFrames;
 
 		ProcessAnimation(node);
 	}
@@ -271,6 +255,9 @@ void FBXParser::LoadAnimation(fbxsdk::FbxNode* node)
 
 void FBXParser::ProcessSkeleton(fbxsdk::FbxNode* node)
 {
+	// 애니메이션만 뽑을 경우..
+	if (m_OnlyAni) return;
+
 	pMesh = node->GetMesh();
 
 	// 새로운 Mesh 생성..
@@ -278,9 +265,6 @@ void FBXParser::ProcessSkeleton(fbxsdk::FbxNode* node)
 
 	m_OneMesh->m_NodeName = node->GetName();
 	m_OneMesh->m_IsBone = true;
-
-	// 애니메이션만 뽑을 경우..
-	if (m_OnlyAni) return;
 
 	// 현 Node Parent 찾기..
 	const char* parentName = node->GetParent()->GetName();
@@ -318,17 +302,18 @@ void FBXParser::ProcessSkeleton(fbxsdk::FbxNode* node)
 		parentBoneIndex = FindBoneIndex(nodeName);
 	}
 
-	// 새로운 Bone 생성..
-	Bone newBone;
-	const char* boneName = node->GetName();
-	newBone.m_BoneName = boneName;
-	newBone.m_parent_bone_number = parentBoneIndex;
-	newBone.m_BoneNumber = (int)m_AllBoneList.size();
-	m_AllBoneList.push_back(BonePair(boneName, newBone));
+	// 해당 Bone Index 삽입..
+	m_OneMesh->m_BoneIndex = (int)m_AllBoneList.size();
+
+	// 새로운 Bone 삽입..
+	m_AllBoneList.push_back(m_OneMesh);
 }
 
 void FBXParser::ProcessMesh(fbxsdk::FbxNode* node)
 {
+	// 애니메이션만 뽑을 경우..
+	if (m_OnlyAni) return;
+
 	pMesh = node->GetMesh();
 
 	// 새로운 Mesh 생성..
@@ -336,13 +321,10 @@ void FBXParser::ProcessMesh(fbxsdk::FbxNode* node)
 
 	m_OneMesh->m_NodeName = node->GetName();
 
-	// 애니메이션만 뽑을 경우..
-	if (m_OnlyAni) return;
-
 	// 현 Node Parent 찾기..
-	
 	const char* parentName = node->GetParent()->GetName();
 
+	// 부모 Mesh 찾기..
 	Mesh* parentMesh = FindMesh(parentName);
 	m_OneMesh->m_ParentName = parentName;
 
@@ -360,7 +342,9 @@ void FBXParser::ProcessMesh(fbxsdk::FbxNode* node)
 	// Node TRS 설정..
 	SetTransform(node);
 
+	// Mesh Vertex 총 개수..
 	int vertexTotalCount = pMesh->GetControlPointsCount();
+	// Mesh Face 총 개수..
 	int polygonTotalCount = pMesh->GetPolygonCount();
 
 	// 만약 Vertex 정보가 없을경우 처리하지 않기 위함..
@@ -383,6 +367,8 @@ void FBXParser::ProcessMesh(fbxsdk::FbxNode* node)
 		// Polygon 개수만큼 Face 생성..
 		m_OneMesh->m_MeshFace.push_back(new Face);
 
+		Face* nowFace = m_OneMesh->m_MeshFace[pi];
+
 		for (int vi = 0; vi < 3; vi++)
 		{
 			int vertexIndex = pMesh->GetPolygonVertex(pi, vi);
@@ -390,22 +376,19 @@ void FBXParser::ProcessMesh(fbxsdk::FbxNode* node)
 
 			if (vertexIndex < 0 || vertexIndex >= vertexTotalCount)	continue;
 
-			DirectX::SimpleMath::Vector3 fbxNormal;
-			DirectX::SimpleMath::Vector2 fbxUV;
-
-			fbxNormal = GetNormal(pMesh, vertexIndex, vertexCount);
-			fbxUV = GetUV(pMesh, vertexIndex, uvIndex);
+			Vector3 fbxNormal = GetNormal(pMesh, vertexIndex, vertexCount);
+			Vector2 fbxUV = GetUV(pMesh, vertexIndex, uvIndex);
 
 			// 일단 하나의 Mesh 당 하나의 Material로 생각하고 가자..
 			if (m_OneMesh->m_MaterialData == nullptr)
 				LinkMaterialByPolygon(pMesh, pi, vertexIndex);
 
 			// Face Vertex Index Data
-			m_OneMesh->m_MeshFace[pi]->m_VertexIndex[vi] = vertexIndex;
+			nowFace->m_VertexIndex[vi] = vertexIndex;
 			// Face Vertex Normal Data
-			m_OneMesh->m_MeshFace[pi]->m_NormalVertex[vi] = fbxNormal;
+			nowFace->m_NormalVertex[vi] = fbxNormal;
 			// Face Vertex UV Data
-			m_OneMesh->m_MeshFace[pi]->m_UVvertex[vi] = fbxUV;
+			nowFace->m_UVvertex[vi] = fbxUV;
 
 			vertexCount++;
 		}
@@ -440,7 +423,11 @@ bool FBXParser::ProcessBoneWeights(fbxsdk::FbxNode* node, std::vector<BoneWeight
 
 			// Skin Mesh 체크..
 			Mesh* skinMesh = FindMesh(node->GetName());
-			std::vector<BoneWeights> skinBoneWeights(meshBoneWeights.size());
+
+			// Bone 개수만큼 List Size 설정..
+			skinMesh->m_BoneTMList.resize(m_AllBoneList.size());
+			skinMesh->m_BoneMeshList.resize(m_AllBoneList.size());
+
 			for (int clusterIndex = 0; clusterIndex < clusterCount; clusterIndex++)
 			{
 				FbxCluster* cluster = skin->GetCluster(clusterIndex);
@@ -456,8 +443,12 @@ bool FBXParser::ProcessBoneWeights(fbxsdk::FbxNode* node, std::vector<BoneWeight
 				// Bone Mesh 체크..
 				Mesh* boneMesh = FindMesh(lineNodeName);
 
+				// 해당 Bone Mesh가 없을경우..
 				if (boneMesh == nullptr) continue;
-				if (boneMesh->m_IsBone == false) continue;
+
+				// Bone Index 체크..
+				int boneIndex = FindBoneIndex(lineNodeName);
+
 
 				FbxAMatrix matClusterTransformMatrix;
 				FbxAMatrix matClusterLinkTransformMatrix;
@@ -472,24 +463,27 @@ bool FBXParser::ProcessBoneWeights(fbxsdk::FbxNode* node, std::vector<BoneWeight
 				cluster->GetTransformLinkMatrix(matClusterLinkTransformMatrix);
 
 				// Bone Matrix 설정..
-				DirectX::SimpleMath::Matrix clusterMatrix = ConvertMatrix(matClusterTransformMatrix);
-				DirectX::SimpleMath::Matrix clusterlinkMatrix = ConvertMatrix(matClusterLinkTransformMatrix);
-				DirectX::SimpleMath::Matrix geometryMatrix = ConvertMatrix(geometryTransform);
+				Matrix clusterMatrix = ConvertMatrix(matClusterTransformMatrix);
+				Matrix clusterlinkMatrix = ConvertMatrix(matClusterLinkTransformMatrix);
+				Matrix geometryMatrix = ConvertMatrix(geometryTransform);
 
-				DirectX::SimpleMath::Matrix offsetMatrix = clusterMatrix * clusterlinkMatrix.Invert() * geometryMatrix;
+				Matrix offsetMatrix = clusterMatrix * clusterlinkMatrix.Invert() * geometryMatrix;
 
-				skinMesh->m_BoneTMList.emplace_back(offsetMatrix);
-				skinMesh->m_BoneMeshList.emplace_back(boneMesh);
+				// 해당 Bone Index에 Bone Offset & Mesh Data 삽입..
+				skinMesh->m_BoneTMList[boneIndex] = offsetMatrix;
+				skinMesh->m_BoneMeshList[boneIndex] = boneMesh;
 
 				int c = cluster->GetControlPointIndicesCount();
 				for (int j = 0; j < cluster->GetControlPointIndicesCount(); ++j)
 				{
-					int m_Index = cluster->GetControlPointIndices()[j];
+					int index = cluster->GetControlPointIndices()[j];
 					double weight = cluster->GetControlPointWeights()[j];
 
-					//if (weight == 0) continue;
-
-					skinBoneWeights[m_Index].AddBoneWeight(clusterIndex, (float)weight);
+					if (weight == 0)
+					{
+						continue;
+					}
+					meshBoneWeights[index].AddBoneWeight(boneIndex, (float)weight);
 				}
 			}
 
@@ -498,20 +492,15 @@ bool FBXParser::ProcessBoneWeights(fbxsdk::FbxNode* node, std::vector<BoneWeight
 			case FbxCluster::eNormalize:
 			{
 				// 가중치 합을 1.0으로 만드는 작업..
-				for (int i = 0; i < (int)skinBoneWeights.size(); ++i)
-					skinBoneWeights[i].Normalize();
+				for (int i = 0; i < (int)meshBoneWeights.size(); ++i)
+					meshBoneWeights[i].Normalize();
 			}
 			break;
-
 			case FbxCluster::eAdditive:
 				break;
-
 			case FbxCluster::eTotalOne:
 				break;
 			}
-
-			for (size_t i = 0; i < meshBoneWeights.size(); i++)
-				meshBoneWeights[i].AddBoneWeights(skinBoneWeights[i]);
 		}
 	}
 
@@ -530,52 +519,69 @@ void FBXParser::ProcessAnimation(fbxsdk::FbxNode* node)
 			int deformerCount = mesh->GetDeformerCount();
 
 			// DeformerCount가 0보다 크면 Skinning Mesh..
-			if (deformerCount > 0)
-				return;
+			if (deformerCount > 0) return;
 		}
+	}
+	else
+	{
+		// 만약 스키닝 오브젝트라면 애니메이션 데이터는 Bone에 저장되어 있으므로..
+		if (m_OneMesh->m_IsSkinningObject) return;
 	}
 
 	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
-
-	// 만약 스키닝 오브젝트라면 애니메이션 데이터는 Bone에 저장되어 있으므로..
-	if (m_OneMesh->m_IsSkinningObject) return;
-
 	if (nodeAttribute != nullptr)
 	{
-		std::string nodeName = node->GetName();
-		Mesh* mesh = FindMesh(nodeName);
+		// 새로운 Animaiton Data 생성..
+		m_OneAnimation = new OneAnimation();
 
-		if (mesh != nullptr)
+		// Animation 삽입(본 인덱스와 애니메이션 인덱스 일치)..
+		m_Model->m_AnimationList.push_back(m_OneAnimation);
+
+		// Animation 정보가 있을경우..
+		m_Model->m_isAnimation = true;
+
+		// 한 프레임 재생 시간..
+		m_OneAnimation->m_TicksPerFrame = m_TickFrame;
+
+		// Animation 시작 프레임..
+		m_OneAnimation->m_StartFrame = m_StartTime;
+		m_OneAnimation->m_EndFrame = m_KeyFrames - 1;
+
+		// Animation 총 프레임..
+		m_OneAnimation->m_TotalFrame = m_KeyFrames;
+
+		// Animation Data 삽입..
+		FbxTime::EMode timeMode = pScene->GetGlobalSettings().GetTimeMode();
+		for (FbxLongLong index = 0; index < m_OneAnimation->m_TotalFrame; index++)
 		{
-			FbxTime::EMode timeMode = pScene->GetGlobalSettings().GetTimeMode();
-			for (FbxLongLong m_Index = 0; m_Index < m_OneAnimation->m_TotalFrame; m_Index++)
-			{
-				FbxTime takeTime;
-				takeTime.SetFrame(m_OneAnimation->m_StartFrame + m_Index, timeMode);
+			FbxTime takeTime;
+			takeTime.SetFrame(m_OneAnimation->m_StartFrame + index, timeMode);
 
-				// Local Transform = 부모 Bone의 Global Transform의 Inverse Transform * 자신 Bone의 Global Transform
-				FbxAMatrix nodeTransform = node->EvaluateLocalTransform(takeTime);
+			// Local Transform = 부모 Bone의 Global Transform의 Inverse Transform * 자신 Bone의 Global Transform
+			FbxAMatrix nodeTransform = node->EvaluateLocalTransform(takeTime);
 
-				DirectX::SimpleMath::Matrix nodeTRS = ConvertMatrix(nodeTransform);
+			DirectX::SimpleMath::Matrix nodeTRS = ConvertMatrix(nodeTransform);
 
-				XMVECTOR scale;
-				XMVECTOR rot;
-				XMVECTOR pos;
+			XMVECTOR scale;
+			XMVECTOR rot;
+			XMVECTOR pos;
 
-				XMMatrixDecompose(&scale, &rot, &pos, nodeTRS);
+			XMMatrixDecompose(&scale, &rot, &pos, nodeTRS);
 
-				OneFrame* newAni = new OneFrame;
+			OneFrame* newAni = new OneFrame;
 
-				newAni->m_Time = (float)m_Index;
-				newAni->m_Pos = DirectX::SimpleMath::Vector3(pos);
-				newAni->m_RotQt = Quaternion(rot);
-				newAni->m_Scale = DirectX::SimpleMath::Vector3(scale);
+			newAni->m_Time = (float)index;
+			newAni->m_Pos = DirectX::SimpleMath::Vector3(pos);
+			newAni->m_RotQt = Quaternion(rot);
+			newAni->m_Scale = DirectX::SimpleMath::Vector3(scale);
 
-				m_OneAnimation->m_AniData.push_back(newAni);
-			}
+			m_OneAnimation->m_AniData.push_back(newAni);
+		}
 
-			// 해당 Mesh에 애니메이션 삽입..
-			mesh->m_Animation = m_OneAnimation;
+		// 해당 Mesh에 애니메이션 삽입..
+		if (m_OnlyAni == false)
+		{
+			m_OneMesh->m_Animation = m_OneAnimation;
 		}
 	}
 }
@@ -602,35 +608,38 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 	// 각각 Face마다 존재하는 3개의 Vertex 비교..
 	for (unsigned int i = 0; i < pMesh->m_MeshFace.size(); i++)
 	{
+		Face* nowFace = pMesh->m_MeshFace[i];
+
 		for (int j = 0; j < 3; j++)
 		{
-			unsigned int vertexIndex = pMesh->m_MeshFace[i]->m_VertexIndex[j];
+			unsigned int vertexIndex = nowFace->m_VertexIndex[j];
 
 			Vertex* nowVertex = pMesh->m_VertexList[vertexIndex];
+			Vector3 nowNormal = nowFace->m_NormalVertex[j];
+			Vector2 nowUV = nowFace->m_UVvertex[j];
+			int nowIndex = nowFace->m_VertexIndex[j];
 
 			// 텍스처가 있고, 설정하지 않았으면 텍스처 u,v 설정..
 			if (nowVertex->m_IsTextureSet == false)
 			{
-				nowVertex->m_U = pMesh->m_MeshFace[i]->m_UVvertex[j].x;
-				nowVertex->m_V = pMesh->m_MeshFace[i]->m_UVvertex[j].y;
+				nowVertex->m_UV = nowUV;
 				nowVertex->m_IsTextureSet = true;
 			}
 
 			// 최초 인덱스 노말값 검사시엔 넣어주고 시작..
 			if (nowVertex->m_IsNormalSet == false)
 			{
-				nowVertex->m_Normal = pMesh->m_MeshFace[i]->m_NormalVertex[j];
+				nowVertex->m_Normal = nowNormal;
 				nowVertex->m_IsNormalSet = true;
 			}
 
 			// Normal, U, V 값중 한개라도 다르면 Vertex 새로 생성..
-			if ((pMesh->m_VertexList[vertexIndex]->m_Normal != pMesh->m_MeshFace[i]->m_NormalVertex[j]))
+			if (nowVertex->m_Normal != nowNormal)
 			{
 				new_VertexSet = true;
 			}
 
-			if ((pMesh->m_VertexList[vertexIndex]->m_U != pMesh->m_MeshFace[i]->m_UVvertex[j].x) ||
-				(pMesh->m_VertexList[vertexIndex]->m_V != pMesh->m_MeshFace[i]->m_UVvertex[j].y))
+			if (nowVertex->m_UV != nowUV)
 			{
 				new_VertexSet = true;
 			}
@@ -642,16 +651,19 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 				{
 					for (size_t k = pMesh->m_VertexList.size(); k < resize_VertexIndex; k++)
 					{
+						Vertex* checkVertex = pMesh->m_VertexList[k];
+
 						// 새로 추가한 Vertex와 동일한 데이터를 갖고있는 Face 내의 Vertex Index 수정..
-						if ((pMesh->m_VertexList[k]->m_Indices == pMesh->m_MeshFace[i]->m_VertexIndex[j]) &&
-							(pMesh->m_VertexList[k]->m_Normal == pMesh->m_MeshFace[i]->m_NormalVertex[j]))
+						if (checkVertex->m_Indices == nowIndex)
 						{
-							if ((pMesh->m_VertexList[k]->m_U == pMesh->m_MeshFace[i]->m_UVvertex[j].x) &&
-								(pMesh->m_VertexList[k]->m_V == pMesh->m_MeshFace[i]->m_UVvertex[j].y))
+							if (checkVertex->m_Normal == nowNormal)
 							{
-								pMesh->m_MeshFace[i]->m_VertexIndex[j] = (int)k;
-								new_VertexSet = false;
-								break;
+								if (checkVertex->m_UV == nowUV)
+								{
+									nowFace->m_VertexIndex[j] = (int)k;
+									new_VertexSet = false;
+									break;
+								}
 							}
 						}
 					}
@@ -661,20 +673,19 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 			// 새로 추가해야할 Vertex..
 			if (new_VertexSet == true)
 			{
-				Vertex* newVertex = new Vertex;
+				Vertex* newVertex = new Vertex();
 				newVertex->m_Pos = nowVertex->m_Pos;
 				newVertex->m_Indices = nowVertex->m_Indices;
-				newVertex->m_Normal = pMesh->m_MeshFace[i]->m_NormalVertex[j];
+				newVertex->m_Normal = nowNormal;
 				newVertex->m_BoneIndices = nowVertex->m_BoneIndices;
 				newVertex->m_BoneWeights = nowVertex->m_BoneWeights;
 				newVertex->m_IsNormalSet = true;
 
-				newVertex->m_U = pMesh->m_MeshFace[i]->m_UVvertex[j].x;
-				newVertex->m_V = pMesh->m_MeshFace[i]->m_UVvertex[j].y;
+				newVertex->m_UV = nowUV;
 				newVertex->m_IsTextureSet = true;
 
 				pMesh->m_VertexList.push_back(newVertex);
-				pMesh->m_MeshFace[i]->m_VertexIndex[j] = (int)resize_VertexIndex;
+				nowFace->m_VertexIndex[j] = (int)resize_VertexIndex;
 				resize_VertexIndex++;
 				new_VertexSet = false;
 			}
@@ -688,13 +699,17 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 		int index1 = pMesh->m_MeshFace[i]->m_VertexIndex[1];
 		int index2 = pMesh->m_MeshFace[i]->m_VertexIndex[2];
 
-		DirectX::SimpleMath::Vector3 ep1 = pMesh->m_VertexList[index1]->m_Pos - pMesh->m_VertexList[index0]->m_Pos;
-		DirectX::SimpleMath::Vector3 ep2 = pMesh->m_VertexList[index2]->m_Pos - pMesh->m_VertexList[index0]->m_Pos;
+		Vertex* vertex0 = pMesh->m_VertexList[index0];
+		Vertex* vertex1 = pMesh->m_VertexList[index0];
+		Vertex* vertex2 = pMesh->m_VertexList[index0];
 
-		DirectX::SimpleMath::Vector2 uv1 = { pMesh->m_VertexList[index1]->m_U - pMesh->m_VertexList[index0]->m_U,
-						  pMesh->m_VertexList[index1]->m_V - pMesh->m_VertexList[index0]->m_V };
-		DirectX::SimpleMath::Vector2 uv2 = { pMesh->m_VertexList[index2]->m_U - pMesh->m_VertexList[index0]->m_U,
-						  pMesh->m_VertexList[index2]->m_V - pMesh->m_VertexList[index0]->m_V };
+		DirectX::SimpleMath::Vector3 ep1 = vertex1->m_Pos - vertex0->m_Pos;
+		DirectX::SimpleMath::Vector3 ep2 = pMesh->m_VertexList[index2]->m_Pos - vertex0->m_Pos;
+
+		DirectX::SimpleMath::Vector2 uv1 = { vertex1->m_UV.x - vertex0->m_UV.x,
+											 vertex1->m_UV.y - vertex0->m_UV.y };
+		DirectX::SimpleMath::Vector2 uv2 = { vertex2->m_UV.x - vertex0->m_UV.x,
+											 vertex2->m_UV.y - vertex0->m_UV.y };
 
 		float den = 1.0f / (uv1.x * uv2.y - uv2.x * uv1.y);
 
@@ -706,9 +721,9 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 		tangent.Normalize();
 
 		// 유사 정점은 값을 누적하여 쉐이더에서 평균값을 사용하도록 하자..
-		pMesh->m_VertexList[index0]->m_Tanget += tangent;
-		pMesh->m_VertexList[index1]->m_Tanget += tangent;
-		pMesh->m_VertexList[index2]->m_Tanget += tangent;
+		vertex0->m_Tanget += tangent;
+		vertex1->m_Tanget += tangent;
+		vertex2->m_Tanget += tangent;
 	}
 
 	// 인덱스는 그냥 복사
@@ -716,18 +731,21 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 	{
 		pMesh->m_IndexList.push_back(new IndexList);
 
+		IndexList* nowIndexList = pMesh->m_IndexList[i];
+		Face* nowFace = pMesh->m_MeshFace[i];
+
 		for (unsigned int j = 0; j < 3; j++)
 		{
 			switch (j)
 			{
 			case 0:
-				pMesh->m_IndexList[i]->m_Index[j] = pMesh->m_MeshFace[i]->m_VertexIndex[0];
+				nowIndexList->m_Index[j] = nowFace->m_VertexIndex[0];
 				break;
 			case 1:
-				pMesh->m_IndexList[i]->m_Index[j] = pMesh->m_MeshFace[i]->m_VertexIndex[2];
+				nowIndexList->m_Index[j] = nowFace->m_VertexIndex[2];
 				break;
 			case 2:
-				pMesh->m_IndexList[i]->m_Index[j] = pMesh->m_MeshFace[i]->m_VertexIndex[1];
+				nowIndexList->m_Index[j] = nowFace->m_VertexIndex[1];
 				break;
 			default:
 				break;
@@ -968,10 +986,10 @@ void FBXParser::SetTransform(fbxsdk::FbxNode* node)
 
 int FBXParser::GetMaterialIndex(fbxsdk::FbxSurfaceMaterial* material)
 {
-	for (unsigned int m_Index = 0; m_Index < fbxMaterials.size(); m_Index++)
+	for (unsigned int index = 0; index < fbxMaterials.size(); index++)
 	{
-		if (fbxMaterials[m_Index] == material)
-			return m_Index;
+		if (fbxMaterials[index] == material)
+			return index;
 	}
 
 	return -1;
@@ -1116,18 +1134,32 @@ void FBXParser::CreateVertex(fbxsdk::FbxMesh* mesh, std::vector<BoneWeights>& bo
 	// Vertex 개수만큼 Vertex 생성..
 	for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
 	{
+		// 새로운 Vertex 생성..
 		m_OneMesh->m_VertexList.push_back(new Vertex);
 
+		// 현재 Vertex..
+		Vertex* nowVertex = m_OneMesh->m_VertexList[vertexIndex];
+
+		// 해당 Vertex의 Position..
 		fbxPos = mesh->GetControlPointAt(vertexIndex);
 
-		m_OneMesh->m_VertexList[vertexIndex]->m_Pos = ConvertVector3(fbxPos);
-		m_OneMesh->m_VertexList[vertexIndex]->m_Indices = vertexIndex;
+		// 변환한 Vertex의 Position..
+		nowVertex->m_Pos = ConvertVector3(fbxPos);
+
+		// 해당 Vertex의 Index..
+		nowVertex->m_Indices = vertexIndex;
+
+		// 현재 Bone Data..
+		BoneWeights nowBone = boneWeights[vertexIndex];
 
 		// Bone Weight Data
-		for (unsigned int boneIndex = 0; boneIndex < boneWeights[vertexIndex].m_BoneWeights.size(); boneIndex++)
+		for (unsigned int boneIndex = 0; boneIndex < nowBone.m_BoneWeights.size(); boneIndex++)
 		{
-			m_OneMesh->m_VertexList[vertexIndex]->m_BoneIndices.push_back(boneWeights[vertexIndex].m_BoneWeights[boneIndex]->m_BoneNumber);
-			m_OneMesh->m_VertexList[vertexIndex]->m_BoneWeights.push_back(boneWeights[vertexIndex].m_BoneWeights[boneIndex]->m_BoneWeight);
+			// 현재 Weight..
+			Weight nowWeight = nowBone.m_BoneWeights[boneIndex];
+
+			nowVertex->m_BoneIndices.push_back(nowWeight.m_BoneNumber);
+			nowVertex->m_BoneWeights.push_back(nowWeight.m_BoneWeight);
 		}
 	}
 }
@@ -1141,10 +1173,10 @@ void FBXParser::CreateMesh()
 
 int FBXParser::FindBoneIndex(std::string boneName)
 {
-	for (BonePair bone : m_AllBoneList)
+	for (Mesh* bone : m_AllBoneList)
 	{
-		if (bone.first == boneName)
-			return bone.second.m_BoneNumber;
+		if (bone->m_NodeName == boneName)
+			return bone->m_BoneIndex;
 	}
 
 	return -1;

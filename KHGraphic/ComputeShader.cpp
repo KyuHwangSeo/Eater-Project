@@ -21,7 +21,7 @@ ComputeShader::~ComputeShader()
 void ComputeShader::LoadShader(std::string fileName)
 {
 	ID3D11ShaderReflection* pReflector = nullptr;
-	ShaderResourceHashTable* resource_table = ShaderResourceHashTable::GetInstance();
+	ShaderResourceHashTable* resource_table = ShaderResourceHashTable::Get();
 
 	size_t cbuffer_register_slot = 0;	// ConstantBuffer Max Register Slot
 	size_t sampler_register_slot = 0;	// Sampler Max Register Slot
@@ -67,7 +67,7 @@ void ComputeShader::LoadShader(std::string fileName)
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
 			// Constant Buffer Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::CBUFFER, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::CBUFFER, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
@@ -90,7 +90,7 @@ void ComputeShader::LoadShader(std::string fileName)
 		case D3D_SIT_TEXTURE:
 		{
 			// SRV Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::SRV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::SRV, bindDesc.Name);
 
 			// SRV Register Slot Number..
 			srv_register_slot = bindDesc.BindPoint;
@@ -102,7 +102,7 @@ void ComputeShader::LoadShader(std::string fileName)
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::SAMPLER, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::SAMPLER, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;
@@ -114,7 +114,7 @@ void ComputeShader::LoadShader(std::string fileName)
 		case D3D_SIT_UAV_RWTYPED:
 		{
 			// UAV Hash Code..
-			hash_key = resource_table->FindHashCode(ShaderResourceHashTable::BufferType::UAV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::UAV, bindDesc.Name);
 
 			// UAV Register Slot Number..
 			uav_register_slot = bindDesc.BindPoint;

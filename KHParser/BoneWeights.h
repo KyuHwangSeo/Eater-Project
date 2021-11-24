@@ -15,13 +15,10 @@ public:
 
 public:
 	void AddBoneWeight(int boneIndex, float boneWeight);
-	void AddBoneWeights(const BoneWeights& boneWeights);
-
-	void Validate();
 	void Normalize();
 
 public:
 	float sumWeight;
-	std::vector<Weight*> m_BoneWeights;
+	std::vector<Weight> m_BoneWeights;
 };
 

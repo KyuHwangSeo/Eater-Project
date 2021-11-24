@@ -27,7 +27,7 @@ public:
 
 	EATER_ENGINEDLL SkinningFilter();
 	virtual EATER_ENGINEDLL ~SkinningFilter();
-
+	virtual void Start();
 	virtual void Update();
 
 	void PushBoneList(std::vector<Transform*>* mBoneList);
@@ -37,4 +37,6 @@ private:
 	std::vector<DirectX::SimpleMath::Matrix>* BoneOffsetTM;
 	//본 리스트
 	std::vector<Transform*>* BoneList;
+
+	int BoneSize;
 };

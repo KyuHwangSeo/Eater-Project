@@ -39,9 +39,10 @@ public:
 
 	//오브젝트의 컨퍼넌트 갯수를 가져옴
 	int GetComponentCount();
-
+	//
 	void PushChildList(GameObject* obj);
 	
+
 	MeshData* OneMeshData;
 	Transform* transform;
 public:
@@ -59,12 +60,10 @@ public:
 public:
 	std::string Name;			//이름
 	int			Tag;			//테그
-	bool		IsDelete;		//삭제 여부
 protected:
 	bool IsActive;				//기능 중지여부
 	unsigned int FunctionMask;	//어떤 함수포인터에 넣었는지 여부
 private:
-
 	//컨퍼넌트 리스트
 	std::vector<Component*> ComponentList;
 	std::vector<GameObject*> ChildList;
@@ -81,47 +80,50 @@ inline T* GameObject::AddComponent(typename std::enable_if<std::is_base_of<Compo
 	//생성한 컨퍼넌트를 리스트에 넣는다
 	ComponentList.push_back(ConponentBox);
 	ConponentBox->SetObject(this);
-	
+
 	//나중에 이타입으로 찾아서 가져올수있도록 타입 설정
 	ConponentBox->SetComponentType(typeid(T).hash_code());
 
 	///오버라이딩 확인 각각에맞는 함수포인터 리스트에 넣는다 
 	//Awake
-	if (&Component::Awake != &T::Awake)
+	if (typeid(&Component::Awake).hash_code() != typeid(&T::Awake).hash_code())
 	{
 		PushComponentFunction(ConponentBox, AWAKE);
 	}
-
+	
+	
 	//Start
-	if (&Component::Start != &T::Start)
+	if (typeid(&Component::Start).hash_code() != typeid(&T::Start).hash_code())
 	{
 		PushComponentFunction(ConponentBox, START);
 	}
 
 	//StartUpdate
-	if (&Component::StartUpdate != &T::StartUpdate)
+	if (typeid(&Component::StartUpdate).hash_code() != typeid(&T::StartUpdate).hash_code())
 	{
 		PushComponentFunction(ConponentBox, START_UPDATE);
 	}
+
 	//이동 행렬
-	if (&Component::TransformUpdate != &T::TransformUpdate)
+	if (typeid(&Component::TransformUpdate).hash_code() != typeid(&T::TransformUpdate).hash_code())
 	{
 		PushComponentFunction(ConponentBox, Transform_UPDATE);
 	}
+
 	//물리 
-	if (&Component::PhysicsUpdate != &T::PhysicsUpdate)
+	if (typeid(&Component::PhysicsUpdate).hash_code() != typeid(&T::PhysicsUpdate).hash_code())
 	{
 		PushComponentFunction(ConponentBox, Physics_UPDATE);
 	}
 
 	//DefaultUpdate
-	if (&Component::Update != &T::Update)
+	if (typeid(&Component::Update).hash_code() != typeid(&T::Update).hash_code())
 	{
 		PushComponentFunction(ConponentBox, UPDATE);
 	}
 
 	//EndUpdate
-	if (&Component::EndUpdate != &T::EndUpdate)
+	if (typeid(&Component::EndUpdate).hash_code() != typeid(&T::EndUpdate).hash_code())
 	{
 		PushComponentFunction(ConponentBox, END_UPDATE);
 	}
@@ -135,7 +137,7 @@ inline T* GameObject::GetComponent(typename std::enable_if<std::is_base_of<Compo
 	//우진이의 코드를 보고 변경
 	//문제점...만약 한개의 오브젝트에 같은 컨퍼넌트 두개가 들어와있다면 어떻게 찾을것인가...
 
-	int count = ComponentList.size();
+	int count = (int)ComponentList.size();
 	for (int i = 0; i < count; i++)
 	{
 		//현재 컨퍼넌트와 찾고자하는 컨퍼넌트의 타입 비교

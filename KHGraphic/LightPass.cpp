@@ -27,7 +27,7 @@ LightPass::~LightPass()
 
 }
 
-void LightPass::Initialize(int width, int height)
+void LightPass::Create(int width, int height)
 {
 	// Buffer ¼³Á¤..
 	m_ScreenBuffer = g_Resource->GetBuffer(eBuffer::SCREEN);
@@ -51,6 +51,11 @@ void LightPass::Initialize(int width, int height)
 	m_BackBuffer = g_Resource->GetMainRenderTarget();
 	m_BackBufferRTV = m_BackBuffer->GetRTV();
 	m_BackBufferSRV = m_BackBuffer->GetSRV();
+}
+
+void LightPass::Start()
+{
+
 }
 
 void LightPass::OnResize(int width, int height)

@@ -29,15 +29,8 @@ ShadowPass::~ShadowPass()
 
 }
 
-void ShadowPass::Initialize(int width, int height)
+void ShadowPass::Create(int width, int height)
 {
-	// Shader 설정..
-	m_MeshShadowVS = g_Shader->GetShader("ShadowMeshVS");
-	m_SkinShadowVS = g_Shader->GetShader("ShadowSkinVS");
-	m_ForwardPS = g_Shader->GetShader("ForwardPS");
-
-	m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::DEPTH);
-
 	// ViewPort 설정..
 	m_ShadowViewport = g_Factory->CreateViewPort(0.0f, 0.0f, (float)width, (float)height, 4.0f, 4.0f);
 
@@ -83,6 +76,22 @@ void ShadowPass::Initialize(int width, int height)
 	m_ShadowRT = g_Factory->CreateBasicRenderTarget(nullptr, &m_ShadowSRV);
 	m_ShadowRT->SetRatio(4.0f, 4.0f);
 
+
+
+	// Texture2D Resource Reset..
+	RESET_COM(tex2D);
+}
+
+void ShadowPass::Start()
+{
+	// Shader 설정..
+	m_MeshShadowVS = g_Shader->GetShader("ShadowMeshVS");
+	m_SkinShadowVS = g_Shader->GetShader("ShadowSkinVS");
+	m_ForwardPS = g_Shader->GetShader("ForwardPS");
+
+	m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::DEPTH);
+
+
 	m_ShadowDepthStencilView = g_Resource->GetDepthStencilView(eDepthStencilView::SHADOW);
 	m_ShadowDepthStencilView->SetRatio(4.0f, 4.0f);
 
@@ -91,9 +100,6 @@ void ShadowPass::Initialize(int width, int height)
 
 	// Shadow Map 등록..
 	m_ForwardPS->SetShaderResourceView<gShadowMap>(&m_ShadowSRV);
-
-	// Texture2D Resource Reset..
-	RESET_COM(tex2D);
 }
 
 void ShadowPass::OnResize(int width, int height)
@@ -133,7 +139,7 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 
 	switch (mesh->ObjType)
 	{
-	case OBJECT_TYPE::Base:
+	case OBJECT_TYPE::BASE:
 	{
 		CB_ShadowObject shadowBuf;
 		shadowBuf.gWorldViewProj = world * view * proj;
@@ -143,7 +149,7 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 		m_MeshShadowVS->Update();
 	}
 	break;
-	case OBJECT_TYPE::Skinning:
+	case OBJECT_TYPE::SKINNING:
 	{
 		CB_ShadowObject shadowBuf;
 		shadowBuf.gWorldViewProj = world * view * proj;
@@ -178,7 +184,7 @@ void ShadowPass::Render(MeshData* mesh)
 	g_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	g_Context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 	g_Context->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
-	
+
 	// Draw..
 	g_Context->DrawIndexed(indexCount, 0, 0);
 }

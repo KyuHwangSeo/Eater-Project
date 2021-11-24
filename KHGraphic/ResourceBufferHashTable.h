@@ -1,8 +1,13 @@
 #pragma once
 #include <unordered_map>
-#include "SingleTon.h"
 
-typedef size_t Hash_Code;
+#define DEFINE_CBUFFER			0x00000001
+#define DEFINE_SAMPLER			0x00000010
+#define DEFINE_SRV				0x00000100
+#define DEFINE_UAV				0x00001000
+
+typedef unsigned int	Define_Mask;
+typedef size_t			Hash_Code;
 
 /// 
 /// ConstantBufferHashTable Class
@@ -12,16 +17,24 @@ typedef size_t Hash_Code;
 /// - 동적으로 해당 Resource Class 선언과 동시에 Hash Table에 올리고싶지만 아직은 방법이 떠오르지 않는다..
 ///   일단 Initalize부분에 귀찮더라도 해당 Resource Class를 올려두자..
 
-class ShaderResourceHashTable : public Singleton<ShaderResourceHashTable>
+enum class eResourceType
+{
+	CBUFFER,
+	SAMPLER,
+	SRV,
+	UAV,
+	DSV,
+	DSS,
+	RS,
+	BS
+};
+
+class ShaderResourceHashTable
 {
 public:
-	enum class BufferType
-	{
-		CBUFFER,
-		SAMPLER,
-		SRV,
-		UAV
-	};
+	static ShaderResourceHashTable* Get();
+
+	static ShaderResourceHashTable* instance;
 
 public:
 	// ConstantBuffer Hash Table..
@@ -33,36 +46,60 @@ public:
 	// UnorderedAccessView Hash Table..
 	std::unordered_map<std::string, Hash_Code> g_UAV_HashTable;
 
-	// Hash Table Reset 함수..
-	void Reset();
-
+public:
 	// Hash Code Push 함수..
-	template<typename T> bool Push(BufferType type, std::string name, Hash_Code hash_code);
+	bool Push(eResourceType type, std::string name, Hash_Code hash_code);
 
 	// 해당 Hash Code 반환 함수..
-	size_t FindHashCode(BufferType type, std::string cBufName);
+	size_t FindHashCode(eResourceType type, std::string cBufName);
+
+	bool DefineCheck(Define_Mask nowDefine);
+
+	// Hash Table Reset 함수..
+	void Destroy();
 
 private:
 	// Hash Code Push Check 함수..
 	bool CheckHashCode(std::unordered_map<std::string, Hash_Code>& table, std::string name, Hash_Code hash_code);
+
+	Define_Mask DEFINE_MASK = 0x00000000;
 };
 
-template<typename T>
-bool ShaderResourceHashTable::Push(BufferType type, std::string name, Hash_Code hash_code)
+inline bool ShaderResourceHashTable::Push(eResourceType type, std::string name, Hash_Code hash_code)
 {
 	switch (type)
 	{
-	case ShaderResourceHashTable::BufferType::CBUFFER:
-		return CheckHashCode(g_CBuffer_HashTable, name, hash_code);
-	case ShaderResourceHashTable::BufferType::SAMPLER:
+	case eResourceType::CBUFFER:
+	{
+		if (DEFINE_MASK & DEFINE_CBUFFER)	
+			return false;
+		else
+			return CheckHashCode(g_CBuffer_HashTable, name, hash_code);
+	}
+	case eResourceType::SAMPLER:
+	{
+		if (DEFINE_MASK & DEFINE_SAMPLER)
+			return false;
+		else
 		return CheckHashCode(g_Sampler_HashTable, name, hash_code);
-	case ShaderResourceHashTable::BufferType::SRV:
-		return CheckHashCode(g_SRV_HashTable, name, hash_code);
-	case ShaderResourceHashTable::BufferType::UAV:
-		return CheckHashCode(g_UAV_HashTable, name, hash_code);
+	}
+	case eResourceType::SRV:
+	{
+		if (DEFINE_MASK & DEFINE_SRV)
+			return false;
+		else
+			return CheckHashCode(g_SRV_HashTable, name, hash_code);
+	}
+	case eResourceType::UAV:
+	{
+		if (DEFINE_MASK & DEFINE_UAV)
+			return false;
+		else
+			return CheckHashCode(g_UAV_HashTable, name, hash_code);
+	}
 	default:
 		break;
 	}
 
-	return false;
+	return true;
 }

@@ -47,7 +47,7 @@ void AxisGrid::BuildGridGeometryBuffers()
 
 	D3D11_BUFFER_DESC ibd;
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = sizeof(UINT) * Grid_Indices.size();
+	ibd.ByteWidth = sizeof(UINT) * (UINT)Grid_Indices.size();
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibd.CPUAccessFlags = 0;
 	ibd.MiscFlags = 0;

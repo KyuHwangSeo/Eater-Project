@@ -1,7 +1,7 @@
 #pragma once
-#include "ClassType.h"
+#include "HashBase.h"
 
-#define ADD_SAMPLER_STATE(ClassName) static bool sampler_##ClassName = ShaderResourceHashTable::GetInstance()->Push<ClassName>(ShaderResourceHashTable::BufferType::SAMPLER, #ClassName, ClassName::GetHashCode());
+#define ADD_SAMPLER_STATE(ClassName) static bool sampler_##ClassName = ShaderResourceHashTable::Get()->Push(eResourceType::SAMPLER, #ClassName, typeid(ClassName).hash_code());
 #define SAMPLER_STATE(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_SAMPLER_STATE(ClassName)
 
 /// <summary>
@@ -19,7 +19,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global SamplerState Resource
 ///////////////////////////////////////////////////////////////////////////////////////////
-
 SAMPLER_STATE(gShadowSam)
 SAMPLER_STATE(samWrapMinLinear)
 SAMPLER_STATE(samWrapAnisotropic)
@@ -28,3 +27,6 @@ SAMPLER_STATE(samWrapLinerPoint)
 SAMPLER_STATE(samBorderLinerPoint)
 SAMPLER_STATE(samClampMinLinearPoint)
 SAMPLER_STATE(samMirrorMinLinear)
+
+/// Resource Hash 재등록 방지 Define
+RESOURCE_DEFINE(DEFINE_SAMPLER)

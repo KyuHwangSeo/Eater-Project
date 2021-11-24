@@ -34,9 +34,6 @@
     <Filter Include="소스 파일\Define">
       <UniqueIdentifier>{c7b4a8db-4f6d-4223-b9e2-70982f866f29}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Shader\HashTable">
-      <UniqueIdentifier>{fb58e275-a01f-4160-83c7-b3f8167dcd12}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Shader\ShaderClass">
       <UniqueIdentifier>{6dc3ac02-5498-4c6c-9c97-e371089b5341}</UniqueIdentifier>
     </Filter>
@@ -51,9 +48,6 @@
     </Filter>
     <Filter Include="소스 파일\Shader\ShaderClass\VertexShader">
       <UniqueIdentifier>{191aea13-d772-47ff-acf1-0d8708940462}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Shader\ShaderResource">
-      <UniqueIdentifier>{d08157a1-f741-4559-bc7d-559abe20919c}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\Factory">
       <UniqueIdentifier>{a2690fa4-357a-4303-bfb2-40ac7c8fc1b2}</UniqueIdentifier>
@@ -130,11 +124,17 @@
     <Filter Include="소스 파일\RendererPass\Forward">
       <UniqueIdentifier>{b44bbdc2-e6b9-4bff-a63c-29fd6013064c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Shader\HLSL\Forward">
-      <UniqueIdentifier>{13184832-72bd-4f5d-9444-942f736e4ef1}</UniqueIdentifier>
+    <Filter Include="소스 파일\HashTable">
+      <UniqueIdentifier>{fb58e275-a01f-4160-83c7-b3f8167dcd12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Shader\HLSL\Shadow">
-      <UniqueIdentifier>{d99c63cf-2801-43fc-acd1-46f6d24fa9b1}</UniqueIdentifier>
+    <Filter Include="소스 파일\HashTable\ShaderResource">
+      <UniqueIdentifier>{d08157a1-f741-4559-bc7d-559abe20919c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\HashTable\HashBase">
+      <UniqueIdentifier>{eeb7f629-8fe6-421b-8d89-6879e6788f0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\HashTable\GraphicResource">
+      <UniqueIdentifier>{54986082-b5a5-4084-ac4c-dbf0bc405c28}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -147,23 +147,11 @@
     <ClInclude Include="ID3D11Graphic.h">
       <Filter>소스 파일\Graphic\DirectX11</Filter>
     </ClInclude>
-    <ClInclude Include="ClassType.h">
-      <Filter>소스 파일\Define</Filter>
-    </ClInclude>
     <ClInclude Include="VertexShader.h">
       <Filter>소스 파일\Shader\ShaderClass\VertexShader</Filter>
     </ClInclude>
-    <ClInclude Include="UnorderedAccessBufferDefine.h">
-      <Filter>소스 파일\Shader\ShaderResource</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderResourceBufferDefine.h">
-      <Filter>소스 파일\Shader\ShaderResource</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantBufferDefine.h">
-      <Filter>소스 파일\Shader\ShaderResource</Filter>
-    </ClInclude>
-    <ClInclude Include="SamplerBufferDefine.h">
-      <Filter>소스 파일\Shader\ShaderResource</Filter>
+      <Filter>소스 파일\HashTable\ShaderResource</Filter>
     </ClInclude>
     <ClInclude Include="ComputeShader.h">
       <Filter>소스 파일\Shader\ShaderClass\ComputeShader</Filter>
@@ -178,7 +166,7 @@
       <Filter>소스 파일\Manager\Shader</Filter>
     </ClInclude>
     <ClInclude Include="ResourceBufferHashTable.h">
-      <Filter>소스 파일\Shader\HashTable</Filter>
+      <Filter>소스 파일\HashTable</Filter>
     </ClInclude>
     <ClInclude Include="PixelShader.h">
       <Filter>소스 파일\Shader\ShaderClass\PixelShader</Filter>
@@ -270,8 +258,29 @@
     <ClInclude Include="ForwardPass.h">
       <Filter>소스 파일\RendererPass\Forward</Filter>
     </ClInclude>
-    <ClInclude Include="SingleTon.h">
-      <Filter>소스 파일\Define</Filter>
+    <ClInclude Include="SamplerBufferDefine.h">
+      <Filter>소스 파일\HashTable\ShaderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderResourceBufferDefine.h">
+      <Filter>소스 파일\HashTable\ShaderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="UnorderedAccessBufferDefine.h">
+      <Filter>소스 파일\HashTable\ShaderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="HashBase.h">
+      <Filter>소스 파일\HashTable\HashBase</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilViewDefine.h">
+      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilStateDefine.h">
+      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterizerStateDefine.h">
+      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+    </ClInclude>
+    <ClInclude Include="BlendStateDefine.h">
+      <Filter>소스 파일\HashTable\GraphicResource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -306,7 +315,7 @@
       <Filter>소스 파일\Manager\Resource</Filter>
     </ClCompile>
     <ClCompile Include="ResourceBufferHashTable.cpp">
-      <Filter>소스 파일\Shader\HashTable</Filter>
+      <Filter>소스 파일\HashTable</Filter>
     </ClCompile>
     <ClCompile Include="KHGraphic.cpp">
       <Filter>소스 파일\Engine</Filter>
@@ -349,20 +358,20 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Forward</Filter>
+    <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\MeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Forward</Filter>
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Forward</Filter>
+    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\ShadowMeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\ShadowSkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
+      <Filter>소스 파일\Shader\HLSL</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

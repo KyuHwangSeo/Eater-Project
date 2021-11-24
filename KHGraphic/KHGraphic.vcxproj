@@ -183,7 +183,10 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClassType.h" />
+    <ClInclude Include="BlendStateDefine.h" />
+    <ClInclude Include="DepthStencilStateDefine.h" />
+    <ClInclude Include="DepthStencilViewDefine.h" />
+    <ClInclude Include="HashBase.h" />
     <ClInclude Include="CompilerDefine.h" />
     <ClInclude Include="ComputeRenderTarget.h" />
     <ClInclude Include="ComputeShader.h" />
@@ -196,6 +199,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="LightPass.h" />
     <ClInclude Include="BasicRenderTarget.h" />
     <ClInclude Include="MathDefine.h" />
+    <ClInclude Include="RasterizerStateDefine.h" />
     <ClInclude Include="RenderTargetTypes.h" />
     <ClInclude Include="ResourceFactoryBase.h" />
     <ClInclude Include="RenderManagerBase.h" />
@@ -221,7 +225,6 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="ShaderResourceBufferDefine.h" />
     <ClInclude Include="ShaderTypes.h" />
     <ClInclude Include="ShadowPass.h" />
-    <ClInclude Include="SingleTon.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="ToolKitDefine.h" />
     <ClInclude Include="UnorderedAccessBufferDefine.h" />

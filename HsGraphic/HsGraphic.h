@@ -6,7 +6,7 @@
 
 class ShaderManager;
 class RenderingManager;
-
+class GraphicDebugManager;
 class TextureBuffer;
 class Indexbuffer;
 class Vertexbuffer;
@@ -22,6 +22,8 @@ public:
 	virtual HS_GRAPHICDLL void OnReSize(int Change_Width, int Change_Height) override;
 	virtual HS_GRAPHICDLL void Render(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	virtual HS_GRAPHICDLL void Delete() override;
+	virtual HS_GRAPHICDLL void SetViewPort(void* VPT, int Change_Width, int Change_Height);
+	virtual HS_GRAPHICDLL void SetDevice(void* Devie, void* DevieContext);
 
 	//텍스쳐 버퍼를생성
 	virtual HS_GRAPHICDLL TextureBuffer* CreateTextureBuffer(std::string path) override;
@@ -36,7 +38,6 @@ private:
 	void CreateRenderTarget();	//랜더타겟 뎁스스텐실 뷰포트를 생성한다
 	void CreateDevice();		//엔진의 디바이스를 생성해준다
 	void BeginRender();			//랜더링 시작
-	void EngineRender();		//엔진 랜더링
 	void EndRender();			//랜더링 종료
 	
 	Vertexbuffer* CreateBasicVertexBuffer(ParserData::Mesh* mModel);
@@ -49,7 +50,7 @@ private:
 	ID3D11DeviceContext*	DeviceContext;		//디바이스 컨텍스트
 	ID3D11RenderTargetView* mRenderTargetView;	//랜더 타겟
 	ID3D11DepthStencilView* mDepthStencilView;	//뎁스 스텐실뷰
-	D3D11_VIEWPORT			mScreenViewport;	//뷰포트
+	D3D11_VIEWPORT*			mScreenViewport;	//뷰포트
 	IDXGISwapChain*			mSwapChain;			//스왑체인	
 
 
@@ -63,6 +64,7 @@ private:
 	ID3D11RasterizerState* mSolid;
 
 	//매니저들
-	ShaderManager*		mShaderManager;
-	RenderingManager*	mRenderManager;
+	ShaderManager*			mShaderManager;
+	RenderingManager*		mRenderManager;
+	GraphicDebugManager*	mDebugManager;
 };

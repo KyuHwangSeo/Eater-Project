@@ -26,6 +26,9 @@ public:
 	//생성한 오브젝트를 넣어줌
 	void PushCreateObject(GameObject* obj);
 
+	//삭제되면 안되는 오브젝트 리스트
+	void PushDontDeleteObject(GameObject* obj);
+
 	//삭제할 오브젝트를 넣어줌(이함수를 실행시킬단계에서 오브젝트를 삭제하지않음 삭제는 가장 마지막에)
 	void PushDeleteObject(GameObject* obj);
 
@@ -48,7 +51,6 @@ public:
 
 	/// 업데이트 함수 리스트를 실행시킴
 	void PlayUpdate();
-	void PlayStart();
 
 	///그래픽 엔진쪽으로 보낼 랜더메세지큐를 생성
 	void CreateRenderQueue();
@@ -63,29 +65,32 @@ public:
 	std::queue<MeshData*>* GetShadowQueue();
 	
 private:
+	///오브젝트 리스트
 	std::vector<GameObject*> ObjectList;
-	std::vector<GameObject*> DontDeleteList;
-	
+	///삭제되면 안되는 오브젝트 리스트
+	std::vector<GameObject*> DontDeleteObjectList;
+	///랜더링까지 모두끝나고 마지막에 삭제될 오브젝트리스트
 	std::queue<GameObject*> DeleteList;
+
 
 	///그래픽엔진쪽으로 던저줄 데이터들
 	std::queue<MeshData*> RenderData;
 	std::queue<MeshData*> ShadowData;
 	std::queue<MeshData*> UIData;
 
-
 	/// 시작단계 한번만 실행됨
-	static Delegate_Map<Component> AwakeFunction;		//시작단계 보다 먼저 실행되는 함수
-	static Delegate_Map<Component> StartFunction;		//시작단계의 실행되는 함수
+	static Delegate_Map AwakeFunction;		//시작단계 보다 먼저 실행되는 함수
+	static Delegate_Map StartFunction;		//시작단계의 실행되는 함수
 
 
 	/// 업데이트 단계 프레임마다 실행
-	static Delegate_Map<Component> StartUpdate;			//가장먼저 시작되는 업데이트
-	static Delegate_Map<Component> TransformUpdate;		//이동 행렬 업데이트
-	static Delegate_Map<Component> PhysicsUpdate;		//물리 행동 업데이트
-	static Delegate_Map<Component> Update;				//디폴트  중간단계의 시작되는 업데이트
-	static Delegate_Map<Component> EndUpdate;			//가장 마지막에 실행되는 업데이트
+	static Delegate_Map StartUpdate;		//가장먼저 시작되는 업데이트
+	static Delegate_Map TransformUpdate;	//이동 행렬 업데이트
+	static Delegate_Map PhysicsUpdate;		//물리 행동 업데이트
+	static Delegate_Map Update;				//디폴트  중간단계의 시작되는 업데이트
+	static Delegate_Map EndUpdate;			//가장 마지막에 실행되는 업데이트
 
-
+	//컨퍼넌트 를넣으면 해당 함수포인터에 넣었던 포인터를 삭제시켜줌
 	void DeleteComponent(Component* cpt);
+	
 };

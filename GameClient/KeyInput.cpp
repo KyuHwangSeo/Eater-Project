@@ -21,26 +21,46 @@ void Keyinput::Start()
 
 void Keyinput::Update()
 {
+	if (GetKeyDown(VK_F1))
+	{
+		speed += 10;
+	}
 
-	float speed = 0.005f;
+	if (GetKeyDown(VK_F2))
+	{
+		speed -= 10;
+	}
+
+	
+	float delta = GetDeltaTime();
 	if (GetKey('D'))
 	{
-		transform->SetLocalPosition(speed,0,0);
+		transform->SetLocalPosition((speed * delta),0,0);
 	}
 
 	if (GetKey('A'))
 	{
-		transform->SetLocalPosition(-speed, 0, 0);
+		transform->SetLocalPosition(-(speed * delta), 0, 0);
 	}
 
 	if (GetKey('W'))
 	{
-		transform->SetLocalPosition(0, 0, speed);
+		transform->SetLocalPosition(0, 0, (speed * delta));
 	}
 
 	if (GetKey('S'))
 	{
-		transform->SetLocalPosition(0, 0, -speed);
+		transform->SetLocalPosition(0, 0, -(speed * delta));
+	}
+
+	if (GetKey('Q'))
+	{
+		transform->SetLocalPosition(0, (speed * delta), 0);
+	}
+
+	if (GetKey('E'))
+	{
+		transform->SetLocalPosition(0, -(speed * delta), 0);
 	}
 
 	if (GetKeyDown(VK_RBUTTON) == true)

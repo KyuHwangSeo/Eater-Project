@@ -13,8 +13,8 @@ namespace ParserData
 		DirectX::SimpleMath::Quaternion m_RotQt;
 		DirectX::SimpleMath::Vector3	m_Scale;
 	};
-
-	struct OneAnimation
+	
+	class OneAnimation
 	{
 	public:
 		OneAnimation();
@@ -25,8 +25,6 @@ namespace ParserData
 		std::vector<OneFrame*>	m_AniData;
 
 		float	m_TicksPerFrame;
-		float	m_FrameTime;
-		int		m_TickFrame;
 		int		m_TotalFrame;
 		int		m_StartFrame;
 		int		m_EndFrame;
@@ -52,7 +50,7 @@ namespace ParserData
 		DirectX::SimpleMath::Vector3 m_Pos;
 		DirectX::SimpleMath::Vector3 m_Normal;
 		DirectX::SimpleMath::Vector3 m_Tanget;
-		float m_U, m_V;
+		DirectX::SimpleMath::Vector2 m_UV;
 
 		bool m_IsNormalSet;		// Normal Data Setting 여부
 		bool m_IsTextureSet;	// Texture Data Setting 여부
@@ -133,6 +131,8 @@ namespace ParserData
 		bool m_TopNode;
 		bool m_IsSkinningObject;
 		bool m_IsBone;
+
+		int m_BoneIndex;
 
 		DirectX::SimpleMath::Matrix m_WorldTM;		// Mesh WorldTM
 		DirectX::SimpleMath::Matrix m_LocalTM;		// Mesh LocalTM
@@ -220,6 +220,7 @@ namespace ParserData
 
 		bool m_isAnimation;											// Animation 유무
 
+		std::vector<ParserData::OneAnimation*> m_AnimationList;		// Animation List
 		std::vector<ParserData::CMaterial*> m_MaterialList;			// Material List
 		std::vector<ParserData::Mesh*> m_MeshList;	 				// Mesh List
 	};

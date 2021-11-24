@@ -29,7 +29,7 @@ void LightManager::AddLight(Light* light)
 	case eLightType::DIRECTION:
 	{
 		DirectionLight* dirLight = reinterpret_cast<DirectionLight*>(light);
- 		m_LightData->DirLights[m_DirectionCount++] = dirLight->GetLightData();
+		m_LightData->DirLights[m_DirectionCount++] = dirLight->GetLightData();
 	}
 	break;
 	case eLightType::SPOT:
