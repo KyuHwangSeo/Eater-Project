@@ -9,9 +9,6 @@ DebugManager::DebugManager()
 
 DebugManager::~DebugManager()
 {
-
-
-
 }
 
 void DebugManager::Initialize(KeyinputManager* mkeyManager, bool mDebugOn)
