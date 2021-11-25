@@ -24,7 +24,7 @@ public:
 
 	void Initialize(KeyinputManager* mkeyManager,bool mDebugOn);
 	static void Print(MSG_TYPE type, std::string typeData,std::string msg,bool Error);
-	static void Line();
+	static void Line(std::string ObjType = "");
 	void Update();
 	void Delete();
 private:

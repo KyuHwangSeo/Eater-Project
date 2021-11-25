@@ -28,10 +28,6 @@ void ShaderManager::Initialize(Microsoft::WRL::ComPtr<ID3D11Device> device, Micr
 
 	// Global Shader Create..
 	CreateShader();
-
-	// Shader Hash Table Reset..
-	ShaderResourceHashTable* table = ShaderResourceHashTable::Get();
-	table->Destroy();
 }
 
 void ShaderManager::Release()

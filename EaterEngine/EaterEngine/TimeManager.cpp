@@ -42,10 +42,20 @@ void TimeManager::Update()
 		_addedTime = 0;
 	}
 
-	std::string temp = "FPS :" +std::to_string(_FPS);
-	//DebugManager::Print(temp,DebugManager::MSG_TYPE::MSG_ENGINE);
+	
+
+	
 
 	_addedTime += (deltaTime);
+	debugTime += (deltaTime);
+
+	if (debugTime >= 5) 
+	{
+		std::string temp = "FPS :" + std::to_string(_FPS);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_SYSTEM,"Time",temp,false);
+		debugTime = 0;
+	}
+
 
 }
 

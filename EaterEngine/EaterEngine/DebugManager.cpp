@@ -45,7 +45,7 @@ void DebugManager::Print(MSG_TYPE type, std::string typeData, std::string msg, b
 		MSG = "[ Create ][" + typeData + "]" + msg;
 		break;
 	case (int)MSG_TYPE::MSG_SYSTEM:
-		MSG = "[ Create ][" + typeData + "]" + msg;
+		MSG = "[ System ][" + typeData + "]" + msg;
 		break;
 	}
 
@@ -65,11 +65,16 @@ void DebugManager::Print(MSG_TYPE type, std::string typeData, std::string msg, b
 	WriteFile(hConsole, MSG.c_str(), MSG.size(), &dwByte, NULL);
 }
 
-void DebugManager::Line()
+void DebugManager::Line(std::string ObjType)
 {
 	DWORD dwByte(0);
-	std::string temp = "-----------------------------------------\n";
-	WriteFile(hConsole, temp.c_str(), temp.size(), &dwByte, NULL);
+	std::string temp01 = "-----------------------------------------";
+	std::string temp02 = ObjType;
+	std::string temp03 = "\n";
+
+	temp01 += temp02;
+	temp01 += temp03;
+	WriteFile(hConsole, temp01.c_str(), temp01.size(), &dwByte, NULL);
 }
 
 void DebugManager::Update()

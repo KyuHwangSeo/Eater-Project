@@ -30,8 +30,7 @@ Animator::~Animator()
 void Animator::Start()
 {
 	transfrom = gameobject->transform;
-	ChoiceAnime(0);
-	SetPlayTime(1,true);
+	Play(1,true);
 }
 
 void Animator::StartUpdate()
@@ -64,10 +63,10 @@ void Animator::StartUpdate()
 
 void Animator::SetAnimation(ParserData::OneAnimation* data)
 {
-	AnimeData.push_back(data);
+	NowAnimationData = data;
 }
 
-void Animator::SetPlayTime(float time, bool Loop)
+void Animator::Play(float time, bool Loop)
 {
 	PlayTime = time;
 	mLoop = Loop;
@@ -94,9 +93,9 @@ void Animator::CreateFrame(int CreateCount)
 
 }
 
-void Animator::ChoiceAnime(int index)
+void Animator::ChoiceAnime(ParserData::OneAnimation* Anime)
 {
-	NowAnimationData = AnimeData[index];
+	NowAnimationData = Anime;
 }
 
 float Animator::GetOnePlayTime(float mPlayTime, int EndFrameCount)
@@ -109,7 +108,7 @@ void Animator::AnimeFrameIndex()
 	if (mStop == false) 
 	{
 		mTime += mTimeManager->DeltaTime();
-		if (mTime >= GetOnePlayTime(PlayTime, NowAnimationData->m_EndFrame))
+		if (mTime >= NowAnimationData->m_TicksPerFrame)
 		{
 			mTime = 0;
 			AnimeIndex++;

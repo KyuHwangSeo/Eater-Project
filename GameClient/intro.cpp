@@ -27,13 +27,17 @@ void intro::Awake()
 	//LoadMesh("Enemy_Run",false, true);
 	//LoadMesh("Player_Attack");
 	//LoadMesh("Skinning");
-	LoadMesh("Enemy_Run",false,false);
+	//LoadMesh("Enemy_Run",false,false);
+	//LoadMesh("Enemy_Roll",false,true);
+	LoadMesh("Anim_Run",false,false);
+	LoadMesh("Anim_Idle",false,true);
+	//LoadMesh("Anim_Idle",false,true);
 	//LoadMesh("box");
 	//LoadMesh("AnimeBox");
 	//LoadTesture("body_normal_tangent_Base_color.png");
-	LoadTesture("Dump.png");
-	LoadTesture("Player.dds");
-	LoadTesture("body_normal_tangent_Base_color.png");
+	//LoadTesture("Dump.png");
+	//LoadTesture("Player.dds");
+	//LoadTesture("body_normal_tangent_Base_color.png");
 
 	///Ä«¸Þ¶ó
 	testobj = Instance("Cam");
@@ -52,13 +56,14 @@ void intro::Awake()
 
 	testobj = Instance("obj1");
 	MeshFilter* Filter = testobj->AddComponent<MeshFilter>();
-	//AnimationController* AC = testobj->AddComponent<AnimationController>();
-	Filter->SetMeshName("Enemy_Run");
+	AnimationController* AC = testobj->AddComponent<AnimationController>();
+	Filter->SetMeshName("Anim_Run");
 	Filter->SetTextureName("Player");
+	Filter->SetAnimationName("Anim");
 	//testobj->SetActive(false);
 	
 	testobj->GetTransform()->Position	= { 0 ,0, 0 };
-	testobj->GetTransform()->Scale		= { 1 ,1, 1 };
+	testobj->GetTransform()->Scale		= { 0.01f ,0.01f, 0.01f };
 	testobj->GetTransform()->Rotation	= {90 ,0,0 };
 }
 

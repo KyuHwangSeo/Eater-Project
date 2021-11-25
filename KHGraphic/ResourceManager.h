@@ -1,6 +1,8 @@
 #pragma once
 #include "ResourceManagerBase.h"
 
+typedef size_t Hash_Code;
+
 class GraphicResourceManager : public IGraphicResourceManager
 {
 public:
@@ -33,8 +35,34 @@ private:
 	ComputeRenderTarget* GetComputeRenderTarget(eRenderTarget state);
 
 public:
+	template<typename T, typename U>
+	void AddResource(U resource);
+
 	template<typename T>
-	void AddResource(T resource);
+	void AddResource(ViewPort* resource);
+
+	template<typename T>
+	void AddResource(RenderTarget* resource);
+
+	template<typename T>
+	void AddResource(DepthStencilView* resource);
+
+	template<typename T>
+	void AddResource(Microsoft::WRL::ComPtr<ID3D11DepthStencilState> resource);
+
+	template<typename T>
+	void AddResource(Microsoft::WRL::ComPtr<ID3D11RasterizerState> resource);
+
+	template<typename T>
+	void AddResource(Microsoft::WRL::ComPtr<ID3D11BlendState> resource);
+
+	template<typename T>
+	void AddResource(Microsoft::WRL::ComPtr<ID3D11SamplerState> resource);
+
+	template<typename T = int>
+	void AddResource(BufferData* resource);
+
+
 	void AddMainRenderTarget(RenderTarget* rtv) { m_BackBuffer = rtv; }
 
 private:
@@ -59,10 +87,10 @@ private:
 	// State Resource List
 	/////////////////////////////////////////////////////////////////////////////////////////
 
-	std::vector<Microsoft::WRL::ComPtr<ID3D11DepthStencilState>> m_DepthStencilStateList;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11RasterizerState>> m_RasterizerStateList;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11BlendState>> m_BlendStateList;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11SamplerState>> m_SamplerStateList;
+	std::unordered_map<Hash_Code, Microsoft::WRL::ComPtr<ID3D11DepthStencilState>> m_DepthStencilStateList;
+	std::unordered_map<Hash_Code, Microsoft::WRL::ComPtr<ID3D11RasterizerState>> m_RasterizerStateList;
+	std::unordered_map<Hash_Code, Microsoft::WRL::ComPtr<ID3D11BlendState>> m_BlendStateList;
+	std::unordered_map<Hash_Code, Microsoft::WRL::ComPtr<ID3D11SamplerState>> m_SamplerStateList;
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer Resource List
@@ -71,29 +99,29 @@ private:
 };
 
 
+template<typename T, typename U>
+inline void GraphicResourceManager::AddResource(U resource) {}
+
 template<typename T>
-inline void GraphicResourceManager::AddResource(T resource) {}
+inline void GraphicResourceManager::AddResource(ViewPort* resource) { m_ViewPortList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<>
-inline void GraphicResourceManager::AddResource(ViewPort* resource) { m_ViewPortList.push_back(resource); }
+template<typename T>
+inline void GraphicResourceManager::AddResource(RenderTarget* resource) { m_RenderTargetList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<>
-inline void GraphicResourceManager::AddResource(RenderTarget* resource) { m_RenderTargetList.push_back(resource); }
+template<typename T>
+inline void GraphicResourceManager::AddResource(DepthStencilView* resource) { m_DepthStencilViewList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<>
-inline void GraphicResourceManager::AddResource(DepthStencilView* resource) { m_DepthStencilViewList.push_back(resource); }
+template<typename T>
+inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11DepthStencilState> resource) { m_DepthStencilStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11DepthStencilState> resource) { m_DepthStencilStateList.push_back(resource); }
+template<typename T>
+inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11RasterizerState> resource) { m_RasterizerStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11RasterizerState> resource) { m_RasterizerStateList.push_back(resource); }
+template<typename T>
+inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11BlendState> resource) { m_BlendStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11BlendState> resource) { m_BlendStateList.push_back(resource); }
+template<typename T>
+inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11SamplerState> resource) { m_SamplerStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11SamplerState> resource) { m_SamplerStateList.push_back(resource); }
-
-template<>
-inline void GraphicResourceManager::AddResource(BufferData* resource) { m_BufferList.push_back(resource); }
+template<typename T>
+inline void GraphicResourceManager::AddResource(BufferData* resource) { m_BufferList.insert(std::make_pair(T::GetHashCode(), resource)); }

@@ -33,5 +33,7 @@ private:
 	__int64 mCurrTime;
 
 	bool mStopped;
+
+	float debugTime = 0;
 };
 

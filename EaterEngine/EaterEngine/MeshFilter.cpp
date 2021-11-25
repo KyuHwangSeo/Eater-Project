@@ -1,5 +1,7 @@
 #include "MeshFilter.h"
+#include "DebugManager.h"
 #include "SkinningFilter.h"
+#include "AnimationController.h"
 #include "GameObject.h"
 #include "LoadManager.h"
 #include "Transform.h"
@@ -25,11 +27,12 @@ MeshFilter::~MeshFilter()
 
 void MeshFilter::Awake()
 {
-	if (isLoadMesh == true)
+	if (isLoad_Mesh == true)
 	{
 		////최상위 객체를 가져옴
 		ModelData* data = LoadManager::GetMesh(MeshName);
 		Transform* MyTr = gameobject->transform;
+
 		gameobject->OneMeshData->ObjType = OBJECT_TYPE::GAMEOBJECT;
 
 		
@@ -54,7 +57,7 @@ void MeshFilter::Awake()
 
 		//Texture Check & Setting..
 		CheckTexture();
-
+		CheckAnimation();
 	}
 }
 
@@ -66,13 +69,13 @@ void MeshFilter::SetManager(ObjectManager* obj, MaterialManager* mat)
 
 void MeshFilter::SetMeshName(std::string mMeshName)
 {
-	isLoadMesh = true;
+	isLoad_Mesh = true;
 	MeshName = mMeshName;
 }
 
 void MeshFilter::SetTextureName(std::string mTextureName)
 {
-	isLoadTexture = true;
+	isLoad_Texture = true;
 	TextureName = mTextureName;
 }
 
@@ -80,6 +83,12 @@ void MeshFilter::SetNormalTextureName(std::string mTextureName)
 {
 
 
+}
+
+void MeshFilter::SetAnimationName(std::string mAnimeName)
+{
+	isLoad_Animation = true;
+	AnimationName = mAnimeName;
 }
 
 void MeshFilter::PushModelData(LoadMeshData* mModel)
@@ -124,10 +133,23 @@ void MeshFilter::CheckTexture()
 	}
 }
 
+void MeshFilter::CheckAnimation()
+{
+	if (isLoad_Animation == false) { return; }
+
+	ModelAnimationData* data		= LoadManager::GetAnimation(AnimationName);
+	AnimationController* Controller = gameobject->GetComponent<AnimationController>();
+
+	//컨퍼넌트를 생성해주고 애니메이션 넣어준다
+	Controller->SetBoneList(&BoneList);
+	Controller->SetAnimeList(data);
+}
+
 void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelData* modeldata)
 {
 	int ChildCount = (int)data->Child.size();
 
+	DebugManager::Line("(Mesh)");
 	GameObject* OBJ = new GameObject();
 	OBJ->Name = data->Name;
 
@@ -190,19 +212,21 @@ void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelDa
 	}
 }
 
-void MeshFilter::CreateChild_Bone(LoadMeshData* data, Transform* parent, std::vector<Transform*>* mBoneList, std::vector<DirectX::SimpleMath::Matrix>* BoneOffsetList)
+void MeshFilter::CreateChild_Bone(LoadMeshData* data, Transform* parent, std::vector<GameObject*>* mBoneList, std::vector<DirectX::SimpleMath::Matrix>* BoneOffsetList)
 {
+	DebugManager::Line("(Bone)");
 	GameObject* OBJ = new GameObject();
 	OBJ->Name = data->Name;
 	OBJ->OneMeshData->ObjType = OBJECT_TYPE::BONE;
 
+	
+
 	//컨퍼넌트 생성
 	Transform* Tr		= OBJ->AddComponent<Transform>();
 	MeshFilter* Filter	= OBJ->AddComponent<MeshFilter>();
-
-	Animator* Anime = OBJ->AddComponent<Animator>();
+	Animator* Anime		= OBJ->AddComponent<Animator>();
 	//애니메이션 데이터 넣어주기
-	Anime->SetAnimation(data->Animation);
+	//Anime->SetAnimation(data->Animation);
 
 	//Transform 연결
 	OBJ->transform = Tr;
@@ -217,7 +241,7 @@ void MeshFilter::CreateChild_Bone(LoadMeshData* data, Transform* parent, std::ve
 	OBJ_Manager->PushCreateObject(OBJ);
 
 	//본에 해당하는 Transform과 오프셋을
-	(*mBoneList)[data->BoneIndex] = Tr;
+	(*mBoneList)[data->BoneIndex] = OBJ;
 	(*BoneOffsetList)[data->BoneIndex] = (*data->BoneOffset);
 
 	//자식객체 개수만큼 실행

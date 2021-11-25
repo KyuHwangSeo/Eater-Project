@@ -56,6 +56,9 @@ void GraphicResourceFactory::Initialize(int width, int height)
 	// Graphic Resource Manager 초기화..
 	m_ResourceManager->Initialize(m_Device, nullptr);
 
+	// Shader Hash Table Reset..
+	ShaderResourceHashTable::Get()->Destroy();
+
 	// Back Buffer 생성..
 	//CreateMainRenderTarget(width, height);
 

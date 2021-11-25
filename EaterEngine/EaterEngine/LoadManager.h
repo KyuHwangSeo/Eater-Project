@@ -44,8 +44,12 @@ public:
 	///GET
 	//매쉬 가져오기
 	static ModelData* GetMesh(std::string Name);
+
 	//텍스쳐 가져오기
 	static TextureBuffer* GetTexture(std::string Name);
+
+	//애니메이션 가져오기
+	static ModelAnimationData* GetAnimation(std::string Name);
 	
 
 	///Load
@@ -55,6 +59,7 @@ public:
 	//프리펩 로드
 	void LoadPrefap(std::string Name);
 
+	
 	///경로
 	//매쉬 경로 설정
 	void LoadMeshPath(std::string mPath);
@@ -87,10 +92,11 @@ private:
 	///리스트
 	static std::map<std::string, ModelData*>			ModelList;
 	static std::map<std::string, TextureBuffer*>		TextureList;
-	static std::map<std::string, std::pair<std::string, ModelAnimationData*>>	AnimationList;
+	static std::map<std::string, ModelAnimationData*>	AnimationList;
 private:
 	//규황이 파서
 	ModelParser* EaterParser;
+
 	//누군가의 그래픽 엔진
 	GraphicEngineManager* GEngine;
 };

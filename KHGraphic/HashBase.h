@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <typeinfo>
 #include "ResourceBufferHashTable.h"
 
 #define CREATE_EMPTY_CLASS(ClassName) struct ClassName : public HashClass<ClassName> {};

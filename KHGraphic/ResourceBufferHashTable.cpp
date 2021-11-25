@@ -3,6 +3,10 @@
 #include "SamplerBufferDefine.h"
 #include "ShaderResourceBufferDefine.h"
 #include "UnorderedAccessBufferDefine.h"
+#include "DepthStencilViewDefine.h"
+#include "DepthStencilStateDefine.h"
+#include "RasterizerStateDefine.h"
+#include "BlendStateDefine.h"
 
 ShaderResourceHashTable* ShaderResourceHashTable::instance = nullptr;
 
@@ -20,6 +24,7 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 {
 	std::unordered_map<std::string, Hash_Code>::iterator cHash;
 	
+	// Resource Type에 따른 Hash Code 반환..
 	switch (type)
 	{
 	case eResourceType::CBUFFER:
@@ -62,6 +67,46 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 		}
 	}
 	break;
+	case eResourceType::DSV:
+	{
+		cHash = g_DSV_HashTable.find(cBufName);
+
+		if (cHash == g_DSV_HashTable.end())
+		{
+			return 0;
+		}
+	}
+	break;
+	case eResourceType::DSS:
+	{
+		cHash = g_DSS_HashTable.find(cBufName);
+
+		if (cHash == g_DSS_HashTable.end())
+		{
+			return 0;
+		}
+	}
+	break;
+	case eResourceType::RS:
+	{
+		cHash = g_RS_HashTable.find(cBufName);
+
+		if (cHash == g_RS_HashTable.end())
+		{
+			return 0;
+		}
+	}
+	break;
+	case eResourceType::BS:
+	{
+		cHash = g_BS_HashTable.find(cBufName);
+
+		if (cHash == g_BS_HashTable.end())
+		{
+			return 0;
+		}
+	}
+	break;
 	default:
 	{
 		return 0;
@@ -96,4 +141,8 @@ void ShaderResourceHashTable::Destroy()
 	g_Sampler_HashTable.clear();
 	g_SRV_HashTable.clear();
 	g_UAV_HashTable.clear();
+	g_DSV_HashTable.clear();
+	g_DSS_HashTable.clear();
+	g_RS_HashTable.clear();
+	g_BS_HashTable.clear();
 }

@@ -9,7 +9,7 @@ using namespace ParserData;
 
 std::map<std::string, ModelData*>			LoadManager::ModelList;
 std::map<std::string, TextureBuffer*>		LoadManager::TextureList;
-std::map<std::string, std::pair<std::string, ModelAnimationData*>>	LoadManager::AnimationList;
+std::map<std::string, ModelAnimationData*>	LoadManager::AnimationList;
 LoadManager::LoadManager()
 {
 	GEngine = nullptr;
@@ -58,6 +58,20 @@ TextureBuffer* LoadManager::GetTexture(std::string Name)
 	{
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_GET, "Texture", Name, false);
 		return temp->second;
+	}
+}
+
+ModelAnimationData* LoadManager::GetAnimation(std::string Name)
+{
+	if (AnimationList.find(Name) != AnimationList.end())
+	{
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_GET, "Animation", Name, false);
+		return AnimationList[Name];
+	}
+	else
+	{
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_GET, "Animation", Name,true);
+		return nullptr;
 	}
 }
 
@@ -268,40 +282,41 @@ LoadMeshData* LoadManager::CreateBoneObjeect(ModelData* SaveData)
 
 void LoadManager::LoadAnimation(ModelData* SaveMesh, ParserData::Model* MeshData, std::string Name)
 {
-	if (MeshData->m_isAnimation == false) { return; }
-
-	//애니메이션 정보가 있다면 읽음
-	ModelAnimationData* data = new ModelAnimationData();
-	data->AnimList = &(MeshData->m_AnimationList);
-	
-	if (data->AnimList == nullptr)
+	if (MeshData->m_isAnimation == false)
 	{
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_LOAD, "Animation", Name, true);
+		return;
 	}
 	else
 	{
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_LOAD, "Animation", Name, false);
 	}
 
-	//저장
+	//저장할 이름 설정 첫번째 key
 	//들어온 string을 맨앞부터"_"까지만읽는다
 	std::string::size_type start = 0;
 	std::string::size_type End = Name.rfind('_');
 	std::string SaveName = Name.substr(start, End);
 	//Enemy_Run 이라면 Enemy가 첫번째 키 
-	
+
 	if (AnimationList.find(SaveName) == AnimationList.end())
 	{
 		//찾는 이름이 없다면 만들어준다
-		AnimationList.insert({ SaveName,{}});
+		ModelAnimationData* data = new ModelAnimationData();
+		AnimationList.insert({ SaveName,data});
 	}
 
+	//저장할 이름 설정 두번째 key
 	//"_"부터 string 끝까지읽음
 	//Enemy_Run 이라면 Run 두번째 키 
 	start = End+1;
 	End = Name.length();
 	std::string key = Name.substr(start, End);
-	AnimationList[SaveName] = std::pair<std::string,ModelAnimationData*>(key, data);
+
+
+	//데이터 저장
+	ModelAnimationData* temp = AnimationList[SaveName];
+	temp->AnimList.insert({key, &(MeshData->m_AnimationList)});
 }
 
 void LoadManager::SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData)

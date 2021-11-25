@@ -25,7 +25,7 @@ public:
 	void SetAnimation(ParserData::OneAnimation*);
 
 	//매개변수로 받은 시간만큼 애니메이션한개를 재생시킴
-	void SetPlayTime(float time,bool Loop);
+	void Play(float Speed = 1 ,bool Loop = true);
 	void Stop();
 	void ReStart();
 
@@ -33,7 +33,7 @@ public:
 	//애니메이션의 프레임수를 생성시킨다
 	void CreateFrame(int CreateCount);
 
-	void ChoiceAnime(int index);
+	void ChoiceAnime(ParserData::OneAnimation* Anime);
 private:
 	//1초에 애니메이션 한개가 돌아가야할떄 프레임시간
 	float GetOnePlayTime(float mPlayTime,int EndFrameCount);

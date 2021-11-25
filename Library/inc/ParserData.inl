@@ -7,8 +7,6 @@ namespace ParserData
 	inline OneAnimation::OneAnimation()
 	{
 		m_TicksPerFrame = 0.0f;
-		m_FrameTime = 0.0f;
-		m_TickFrame = 0;
 		m_TotalFrame = 0;
 		m_StartFrame = 0;
 		m_EndFrame = 0;

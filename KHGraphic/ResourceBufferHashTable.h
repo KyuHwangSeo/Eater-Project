@@ -5,6 +5,10 @@
 #define DEFINE_SAMPLER			0x00000010
 #define DEFINE_SRV				0x00000100
 #define DEFINE_UAV				0x00001000
+#define DEFINE_DSV				0x00010000
+#define DEFINE_DSS				0x00100000
+#define DEFINE_RS				0x01000000
+#define DEFINE_BS				0x10000000
 
 typedef unsigned int	Define_Mask;
 typedef size_t			Hash_Code;
@@ -45,6 +49,15 @@ public:
 	std::unordered_map<std::string, Hash_Code> g_SRV_HashTable;
 	// UnorderedAccessView Hash Table..
 	std::unordered_map<std::string, Hash_Code> g_UAV_HashTable;
+
+	// DepthStencilView Hash Table..
+	std::unordered_map<std::string, Hash_Code> g_DSV_HashTable;
+	// DepthStencilState Hash Table..
+	std::unordered_map<std::string, Hash_Code> g_DSS_HashTable;
+	// RasterizerState Hash Table..
+	std::unordered_map<std::string, Hash_Code> g_RS_HashTable;
+	// BlendState Hash Table..
+	std::unordered_map<std::string, Hash_Code> g_BS_HashTable;
 
 public:
 	// Hash Code Push ÇÔ¼ö..
@@ -96,6 +109,34 @@ inline bool ShaderResourceHashTable::Push(eResourceType type, std::string name, 
 			return false;
 		else
 			return CheckHashCode(g_UAV_HashTable, name, hash_code);
+	}
+	case eResourceType::DSV:
+	{
+		if (DEFINE_MASK & DEFINE_DSV)
+			return false;
+		else
+			return CheckHashCode(g_DSV_HashTable, name, hash_code);
+	}
+	case eResourceType::DSS:
+	{
+		if (DEFINE_MASK & DEFINE_DSS)
+			return false;
+		else
+			return CheckHashCode(g_DSS_HashTable, name, hash_code);
+	}
+	case eResourceType::RS:
+	{
+		if (DEFINE_MASK & DEFINE_RS)
+			return false;
+		else
+			return CheckHashCode(g_RS_HashTable, name, hash_code);
+	}
+	case eResourceType::BS:
+	{
+		if (DEFINE_MASK & DEFINE_BS)
+			return false;
+		else
+			return CheckHashCode(g_BS_HashTable, name, hash_code);
 	}
 	default:
 		break;
