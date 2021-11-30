@@ -7,6 +7,7 @@ enum class eRenderTargetType
 	COMPUTE,
 };
 
+// DirectX 11 RenderTargetView Class
 class RenderTarget : public Texture2D
 {
 public:

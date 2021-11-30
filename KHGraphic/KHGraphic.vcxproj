@@ -186,6 +186,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="BlendStateDefine.h" />
     <ClInclude Include="DepthStencilStateDefine.h" />
     <ClInclude Include="DepthStencilViewDefine.h" />
+    <ClInclude Include="GraphicState.h" />
     <ClInclude Include="HashBase.h" />
     <ClInclude Include="CompilerDefine.h" />
     <ClInclude Include="ComputeRenderTarget.h" />
@@ -200,7 +201,9 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="BasicRenderTarget.h" />
     <ClInclude Include="MathDefine.h" />
     <ClInclude Include="RasterizerStateDefine.h" />
+    <ClInclude Include="RenderTargetDefine.h" />
     <ClInclude Include="RenderTargetTypes.h" />
+    <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="ResourceFactoryBase.h" />
     <ClInclude Include="RenderManagerBase.h" />
     <ClInclude Include="ResourceManagerBase.h" />
@@ -231,6 +234,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="VertexDefine.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="ViewPort.h" />
+    <ClInclude Include="ViewPortDefine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComputeRenderTarget.cpp" />
@@ -239,6 +243,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClCompile Include="DeferredPass.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="ForwardPass.cpp" />
+    <ClCompile Include="GraphicState.cpp" />
     <ClCompile Include="KHGraphic.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="LightPass.cpp" />

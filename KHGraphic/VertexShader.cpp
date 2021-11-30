@@ -116,7 +116,7 @@ void VertexShader::LoadShader(std::string fileName)
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
 			// Constant Buffer Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::CBUFFER, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::CB, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
@@ -151,7 +151,7 @@ void VertexShader::LoadShader(std::string fileName)
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SAMPLER, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::SS, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;

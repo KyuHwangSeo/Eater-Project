@@ -2,7 +2,7 @@
 #include "ViewPort.h"
 
 ViewPort::ViewPort(float topX, float topY, float width, float height, float width_ratio, float height_ratio)
-	:m_Width_Ratio(width_ratio), m_Height_Ratio(height_ratio)
+	:ResourceBase(eResourceType::VP), m_Width_Ratio(width_ratio), m_Height_Ratio(height_ratio)
 {
 	m_ViewPort = new D3D11_VIEWPORT();
 	m_ViewPort->Width = width * width_ratio;

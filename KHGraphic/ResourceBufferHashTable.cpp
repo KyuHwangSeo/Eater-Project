@@ -27,7 +27,7 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 	// Resource Type에 따른 Hash Code 반환..
 	switch (type)
 	{
-	case eResourceType::CBUFFER:
+	case eResourceType::CB:
 	{
 		cHash = g_CBuffer_HashTable.find(cBufName);
 	
@@ -37,7 +37,7 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 		}
 	}
 	break;
-	case eResourceType::SAMPLER:
+	case eResourceType::SS:
 	{
 		cHash = g_Sampler_HashTable.find(cBufName);
 	

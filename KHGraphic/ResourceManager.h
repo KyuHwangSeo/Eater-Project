@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 #include "ResourceManagerBase.h"
 
 typedef size_t Hash_Code;
@@ -35,31 +36,9 @@ private:
 	ComputeRenderTarget* GetComputeRenderTarget(eRenderTarget state);
 
 public:
-	template<typename T, typename U>
-	void AddResource(U resource);
-
 	template<typename T>
-	void AddResource(ViewPort* resource);
+	void AddResource(ResourceBase* resource);
 
-	template<typename T>
-	void AddResource(RenderTarget* resource);
-
-	template<typename T>
-	void AddResource(DepthStencilView* resource);
-
-	template<typename T>
-	void AddResource(Microsoft::WRL::ComPtr<ID3D11DepthStencilState> resource);
-
-	template<typename T>
-	void AddResource(Microsoft::WRL::ComPtr<ID3D11RasterizerState> resource);
-
-	template<typename T>
-	void AddResource(Microsoft::WRL::ComPtr<ID3D11BlendState> resource);
-
-	template<typename T>
-	void AddResource(Microsoft::WRL::ComPtr<ID3D11SamplerState> resource);
-
-	template<typename T = int>
 	void AddResource(BufferData* resource);
 
 
@@ -98,30 +77,36 @@ private:
 	std::vector<BufferData*> m_BufferList;
 };
 
-
-template<typename T, typename U>
-inline void GraphicResourceManager::AddResource(U resource) {}
-
 template<typename T>
-inline void GraphicResourceManager::AddResource(ViewPort* resource) { m_ViewPortList.insert(std::make_pair(T::GetHashCode(), resource)); }
+inline void GraphicResourceManager::AddResource(ResourceBase* resource)
+{
+	switch (resource->GetType())
+	{
+	case eResourceType::CB:
+		break;
+	case eResourceType::SRV:
+		break;
+	case eResourceType::UAV:
+		break;
+	case eResourceType::DSV:
+		break;
+	case eResourceType::DSS:
+		break;
+	case eResourceType::SS:
+		break;
+	case eResourceType::RS:
+		break;
+	case eResourceType::BS:
+		break;
+	case eResourceType::RT:
+		break;
+	case eResourceType::VP:
+		break;
+	default:
+		break;
+	}
+}
 
-template<typename T>
-inline void GraphicResourceManager::AddResource(RenderTarget* resource) { m_RenderTargetList.insert(std::make_pair(T::GetHashCode(), resource)); }
+inline void GraphicResourceManager::AddResource(BufferData* resource) { m_BufferList.push_back(resource); }
 
-template<typename T>
-inline void GraphicResourceManager::AddResource(DepthStencilView* resource) { m_DepthStencilViewList.insert(std::make_pair(T::GetHashCode(), resource)); }
 
-template<typename T>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11DepthStencilState> resource) { m_DepthStencilStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
-
-template<typename T>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11RasterizerState> resource) { m_RasterizerStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
-
-template<typename T>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11BlendState> resource) { m_BlendStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
-
-template<typename T>
-inline void GraphicResourceManager::AddResource(Microsoft::WRL::ComPtr<ID3D11SamplerState> resource) { m_SamplerStateList.insert(std::make_pair(T::GetHashCode(), resource)); }
-
-template<typename T>
-inline void GraphicResourceManager::AddResource(BufferData* resource) { m_BufferList.insert(std::make_pair(T::GetHashCode(), resource)); }

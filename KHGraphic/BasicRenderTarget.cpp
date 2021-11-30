@@ -4,9 +4,9 @@
 #include "BasicRenderTarget.h"
 
 BasicRenderTarget::BasicRenderTarget(ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv)
-	:RenderTarget(eRenderTargetType::BASIC, rtv), m_SRV(*srv)
+	:RenderTarget(eRenderTargetType::BASIC, rtv)
 {
-	
+	if (srv) m_SRV = *srv;
 }
 
 BasicRenderTarget::~BasicRenderTarget()

@@ -1,9 +1,10 @@
 #pragma once
+#include "ResourceBase.h"
 
-class Texture2D
+class Texture2D : public ResourceBase
 {
 public:
-	Texture2D() : m_Width_Ratio(1.0f), m_Height_Ratio(1.0f) {}
+	Texture2D(eResourceType resourceType) : ResourceBase(resourceType), m_Width_Ratio(1.0f), m_Height_Ratio(1.0f) {}
 	virtual ~Texture2D() = default;
 
 public:

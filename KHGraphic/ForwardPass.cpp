@@ -37,7 +37,7 @@ void ForwardPass::Create(int width, int height)
 
 	// DepthStencilView 설정..
 	m_DSV = g_Resource->GetDepthStencilView(eDepthStencilView::DEFALT);
-	m_DepthStencilView = m_DSV->GetDSV();
+	m_DepthStencilView = m_DSV->Get();
 	
 	m_DepthStencilState = g_Resource->GetDepthStencilState(eDepthStencilState::DEFALT);
 	m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::SOLID);
@@ -66,7 +66,7 @@ void ForwardPass::OnResize(int width, int height)
 	//m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 재설정..
-	m_DepthStencilView = m_DSV->GetDSV();
+	m_DepthStencilView = m_DSV->Get();
 }
 
 void ForwardPass::Release()

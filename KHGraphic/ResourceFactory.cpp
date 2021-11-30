@@ -19,6 +19,10 @@
 #include "VertexDefine.h"
 #include "SamplerBufferDefine.h"
 #include "ToolKitDefine.h"
+#include "BlendStateDefine.h"
+#include "DepthStencilStateDefine.h"
+#include "DepthStencilViewDefine.h"
+#include "RasterizerStateDefine.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -110,6 +114,7 @@ void GraphicResourceFactory::CreateUAV(ID3D11Texture2D* tex2D, D3D11_UNORDERED_A
 	HR(m_Device->CreateUnorderedAccessView(tex2D, uavDesc, uav));
 }
 
+template<typename T>
 void GraphicResourceFactory::CreateDSV(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, ID3D11DepthStencilView** dsv)
 {
 	// 货肺款 Resource Pointer 积己..
@@ -133,10 +138,11 @@ void GraphicResourceFactory::CreateDSV(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENC
 	DepthStencilView* depthStencilView = new DepthStencilView(newResource.GetAddressOf());
 
 	// Resoure 殿废..
-	m_ResourceManager->AddResource(depthStencilView);
+	m_ResourceManager->AddResource<T>(depthStencilView);
 }
 
-Microsoft::WRL::ComPtr<ID3D11DepthStencilState> GraphicResourceFactory::CreateDSS(D3D11_DEPTH_STENCIL_DESC* dssDesc)
+template<typename T>
+inline Microsoft::WRL::ComPtr<ID3D11DepthStencilState> GraphicResourceFactory::CreateDSS(D3D11_DEPTH_STENCIL_DESC* dssDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> newResource = nullptr;
@@ -145,12 +151,13 @@ Microsoft::WRL::ComPtr<ID3D11DepthStencilState> GraphicResourceFactory::CreateDS
 	HR(m_Device->CreateDepthStencilState(dssDesc, newResource.GetAddressOf()));
 
 	// Resoure 殿废..
-	m_ResourceManager->AddResource(newResource);
+	m_ResourceManager->AddResource<T>(newResource);
 
 	return newResource;
 }
 
-Microsoft::WRL::ComPtr<ID3D11RasterizerState> GraphicResourceFactory::CreateRS(D3D11_RASTERIZER_DESC* rsDesc)
+template<typename T>
+inline Microsoft::WRL::ComPtr<ID3D11RasterizerState> GraphicResourceFactory::CreateRS(D3D11_RASTERIZER_DESC* rsDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> newResource = nullptr;
@@ -159,26 +166,28 @@ Microsoft::WRL::ComPtr<ID3D11RasterizerState> GraphicResourceFactory::CreateRS(D
 	HR(m_Device->CreateRasterizerState(rsDesc, newResource.GetAddressOf()));
 
 	// Resoure 殿废..
-	m_ResourceManager->AddResource(newResource);
+	m_ResourceManager->AddResource<T>(newResource);
 
 	return newResource;
 }
 
-Microsoft::WRL::ComPtr<ID3D11BlendState> GraphicResourceFactory::CreateBS(D3D11_BLEND_DESC* bsDesc)
+template<typename T>
+inline Microsoft::WRL::ComPtr<ID3D11BlendState> GraphicResourceFactory::CreateBS(D3D11_BLEND_DESC* bsDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11BlendState> newResource = nullptr;
-	
+
 	// BlendState Resource 积己..
 	HR(m_Device->CreateBlendState(bsDesc, newResource.GetAddressOf()));
 
 	// Resoure 殿废..
-	m_ResourceManager->AddResource(newResource);
+	m_ResourceManager->AddResource<T>(newResource);
 
 	return newResource;
 }
 
-Microsoft::WRL::ComPtr<ID3D11SamplerState> GraphicResourceFactory::CreateSS(D3D11_SAMPLER_DESC* ssDesc)
+template<typename T>
+inline Microsoft::WRL::ComPtr<ID3D11SamplerState> GraphicResourceFactory::CreateSS(D3D11_SAMPLER_DESC* ssDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> newResource = nullptr;
@@ -187,7 +196,7 @@ Microsoft::WRL::ComPtr<ID3D11SamplerState> GraphicResourceFactory::CreateSS(D3D1
 	HR(m_Device->CreateSamplerState(ssDesc, newResource.GetAddressOf()));
 
 	// Resoure 殿废..
-	m_ResourceManager->AddResource(newResource);
+	m_ResourceManager->AddResource<T>(newResource);
 
 	return newResource;
 }
@@ -370,12 +379,12 @@ TextureBuffer* GraphicResourceFactory::CreateTextureBuffer(std::string path)
 	return tBuffer;
 }
 
-IShaderManager* GraphicResourceFactory::GetShaderManager()
+ShaderManager* GraphicResourceFactory::GetShaderManager()
 {
 	return m_ShaderManager;
 }
 
-IGraphicResourceManager* GraphicResourceFactory::GetResourceManager()
+GraphicResourceManager* GraphicResourceFactory::GetResourceManager()
 {
 	return m_ResourceManager;
 }
@@ -550,7 +559,7 @@ void GraphicResourceFactory::CreateDepthStencilState()
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Defalt DepthStencilState 积己..
-	CreateDSS(&depthStencilDesc);
+	CreateDSS<DSS_Defalt>(&depthStencilDesc);
 
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
@@ -573,7 +582,7 @@ void GraphicResourceFactory::CreateDepthStencilState()
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// NoDepth DepthStencilState 积己..
-	CreateDSS(&depthStencilDesc);
+	CreateDSS<DSS_NoDepth>(&depthStencilDesc);
 }
 
 void GraphicResourceFactory::CreateRasterizerState()
@@ -593,7 +602,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.ScissorEnable = false;
 
 	// Solid RasterizerState 积己..
-	CreateRS(&rasterizerDesc);
+	CreateRS<RS_Solid>(&rasterizerDesc);
 
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
@@ -609,7 +618,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.ScissorEnable = false;
 
 	// WireFrame RasterizerState 积己..
-	CreateRS(&rasterizerDesc);
+	CreateRS<RS_WireFrame>(&rasterizerDesc);
 
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -618,7 +627,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.DepthClipEnable = true;
 
 	// NoCull RasterizerState 积己..
-	CreateRS(&rasterizerDesc);
+	CreateRS<RS_CullNone>(&rasterizerDesc);
 
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -630,7 +639,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.SlopeScaledDepthBias = 0.005f;
 
 	// Depth RasterizerState 积己..
-	CreateRS(&rasterizerDesc);
+	CreateRS<RS_Depth>(&rasterizerDesc);
 }
 
 void GraphicResourceFactory::CreateSamplerState()
@@ -646,7 +655,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samClampMinLinear SamplerState 积己..
-	m_ShaderManager->AddSampler<samClampMinLinear>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<samClampMinLinear>(CreateSS<samClampMinLinear>(&samplerDesc));
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -658,7 +667,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samWrapAnisotropic SamplerState 积己..
-	m_ShaderManager->AddSampler<samWrapAnisotropic>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<samWrapAnisotropic>(CreateSS<samWrapAnisotropic>(&samplerDesc));
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -671,7 +680,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samWrapMinLinear SamplerState 积己..
-	m_ShaderManager->AddSampler<samWrapMinLinear>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<samWrapMinLinear>(CreateSS<samWrapMinLinear>(&samplerDesc));
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -683,7 +692,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samMirrorMinLinear SamplerState 积己..
-	m_ShaderManager->AddSampler<samMirrorMinLinear>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<samMirrorMinLinear>(CreateSS<samMirrorMinLinear>(&samplerDesc));
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -695,7 +704,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samClampMinLinearPoint SamplerState 积己..
-	m_ShaderManager->AddSampler<samClampMinLinearPoint>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<samClampMinLinearPoint>(CreateSS<samClampMinLinearPoint>(&samplerDesc));
 	
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -708,7 +717,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samBorderLinerPoint SamplerState 积己..
-	m_ShaderManager->AddSampler<samBorderLinerPoint>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<samBorderLinerPoint>(CreateSS<samBorderLinerPoint>(&samplerDesc));
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -719,7 +728,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samWrapLinerPoint SamplerState 积己..
-	m_ShaderManager->AddSampler<samWrapLinerPoint>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<samWrapLinerPoint>(CreateSS<samWrapLinerPoint>(&samplerDesc));
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
@@ -731,7 +740,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// gShadowSam SamplerState 积己..
-	m_ShaderManager->AddSampler<gShadowSam>(CreateSS(&samplerDesc));
+	m_ShaderManager->AddSampler<gShadowSam>(CreateSS<gShadowSam>(&samplerDesc));
 }
 
 void GraphicResourceFactory::CreateBlendState()
@@ -750,7 +759,7 @@ void GraphicResourceFactory::CreateBlendState()
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	// Blending First RenderTarget BlendState 积己..
-	CreateBS(&blendDesc);
+	CreateBS<BS_AlphaBlend>(&blendDesc);
 }
 
 void GraphicResourceFactory::CreateDepthStencilView(int width, int height)
@@ -775,7 +784,7 @@ void GraphicResourceFactory::CreateDepthStencilView(int width, int height)
 	CreateTexture2D(&texDesc, tex2D.GetAddressOf());
 
 	// Defalt DepthStencilView 积己..
-	CreateDSV(tex2D.Get(), nullptr, nullptr);
+	CreateDSV<DSV_Defalt>(tex2D.Get(), nullptr, nullptr);
 
 	RESET_COM(tex2D);
 }

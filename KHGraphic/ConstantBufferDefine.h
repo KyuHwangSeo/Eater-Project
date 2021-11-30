@@ -3,8 +3,8 @@
 #include "LightHelper.h"
 #include "HashBase.h"
 
-#define ADD_CONSTANT_BUFFER(ClassName) static bool cbuffer_##ClassName = ShaderResourceHashTable::Get()->Push(eResourceType::CBUFFER, #ClassName, typeid(ClassName).hash_code());
-#define CONSTANT_BUFFER(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_CONSTANT_BUFFER(ClassName)
+#define CONSTANT_BUFFER(ClassName) CREATE_EMPTY_CLASS(ClassName, CB_Resource) ADD_CONSTANT_BUFFER(ClassName)
+#define ADD_CONSTANT_BUFFER(ClassName) static bool cbuffer_##ClassName = ShaderResourceHashTable::Get()->Push(eResourceType::CB, #ClassName, typeid(ClassName).hash_code());
 
 /// <summary>
 /// ConstantBuffer Resource Struct

@@ -64,13 +64,13 @@ void PixelShader::LoadShader(std::string fileName)
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
 			// Constant Buffer Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::CBUFFER, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::CB, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
 
 			// Key (Constant Buffer HashCode) && Value (Register Slot, Constant Buffer)
-			m_ConstantBufferList.insert(std::make_pair(hash_key, new ConstantBuffer(bindDesc.Name, cbuffer_register_slot, &cBuffer)));
+			m_ConstantBufferList.insert(std::make_pair(hash_key, new ConstantBuffer(bindDesc.Name, cbuffer_register_slot, hash_key, &cBuffer)));
 		}
 	}
 
@@ -93,19 +93,19 @@ void PixelShader::LoadShader(std::string fileName)
 			srv_register_slot = bindDesc.BindPoint;
 			
 			// SRV 추가..
-			m_SRVList.insert(std::make_pair(hash_key, new ShaderResourceBuffer(bindDesc.Name, srv_register_slot)));
+			m_SRVList.insert(std::make_pair(hash_key, new ShaderResourceBuffer(bindDesc.Name, srv_register_slot, hash_key)));
 		}
 			break;
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SAMPLER, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(eResourceType::SS, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;
 
 			// Sampler 추가..
-			m_SamplerList.insert(std::make_pair(hash_key, new SamplerBuffer(bindDesc.Name, sampler_register_slot)));
+			m_SamplerList.insert(std::make_pair(hash_key, new SamplerBuffer(bindDesc.Name, sampler_register_slot, hash_key)));
 		}
 			break;
 		default:

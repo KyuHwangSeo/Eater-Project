@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include "EnumDefine.h"
 
 #define DEFINE_CBUFFER			0x00000001
 #define DEFINE_SAMPLER			0x00000010
@@ -20,18 +21,6 @@ typedef size_t			Hash_Code;
 /// - Shader Reflect Load 시 Description과 비교하기 위해 필요하므로 Shader Load 전에 초기화 필수
 /// - 동적으로 해당 Resource Class 선언과 동시에 Hash Table에 올리고싶지만 아직은 방법이 떠오르지 않는다..
 ///   일단 Initalize부분에 귀찮더라도 해당 Resource Class를 올려두자..
-
-enum class eResourceType
-{
-	CBUFFER,
-	SAMPLER,
-	SRV,
-	UAV,
-	DSV,
-	DSS,
-	RS,
-	BS
-};
 
 class ShaderResourceHashTable
 {
@@ -82,14 +71,14 @@ inline bool ShaderResourceHashTable::Push(eResourceType type, std::string name, 
 {
 	switch (type)
 	{
-	case eResourceType::CBUFFER:
+	case eResourceType::CB:
 	{
 		if (DEFINE_MASK & DEFINE_CBUFFER)	
 			return false;
 		else
 			return CheckHashCode(g_CBuffer_HashTable, name, hash_code);
 	}
-	case eResourceType::SAMPLER:
+	case eResourceType::SS:
 	{
 		if (DEFINE_MASK & DEFINE_SAMPLER)
 			return false;

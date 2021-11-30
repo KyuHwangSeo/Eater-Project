@@ -5,7 +5,7 @@
 #include "ComputeRenderTarget.h"
 
 RenderTarget::RenderTarget(eRenderTargetType type, ID3D11RenderTargetView** rtv)
-	:m_RenderTargetType(type)
+	:Texture2D(eResourceType::RT), m_RenderTargetType(type)
 {
 	if (rtv) m_RTV = *rtv;
 }

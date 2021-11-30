@@ -1,53 +1,16 @@
 #pragma once
 
-enum class eDepthStencilState
+// ResourceType Enum Class..
+enum class eResourceType
 {
-	DEFALT = 0,
-	NODEPTH
-};
-
-enum class eRasterizerState
-{
-	SOLID = 0,
-	WIRE,
-	NOCULL,
-	DEPTH
-};
-
-enum class eBlendState
-{
-	BLEND_ONE = 0,
-
-};
-
-enum class eViewPort
-{
-	SCREEN = 0,
-	SHADOW,
-	SSAO,
-};
-
-enum class eDepthStencilView
-{
-	DEFALT = 0,
-	SHADOW
-};
-
-enum class eRenderTarget
-{
-	BACK_BUFFER,
-
-};
-
-enum class eBuffer
-{
-	SCREEN,
-	SSAO
-};
-
-enum class eRenderType
-{
-	MESH,
-	SKIN,
-	TERRAIN
+	CB,			// Constant Buffer Resource
+	SRV,		// Shader Resource View Resource
+	UAV,		// Unordered Access View Resource
+	DSV,		// Depth Stencil View Resource
+	DSS,		// Depth Stencil State Resource
+	SS,			// Sampler State Resource
+	RS,			// Rasterizer State Resource
+	BS,			// Blend State Resource
+	RT,			// RenderTarget Resource
+	VP,			// ViewPort Resource
 };

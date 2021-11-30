@@ -3,7 +3,7 @@
 #include "DepthStencilView.h"
 
 DepthStencilView::DepthStencilView(ID3D11DepthStencilView** dsv)
-	:m_DSV(*dsv)
+	:Texture2D(eResourceType::DSV), m_DSV(*dsv)
 {
 
 }
@@ -43,17 +43,17 @@ D3D11_TEXTURE2D_DESC DepthStencilView::GetTextureDesc()
 	return texDesc;
 }
 
-ID3D11DepthStencilView* DepthStencilView::GetDSV()
+ID3D11DepthStencilView* DepthStencilView::Get()
 {
 	return m_DSV.Get();
 }
 
-ID3D11DepthStencilView** DepthStencilView::GetAddressDSV()
+ID3D11DepthStencilView** DepthStencilView::GetAddress()
 {
 	return m_DSV.GetAddressOf();
 }
 
-D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilView::GetDSVDesc()
+D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilView::GetDesc()
 {
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	m_DSV->GetDesc(&dsvDesc);

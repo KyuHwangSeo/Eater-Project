@@ -4,9 +4,9 @@
 #include "ComputeRenderTarget.h"
 
 ComputeRenderTarget::ComputeRenderTarget(ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav)
-	:RenderTarget(eRenderTargetType::COMPUTE, rtv), m_UAV(*uav)
+	:RenderTarget(eRenderTargetType::COMPUTE, rtv)
 {
-
+	if (uav) m_UAV = *uav;
 }
 
 ComputeRenderTarget::~ComputeRenderTarget()

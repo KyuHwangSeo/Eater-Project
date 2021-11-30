@@ -2,7 +2,7 @@
 #include "HashBase.h"
 
 #define ADD_UNORDERED_ACCESS_VIEW(ClassName) static bool uav_##ClassName = ShaderResourceHashTable::Get()->Push(eResourceType::UAV, #ClassName, typeid(ClassName).hash_code());
-#define UNORDERED_ACCESS_VIEW(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_UNORDERED_ACCESS_VIEW(ClassName)
+#define UNORDERED_ACCESS_VIEW(ClassName) CREATE_EMPTY_CLASS(ClassName, UAV_Resource) ADD_UNORDERED_ACCESS_VIEW(ClassName)
 
 /// <summary>
 /// UnorderedAccessView Resource Struct

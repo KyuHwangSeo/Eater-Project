@@ -35,7 +35,7 @@ void DeferredPass::Create(int width, int height)
 	
 	// DepthStencilView 설정..
 	m_DSV = g_Resource->GetDepthStencilView(eDepthStencilView::DEFALT);
-	m_DepthStencilView = m_DSV->GetDSV();
+	m_DepthStencilView = m_DSV->Get();
 
 	m_DepthStencilState = g_Resource->GetDepthStencilState(eDepthStencilState::DEFALT);
 	m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::SOLID);
@@ -154,7 +154,7 @@ void DeferredPass::Start()
 void DeferredPass::OnResize(int width, int height)
 {
 	// DepthStencilView 재설성..
-	m_DepthStencilView = m_DSV->GetDSV();
+	m_DepthStencilView = m_DSV->Get();
 	
 	// ShaderResourceView List 재설정..
 	m_SRVList[0] = m_AlbedoRT->GetSRV();
