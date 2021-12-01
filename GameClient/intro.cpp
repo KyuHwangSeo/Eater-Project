@@ -16,7 +16,7 @@ void intro::Awake()
 	LoadMeshPath("../Resources/Mesh/");
 	LoadTesturePath("../Resources/Texture/");
 	
-	//LoadMesh("Player_Idle");
+	LoadMesh("Player_Idle");
 	//LoadMesh("EnemyB");
 	//LoadMesh("Field");
 	//LoadMesh("Table");
@@ -29,8 +29,8 @@ void intro::Awake()
 	//LoadMesh("Skinning");
 	//LoadMesh("Enemy_Run",false,false);
 	//LoadMesh("Enemy_Roll",false,true);
-	LoadMesh("Anim_Run",false,false);
-	LoadMesh("Anim_Idle",false,true);
+	//LoadMesh("Anim_Run",false,false);
+	//LoadMesh("Anim_Idle",false,true);
 	//LoadMesh("Anim_Idle",false,true);
 	//LoadMesh("box");
 	//LoadMesh("AnimeBox");
@@ -57,9 +57,9 @@ void intro::Awake()
 	testobj = Instance("obj1");
 	MeshFilter* Filter = testobj->AddComponent<MeshFilter>();
 	AnimationController* AC = testobj->AddComponent<AnimationController>();
-	Filter->SetMeshName("Anim_Run");
-	Filter->SetTextureName("Player");
-	Filter->SetAnimationName("Anim");
+	Filter->SetMeshName("Player_Idle");
+	//Filter->SetTextureName("Player");
+	//Filter->SetAnimationName("Anim");
 	//testobj->SetActive(false);
 	
 	testobj->GetTransform()->Position	= { 0 ,0, 0 };

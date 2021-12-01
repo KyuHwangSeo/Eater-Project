@@ -1,19 +1,21 @@
 #include <vector>
 #include "DirectDefine.h"
 #include "D3D11Graphic.h"
+#include "GraphicState.h"
+#include "BufferData.h"
 #include "ViewPort.h"
 #include "Texture2D.h"
 #include "DepthStencilView.h"
 #include "RenderTargetBase.h"
 #include "BasicRenderTarget.h"
 #include "ComputeRenderTarget.h"
-#include "ResourceManager.h"
 #include "ShaderBase.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "ComputeShader.h"
-#include "ShaderManager.h"
 #include "ShaderTypes.h"
+#include "ShaderManager.h"
+#include "ResourceManager.h"
 #include "ResourceFactory.h"
 
 #include "VertexDefine.h"
@@ -23,6 +25,9 @@
 #include "DepthStencilStateDefine.h"
 #include "DepthStencilViewDefine.h"
 #include "RasterizerStateDefine.h"
+#include "BufferDataDefine.h"
+#include "ViewPortDefine.h"
+
 
 using namespace DirectX::SimpleMath;
 
@@ -30,7 +35,7 @@ GraphicResourceFactory::GraphicResourceFactory(D3D11Graphic* graphic)
 {
 	// Graphic Resource & Shader Manager 积己..
 	m_ShaderManager = new ShaderManager();
-	m_ResourceManager = new GraphicResourceManager();
+	m_ResourceManager = new GraphicResourceManager(m_ShaderManager);
 
 	m_Device = graphic->GetDevice();
 	m_Context = graphic->GetContext();
@@ -41,7 +46,7 @@ GraphicResourceFactory::GraphicResourceFactory(ID3D11Device** device, ID3D11Devi
 {
 	// Graphic Resource & Shader Manager 积己..
 	m_ShaderManager = new ShaderManager();
-	m_ResourceManager = new GraphicResourceManager();
+	m_ResourceManager = new GraphicResourceManager(m_ShaderManager);
 
 	m_Device = *device;
 	m_Context = *context;
@@ -54,15 +59,6 @@ GraphicResourceFactory::~GraphicResourceFactory()
 
 void GraphicResourceFactory::Initialize(int width, int height)
 {
-	// Shader Manager 檬扁拳..
-	m_ShaderManager->Initialize(m_Device, m_Context);
-
-	// Graphic Resource Manager 檬扁拳..
-	m_ResourceManager->Initialize(m_Device, nullptr);
-
-	// Shader Hash Table Reset..
-	ShaderResourceHashTable::Get()->Destroy();
-
 	// Back Buffer 积己..
 	//CreateMainRenderTarget(width, height);
 
@@ -78,6 +74,15 @@ void GraphicResourceFactory::Initialize(int width, int height)
 	// FullScreen Buffer..
 	CreateQuadBuffer();
 	CreateSSAOQuadBuffer();
+
+	// Shader Manager 檬扁拳..
+	m_ShaderManager->Initialize(m_Device, m_Context);
+
+	// Graphic Resource Manager 檬扁拳..
+	m_ResourceManager->Initialize(m_Device, nullptr);
+
+	// Shader Hash Table Reset..
+	ShaderResourceHashTable::Get()->Destroy();
 }
 
 void GraphicResourceFactory::Release()
@@ -114,65 +119,52 @@ void GraphicResourceFactory::CreateUAV(ID3D11Texture2D* tex2D, D3D11_UNORDERED_A
 	HR(m_Device->CreateUnorderedAccessView(tex2D, uavDesc, uav));
 }
 
-template<typename T>
-void GraphicResourceFactory::CreateDSV(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, ID3D11DepthStencilView** dsv)
+void GraphicResourceFactory::CreateDSV(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> newResource = nullptr;
 
-	if (dsv != nullptr)
-	{
-		// DepthStencilView Resource 积己..
-		HR(m_Device->CreateDepthStencilView(tex2D, dsvDesc, dsv));
-
-		// Resource Point Copy..
-		newResource = *dsv;
-	}
-	else
-	{
-		// DepthStencilView Resource 积己..
-		HR(m_Device->CreateDepthStencilView(tex2D, dsvDesc, newResource.GetAddressOf()));
-	}
+	// DepthStencilView Resource 积己..
+	HR(m_Device->CreateDepthStencilView(tex2D, dsvDesc, newResource.GetAddressOf()));
 
 	// DepthStencilView 积己..
-	DepthStencilView* depthStencilView = new DepthStencilView(newResource.GetAddressOf());
+	DepthStencilView* dsv = new DepthStencilView(newResource.GetAddressOf());
 
 	// Resoure 殿废..
-	m_ResourceManager->AddResource<T>(depthStencilView);
+	m_ResourceManager->AddResource(hash_code, dsv);
 }
 
-template<typename T>
-inline Microsoft::WRL::ComPtr<ID3D11DepthStencilState> GraphicResourceFactory::CreateDSS(D3D11_DEPTH_STENCIL_DESC* dssDesc)
+void GraphicResourceFactory::CreateDSS(Hash_Code hash_code, D3D11_DEPTH_STENCIL_DESC* dssDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> newResource = nullptr;
-	
+
 	// DepthStencilState Resource 积己..
 	HR(m_Device->CreateDepthStencilState(dssDesc, newResource.GetAddressOf()));
 
-	// Resoure 殿废..
-	m_ResourceManager->AddResource<T>(newResource);
+	// DepthStencilState 积己..
+	DepthStencilState* dss = new DepthStencilState(newResource.GetAddressOf());
 
-	return newResource;
+	// Resoure 殿废..
+	m_ResourceManager->AddResource(hash_code, dss);
 }
 
-template<typename T>
-inline Microsoft::WRL::ComPtr<ID3D11RasterizerState> GraphicResourceFactory::CreateRS(D3D11_RASTERIZER_DESC* rsDesc)
+void GraphicResourceFactory::CreateRS(Hash_Code hash_code, D3D11_RASTERIZER_DESC* rsDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> newResource = nullptr;
-	
+
 	// RasterizerState Resource 积己..
 	HR(m_Device->CreateRasterizerState(rsDesc, newResource.GetAddressOf()));
 
-	// Resoure 殿废..
-	m_ResourceManager->AddResource<T>(newResource);
+	// RasterizerState 积己..
+	RasterizerState* rs = new RasterizerState(newResource.GetAddressOf());
 
-	return newResource;
+	// Resoure 殿废..
+	m_ResourceManager->AddResource(hash_code, rs);
 }
 
-template<typename T>
-inline Microsoft::WRL::ComPtr<ID3D11BlendState> GraphicResourceFactory::CreateBS(D3D11_BLEND_DESC* bsDesc)
+void GraphicResourceFactory::CreateBS(Hash_Code hash_code, D3D11_BLEND_DESC* bsDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11BlendState> newResource = nullptr;
@@ -180,14 +172,14 @@ inline Microsoft::WRL::ComPtr<ID3D11BlendState> GraphicResourceFactory::CreateBS
 	// BlendState Resource 积己..
 	HR(m_Device->CreateBlendState(bsDesc, newResource.GetAddressOf()));
 
-	// Resoure 殿废..
-	m_ResourceManager->AddResource<T>(newResource);
+	// BlendState 积己..
+	BlendState* rs = new BlendState(newResource.GetAddressOf());
 
-	return newResource;
+	// Resoure 殿废..
+	m_ResourceManager->AddResource(hash_code, rs);
 }
 
-template<typename T>
-inline Microsoft::WRL::ComPtr<ID3D11SamplerState> GraphicResourceFactory::CreateSS(D3D11_SAMPLER_DESC* ssDesc)
+void GraphicResourceFactory::CreateSS(Hash_Code hash_code, D3D11_SAMPLER_DESC* ssDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> newResource = nullptr;
@@ -195,24 +187,23 @@ inline Microsoft::WRL::ComPtr<ID3D11SamplerState> GraphicResourceFactory::Create
 	// SamplerState Resource 积己..
 	HR(m_Device->CreateSamplerState(ssDesc, newResource.GetAddressOf()));
 
-	// Resoure 殿废..
-	m_ResourceManager->AddResource<T>(newResource);
+	// SamplerState 积己..
+	SamplerState* ss = new SamplerState(newResource.GetAddressOf());
 
-	return newResource;
+	// Resoure 殿废..
+	m_ResourceManager->AddResource(hash_code, ss);
 }
 
-D3D11_VIEWPORT* GraphicResourceFactory::CreateViewPort(float topX, float topY, float width, float height, float width_ratio, float height_ratio)
+void GraphicResourceFactory::CreateViewPort(Hash_Code hash_code, float topX, float topY, float width, float height, float width_ratio /*= 1.0f*/, float height_ratio /*= 1.0f*/)
 {
 	// ViewPort 积己..
 	ViewPort* viewPort = new ViewPort(topX, topY, width, height, width_ratio, height_ratio);
 
 	// Resoure 殿废..
-	m_ResourceManager->AddResource(viewPort);
-
-	return viewPort->GetViewPort();
+	m_ResourceManager->AddResource(hash_code, viewPort);
 }
 
-BasicRenderTarget* GraphicResourceFactory::CreateMainRenderTarget(UINT width, UINT height)
+void GraphicResourceFactory::CreateMainRenderTarget(UINT width, UINT height)
 {
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = nullptr;
@@ -237,22 +228,18 @@ BasicRenderTarget* GraphicResourceFactory::CreateMainRenderTarget(UINT width, UI
 	RESET_COM(tex2D);
 	RESET_COM(rtv);
 	RESET_COM(srv);
-
-	return mainRenderTarget;
 }
 
-BasicRenderTarget* GraphicResourceFactory::CreateBasicRenderTarget(ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv)
+void GraphicResourceFactory::CreateBasicRenderTarget(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv)
 {
 	// Basic RenderTarget 积己..
 	BasicRenderTarget* basicRenderTarget = new BasicRenderTarget(rtv, srv);
 
 	// Resource 殿废..
-	m_ResourceManager->AddResource(basicRenderTarget);
-
-	return basicRenderTarget;
+	m_ResourceManager->AddResource(hash_code, basicRenderTarget);
 }
 
-BasicRenderTarget* GraphicResourceFactory::CreateBasicRenderTarget(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
+void GraphicResourceFactory::CreateBasicRenderTarget(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
 {
 	ComPtr<ID3D11RenderTargetView> rtv = nullptr;
 	ComPtr<ID3D11ShaderResourceView> srv = nullptr;
@@ -264,23 +251,19 @@ BasicRenderTarget* GraphicResourceFactory::CreateBasicRenderTarget(ID3D11Texture
 	BasicRenderTarget* basicRenderTarget = new BasicRenderTarget(rtv.GetAddressOf(), srv.GetAddressOf());
 
 	// Resource 殿废..
-	m_ResourceManager->AddResource(basicRenderTarget);
-
-	return basicRenderTarget;
+	m_ResourceManager->AddResource(hash_code, basicRenderTarget);
 }
 
-ComputeRenderTarget* GraphicResourceFactory::CreateComputeRenderTarget(ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav)
+void GraphicResourceFactory::CreateComputeRenderTarget(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav)
 {
 	// Compute RenderTarget 积己..
 	ComputeRenderTarget* computeRenderTarget = new ComputeRenderTarget(rtv, uav);
 
 	// Resource 殿废..
-	m_ResourceManager->AddResource(computeRenderTarget);
-
-	return computeRenderTarget;
+	m_ResourceManager->AddResource(hash_code, computeRenderTarget);
 }
 
-ComputeRenderTarget* GraphicResourceFactory::CreateComputeRenderTarget(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
+void GraphicResourceFactory::CreateComputeRenderTarget(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
 {
 	ComPtr<ID3D11RenderTargetView> rtv = nullptr;
 	ComPtr<ID3D11UnorderedAccessView> uav = nullptr;
@@ -292,9 +275,7 @@ ComputeRenderTarget* GraphicResourceFactory::CreateComputeRenderTarget(ID3D11Tex
 	ComputeRenderTarget* computeRenderTarget = new ComputeRenderTarget(rtv.GetAddressOf(), uav.GetAddressOf());
 
 	// Resource 殿废..
-	m_ResourceManager->AddResource(computeRenderTarget);
-
-	return computeRenderTarget;
+	m_ResourceManager->AddResource(hash_code, computeRenderTarget);
 }
 
 Vertexbuffer* GraphicResourceFactory::CreateVertexBuffer(ParserData::Mesh* mesh)
@@ -379,12 +360,12 @@ TextureBuffer* GraphicResourceFactory::CreateTextureBuffer(std::string path)
 	return tBuffer;
 }
 
-ShaderManager* GraphicResourceFactory::GetShaderManager()
+IShaderManager* GraphicResourceFactory::GetShaderManager()
 {
 	return m_ShaderManager;
 }
 
-GraphicResourceManager* GraphicResourceFactory::GetResourceManager()
+IGraphicResourceManager* GraphicResourceFactory::GetResourceManager()
 {
 	return m_ResourceManager;
 }
@@ -559,7 +540,7 @@ void GraphicResourceFactory::CreateDepthStencilState()
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Defalt DepthStencilState 积己..
-	CreateDSS<DSS_Defalt>(&depthStencilDesc);
+	IGraphicResourceFactory::CreateDSS<DSS_Defalt>(&depthStencilDesc);
 
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
@@ -582,7 +563,7 @@ void GraphicResourceFactory::CreateDepthStencilState()
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// NoDepth DepthStencilState 积己..
-	CreateDSS<DSS_NoDepth>(&depthStencilDesc);
+	IGraphicResourceFactory::CreateDSS<DSS_NoDepth>(&depthStencilDesc);
 }
 
 void GraphicResourceFactory::CreateRasterizerState()
@@ -602,7 +583,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.ScissorEnable = false;
 
 	// Solid RasterizerState 积己..
-	CreateRS<RS_Solid>(&rasterizerDesc);
+	IGraphicResourceFactory::CreateRS<RS_Solid>(&rasterizerDesc);
 
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
@@ -618,7 +599,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.ScissorEnable = false;
 
 	// WireFrame RasterizerState 积己..
-	CreateRS<RS_WireFrame>(&rasterizerDesc);
+	IGraphicResourceFactory::CreateRS<RS_WireFrame>(&rasterizerDesc);
 
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -627,7 +608,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.DepthClipEnable = true;
 
 	// NoCull RasterizerState 积己..
-	CreateRS<RS_CullNone>(&rasterizerDesc);
+	IGraphicResourceFactory::CreateRS<RS_CullNone>(&rasterizerDesc);
 
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -639,7 +620,7 @@ void GraphicResourceFactory::CreateRasterizerState()
 	rasterizerDesc.SlopeScaledDepthBias = 0.005f;
 
 	// Depth RasterizerState 积己..
-	CreateRS<RS_Depth>(&rasterizerDesc);
+	IGraphicResourceFactory::CreateRS<RS_Depth>(&rasterizerDesc);
 }
 
 void GraphicResourceFactory::CreateSamplerState()
@@ -655,7 +636,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samClampMinLinear SamplerState 积己..
-	m_ShaderManager->AddSampler<samClampMinLinear>(CreateSS<samClampMinLinear>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<samClampMinLinear>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -667,7 +648,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samWrapAnisotropic SamplerState 积己..
-	m_ShaderManager->AddSampler<samWrapAnisotropic>(CreateSS<samWrapAnisotropic>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<samWrapAnisotropic>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -680,7 +661,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samWrapMinLinear SamplerState 积己..
-	m_ShaderManager->AddSampler<samWrapMinLinear>(CreateSS<samWrapMinLinear>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<samWrapMinLinear>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -692,7 +673,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samMirrorMinLinear SamplerState 积己..
-	m_ShaderManager->AddSampler<samMirrorMinLinear>(CreateSS<samMirrorMinLinear>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<samMirrorMinLinear>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -704,7 +685,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samClampMinLinearPoint SamplerState 积己..
-	m_ShaderManager->AddSampler<samClampMinLinearPoint>(CreateSS<samClampMinLinearPoint>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<samClampMinLinearPoint>(&samplerDesc);
 	
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -717,7 +698,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samBorderLinerPoint SamplerState 积己..
-	m_ShaderManager->AddSampler<samBorderLinerPoint>(CreateSS<samBorderLinerPoint>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<samBorderLinerPoint>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -728,7 +709,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samWrapLinerPoint SamplerState 积己..
-	m_ShaderManager->AddSampler<samWrapLinerPoint>(CreateSS<samWrapLinerPoint>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<samWrapLinerPoint>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
@@ -740,7 +721,7 @@ void GraphicResourceFactory::CreateSamplerState()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// gShadowSam SamplerState 积己..
-	m_ShaderManager->AddSampler<gShadowSam>(CreateSS<gShadowSam>(&samplerDesc));
+	IGraphicResourceFactory::CreateSS<gShadowSam>(&samplerDesc);
 }
 
 void GraphicResourceFactory::CreateBlendState()
@@ -759,7 +740,7 @@ void GraphicResourceFactory::CreateBlendState()
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	// Blending First RenderTarget BlendState 积己..
-	CreateBS<BS_AlphaBlend>(&blendDesc);
+	IGraphicResourceFactory::CreateBS<BS_AlphaBlend>(&blendDesc);
 }
 
 void GraphicResourceFactory::CreateDepthStencilView(int width, int height)
@@ -784,7 +765,7 @@ void GraphicResourceFactory::CreateDepthStencilView(int width, int height)
 	CreateTexture2D(&texDesc, tex2D.GetAddressOf());
 
 	// Defalt DepthStencilView 积己..
-	CreateDSV<DSV_Defalt>(tex2D.Get(), nullptr, nullptr);
+	IGraphicResourceFactory::CreateDSV<DSV_Defalt>(tex2D.Get(), nullptr);
 
 	RESET_COM(tex2D);
 }
@@ -792,7 +773,7 @@ void GraphicResourceFactory::CreateDepthStencilView(int width, int height)
 void GraphicResourceFactory::CreateViewPort(int width, int height)
 {
 	// Defalt ViewPort 积己..
-	CreateViewPort(0.0f, 0.0f, (float)width, (float)height);
+	IGraphicResourceFactory::CreateViewPort<VP_FullScreen>(0.0f, 0.0f, (float)width, (float)height);
 }
 
 void GraphicResourceFactory::CreateQuadBuffer()
@@ -846,7 +827,7 @@ void GraphicResourceFactory::CreateQuadBuffer()
 	HR(m_Device->CreateBuffer(&ibd, &iinitData, &newBuf->IB));
 
 	// Resource 殿废..
-	m_ResourceManager->AddResource(newBuf);
+	m_ResourceManager->AddResource<BD_FullScreen>(newBuf);
 }
 
 void GraphicResourceFactory::CreateSSAOQuadBuffer()
@@ -907,5 +888,5 @@ void GraphicResourceFactory::CreateSSAOQuadBuffer()
 	HR(m_Device->CreateBuffer(&ibd, &iinitData, &newBuf->IB));
 
 	// Resource 殿废..
-	m_ResourceManager->AddResource(newBuf);
+	m_ResourceManager->AddResource<BD_SSAOScreen>(newBuf);
 }

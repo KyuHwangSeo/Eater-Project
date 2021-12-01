@@ -14,10 +14,15 @@
 
 #include "VertexDefine.h"
 #include "ConstantBufferDefine.h"
-#include "ShaderResourceBufferDefine.h"
 #include "ResourceFactoryBase.h"
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
+#include "ShaderResourceBufferDefine.h"
+#include "DepthStencilViewDefine.h"
+#include "DepthStencilStateDefine.h"
+#include "ViewPortDefine.h"
+#include "RenderTargetDefine.h"
+#include "RasterizerStateDefine.h"
 
 ShadowPass::ShadowPass()
 	:m_ShadowDSV(nullptr), m_ShadowSRV(nullptr)
@@ -32,7 +37,7 @@ ShadowPass::~ShadowPass()
 void ShadowPass::Create(int width, int height)
 {
 	// ViewPort 설정..
-	m_ShadowViewport = g_Factory->CreateViewPort(0.0f, 0.0f, (float)width, (float)height, 4.0f, 4.0f);
+	g_Factory->CreateViewPort<VP_Shadow>(0.0f, 0.0f, (float)width, (float)height, 4.0f, 4.0f);
 
 	// DepthStencilView 설정..
 	D3D11_TEXTURE2D_DESC texDesc;
@@ -61,7 +66,7 @@ void ShadowPass::Create(int width, int height)
 	dsvDesc.Texture2D.MipSlice = 0;
 
 	// Shadow DepthStencilView 생성..
-	g_Factory->CreateDSV(tex2D.Get(), &dsvDesc, nullptr);
+	g_Factory->CreateDSV<DSV_Shadow>(tex2D.Get(), &dsvDesc);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
@@ -73,10 +78,7 @@ void ShadowPass::Create(int width, int height)
 	g_Factory->CreateSRV(tex2D.Get(), &srvDesc, &m_ShadowSRV);
 
 	// RenderTarget 생성..
-	m_ShadowRT = g_Factory->CreateBasicRenderTarget(nullptr, &m_ShadowSRV);
-	m_ShadowRT->SetRatio(4.0f, 4.0f);
-
-
+	g_Factory->CreateBasicRenderTarget<RT_Shadow>(nullptr, &m_ShadowSRV);
 
 	// Texture2D Resource Reset..
 	RESET_COM(tex2D);
@@ -88,11 +90,13 @@ void ShadowPass::Start()
 	m_MeshShadowVS = g_Shader->GetShader("ShadowMeshVS");
 	m_SkinShadowVS = g_Shader->GetShader("ShadowSkinVS");
 	m_ForwardPS = g_Shader->GetShader("ForwardPS");
+	
+	m_ShadowRT = g_Resource->GetRenderTarget<RT_Shadow>();
+	m_ShadowRT->SetRatio(4.0f, 4.0f);
+	m_ShadowViewport = g_Resource->GetViewPort<VP_Shadow>();
+	m_RasterizerState = g_Resource->GetRasterizerState<RS_Depth>();
 
-	m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::DEPTH);
-
-
-	m_ShadowDepthStencilView = g_Resource->GetDepthStencilView(eDepthStencilView::SHADOW);
+	m_ShadowDepthStencilView = g_Resource->GetDepthStencilView<DSV_Shadow>();
 	m_ShadowDepthStencilView->SetRatio(4.0f, 4.0f);
 
 	// Shadow DepthStencilView 설정..

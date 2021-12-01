@@ -17,6 +17,10 @@
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
 #include "ShaderResourceBufferDefine.h"
+#include "DepthStencilStateDefine.h"
+#include "DepthStencilViewDefine.h"
+#include "RasterizerStateDefine.h"
+#include "BlendStateDefine.h"
 
 ForwardPass::ForwardPass()
 {
@@ -30,22 +34,9 @@ ForwardPass::~ForwardPass()
 
 void ForwardPass::Create(int width, int height)
 {
-	// Shader 설정..
-	m_MeshVS = g_Shader->GetShader("MeshVS");
-	m_SkinVS = g_Shader->GetShader("SkinVS");
-	m_ForwardPS = g_Shader->GetShader("ForwardPS");
-
-	// DepthStencilView 설정..
-	m_DSV = g_Resource->GetDepthStencilView(eDepthStencilView::DEFALT);
-	m_DepthStencilView = m_DSV->Get();
-	
-	m_DepthStencilState = g_Resource->GetDepthStencilState(eDepthStencilState::DEFALT);
-	m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::SOLID);
-	m_BlendState = g_Resource->GetBlendState(eBlendState::BLEND_ONE);
-
 	// ViewPort 설정..
 	//m_ScreenViewport = g_Resource->GetViewPort(eViewPort::SCREEN);
-
+	
 	// BackBuffer 생성..
 	//m_BackBuffer = g_Resource->GetMainRenderTarget();
 	//m_BackBufferRTV = m_BackBuffer->GetRTV();
@@ -54,7 +45,18 @@ void ForwardPass::Create(int width, int height)
 
 void ForwardPass::Start()
 {
+	// Shader 설정..
+	m_MeshVS = g_Shader->GetShader("MeshVS");
+	m_SkinVS = g_Shader->GetShader("SkinVS");
+	m_ForwardPS = g_Shader->GetShader("ForwardPS");
 
+	// DepthStencilView 설정..
+	m_DSV = g_Resource->GetDepthStencilView<DSV_Defalt>();
+	m_DepthStencilView = m_DSV->Get();
+
+	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>();
+	m_RasterizerState = g_Resource->GetRasterizerState<RS_Solid>();
+	m_BlendState = g_Resource->GetBlendState<BS_AlphaBlend>();
 }
 
 void ForwardPass::OnResize(int width, int height)

@@ -184,6 +184,8 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BlendStateDefine.h" />
+    <ClInclude Include="BufferData.h" />
+    <ClInclude Include="BufferDataDefine.h" />
     <ClInclude Include="DepthStencilStateDefine.h" />
     <ClInclude Include="DepthStencilViewDefine.h" />
     <ClInclude Include="GraphicState.h" />
@@ -224,7 +226,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShaderManagerBase.h" />
     <ClInclude Include="ShaderResourceBase.h" />
-    <ClInclude Include="ResourceBufferHashTable.h" />
+    <ClInclude Include="ShaderResourceHashTable.h" />
     <ClInclude Include="ShaderResourceBufferDefine.h" />
     <ClInclude Include="ShaderTypes.h" />
     <ClInclude Include="ShadowPass.h" />
@@ -237,6 +239,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="ViewPortDefine.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BufferData.cpp" />
     <ClCompile Include="ComputeRenderTarget.cpp" />
     <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="D3D11Graphic.cpp" />
@@ -257,7 +260,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="ResourceBufferHashTable.cpp" />
+    <ClCompile Include="ShaderResourceHashTable.cpp" />
     <ClCompile Include="ShaderTypes.cpp" />
     <ClCompile Include="ShadowPass.cpp" />
     <ClCompile Include="VertexShader.cpp" />

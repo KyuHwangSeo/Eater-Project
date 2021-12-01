@@ -1,11 +1,11 @@
 #pragma once
 #include "ResourceFactoryBase.h"
+#include "HashBase.h"
 
 class D3D11Graphic;
-class ShaderManager;
-class GraphicResourceManager;
 class BasicRenderTarget;
 class ComputeRenderTarget;
+
 class GraphicResourceFactory : public IGraphicResourceFactory
 {
 public:
@@ -17,35 +17,35 @@ public:
 	void Initialize(int width, int height) override;
 	void Release() override;
 
-	void CreateTexture2D(D3D11_TEXTURE2D_DESC* texDesc, ID3D11Texture2D** tex2D);
-	void CreateRTV(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, ID3D11RenderTargetView** rtv);
-	void CreateSRV(ID3D11Texture2D* tex2D, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, ID3D11ShaderResourceView** srv);
-	void CreateUAV(ID3D11Texture2D* tex2D, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc, ID3D11UnorderedAccessView** uav);
-	template<typename T> void CreateDSV(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, ID3D11DepthStencilView** dsv);
-
-	template<typename T> Microsoft::WRL::ComPtr<ID3D11DepthStencilState> CreateDSS(D3D11_DEPTH_STENCIL_DESC* dssDesc);
-	template<typename T> Microsoft::WRL::ComPtr<ID3D11RasterizerState> CreateRS(D3D11_RASTERIZER_DESC* rsDesc);
-	template<typename T> Microsoft::WRL::ComPtr<ID3D11BlendState> CreateBS(D3D11_BLEND_DESC* bsDesc);
-	template<typename T> Microsoft::WRL::ComPtr<ID3D11SamplerState> CreateSS(D3D11_SAMPLER_DESC* ssDesc);
-
-	D3D11_VIEWPORT* CreateViewPort(float topX, float topY, float width, float height, float width_ratio = 1.0f, float height_ratio = 1.0f);
+	void CreateTexture2D(D3D11_TEXTURE2D_DESC* texDesc, ID3D11Texture2D** tex2D) override;
+	void CreateRTV(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, ID3D11RenderTargetView** rtv) override;
+	void CreateSRV(ID3D11Texture2D* tex2D, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, ID3D11ShaderResourceView** srv) override;
+	void CreateUAV(ID3D11Texture2D* tex2D, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc, ID3D11UnorderedAccessView** uav) override;
 
 public:
-	BasicRenderTarget* CreateMainRenderTarget(UINT width, UINT height);
+	void CreateMainRenderTarget(UINT width, UINT height) override;
 
-	BasicRenderTarget* CreateBasicRenderTarget(ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv);
-	BasicRenderTarget* CreateBasicRenderTarget(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc);
+public:
+	void CreateDSV(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc) override;
+	void CreateDSS(Hash_Code hash_code, D3D11_DEPTH_STENCIL_DESC* dssDesc) override;
+	void CreateRS(Hash_Code hash_code, D3D11_RASTERIZER_DESC* rsDesc) override;
+	void CreateBS(Hash_Code hash_code, D3D11_BLEND_DESC* bsDesc) override;
+	void CreateSS(Hash_Code hash_code, D3D11_SAMPLER_DESC* ssDesc) override;
+	void CreateViewPort(Hash_Code hash_code, float topX, float topY, float width, float height, float width_ratio = 1.0f, float height_ratio = 1.0f) override;
 
-	ComputeRenderTarget* CreateComputeRenderTarget(ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav);
-	ComputeRenderTarget* CreateComputeRenderTarget(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc);
+	void CreateBasicRenderTarget(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv) override;
+	void CreateBasicRenderTarget(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) override;
+	void CreateComputeRenderTarget(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav) override;
+	void CreateComputeRenderTarget(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) override;
 
+public:
 	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
 	Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mesh) override;
 	TextureBuffer* CreateTextureBuffer(std::string path) override;
 
 public:
-	ShaderManager* GetShaderManager();
-	GraphicResourceManager* GetResourceManager();
+	IShaderManager* GetShaderManager();
+	IGraphicResourceManager* GetResourceManager();
 
 private:
 	template<typename T>
@@ -67,8 +67,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_Context;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
 
-	ShaderManager* m_ShaderManager;
-	GraphicResourceManager* m_ResourceManager;
+	IShaderManager* m_ShaderManager;
+	IGraphicResourceManager* m_ResourceManager;
 };
 
 struct MeshVertex;

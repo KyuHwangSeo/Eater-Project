@@ -1,21 +1,6 @@
 #pragma once
 #include "SimpleMath.h"
 
-class BufferData
-{
-public:
-	BufferData() : VB(nullptr), IB(nullptr), IndexCount(0), Stride(0), Offset(0) {}
-	~BufferData() { RESET_COM(VB); RESET_COM(IB); }
-
-public:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> VB;		// Vertex Buffer
-	Microsoft::WRL::ComPtr<ID3D11Buffer> IB;		// Index Buffer
-
-	UINT IndexCount;		// Index Count
-	UINT Stride;			// Vertex Struct Size
-	UINT Offset;			// Offset
-};
-
 struct MeshVertex
 {
 	DirectX::SimpleMath::Vector3 Pos;

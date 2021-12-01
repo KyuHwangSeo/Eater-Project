@@ -5,15 +5,17 @@
 /// 해당 Class의 Type을 반영하여 원본 Class Operator를 통해 여러가지 타입으로 반환
 /// </summary>
 
-class GraphicResourceManager;
+interface IGraphicResourceManager;
+
+class RenderTarget;
 class BasicRenderTarget;
 class ComputeRenderTarget;
 
 class OriginalRenderTarget
 {
 public:
-	GraphicResourceManager* pThis;
-	eRenderTarget state;
+	IGraphicResourceManager* pThis;
+	size_t hash_code;
 
 public:
 	operator BasicRenderTarget* ();

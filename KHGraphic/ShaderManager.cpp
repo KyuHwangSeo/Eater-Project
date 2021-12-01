@@ -6,7 +6,7 @@
 #include "windows.h"
 #include "ShaderManagerBase.h"
 #include "ShaderManager.h"
-#include "ResourceBufferHashTable.h"
+#include "ShaderResourceHashTable.h"
 
 using namespace Microsoft::WRL;
 
@@ -141,6 +141,27 @@ void ShaderManager::CreateShader()
 	//// Screen Blur Shader
 	//LoadShader(eShaderType::COMPUTE, "HorizonBlurCS.cso");
 	//LoadShader(eShaderType::COMPUTE, "VerticalBlurCS.cso");
+}
+
+void ShaderManager::AddSampler(Hash_Code hash_code, ID3D11SamplerState** sampler)
+{
+	for (std::pair<std::string, ShaderBase*> shader : m_ShaderList)
+	{
+		ShaderBase* pShader = shader.second;
+
+		switch (pShader->GetType())
+		{
+		case eShaderType::VERTEX:
+		case eShaderType::PIXEL:
+		case eShaderType::COMPUTE:
+		{
+			pShader->SetSamplerState(hash_code, sampler);
+		}
+		break;
+		default:
+			break;
+		}
+	}
 }
 
 ShaderBase* ShaderManager::LoadShader(eShaderType shaderType, std::string shaderName)

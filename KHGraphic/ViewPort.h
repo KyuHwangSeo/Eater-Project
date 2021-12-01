@@ -19,7 +19,7 @@ public:
 public:
 	void OnResize(int width, int height);
 
-	D3D11_VIEWPORT* GetViewPort();
+	D3D11_VIEWPORT* Get();
 
 private:
 	D3D11_VIEWPORT* m_ViewPort;

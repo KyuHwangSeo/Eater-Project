@@ -1,13 +1,11 @@
 #pragma once
 #include "HashBase.h"
 
-#define RASTERIZER_STATE(ClassName) CREATE_EMPTY_CLASS(ClassName, RS_Resource)
+#define BUFFER_DATA(ClassName) CREATE_EMPTY_CLASS(ClassName, BD_Resource)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Global Rasterizer State
+// Global BufferData
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-RASTERIZER_STATE(RS_Solid)
-RASTERIZER_STATE(RS_WireFrame)
-RASTERIZER_STATE(RS_CullNone)
-RASTERIZER_STATE(RS_Depth)
+BUFFER_DATA(BD_FullScreen)
+BUFFER_DATA(BD_SSAOScreen)

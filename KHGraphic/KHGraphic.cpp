@@ -30,7 +30,7 @@ void KHGraphic::Initialize(HWND hwnd, int screenWidth, int screenHeight)
 	m_ResourceFactory->Initialize(screenWidth, screenHeight);
 
 	// Render Manager 생성 및 초기화..
-	m_RenderManager = new RenderManager(graphic, m_ResourceFactory);
+	m_RenderManager = new RenderManager(graphic, (GraphicResourceFactory*)m_ResourceFactory);
 	m_RenderManager->Initialize(screenWidth, screenHeight);
 }
 
@@ -97,7 +97,7 @@ GRAPHIC_DLL void KHGraphic::SetDevice(void* Devie, void* DevieContext)
 	m_ResourceFactory = new GraphicResourceFactory(device, context);
 
 	// Render Manager 생성 및 초기화..
-	m_RenderManager = new RenderManager(nullptr, m_ResourceFactory);
+	m_RenderManager = new RenderManager(nullptr, (GraphicResourceFactory*)m_ResourceFactory);
 
 	RenderPassBase::g_Context = *context;
 }

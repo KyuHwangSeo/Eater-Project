@@ -29,4 +29,4 @@ SAMPLER_STATE(samClampMinLinearPoint)
 SAMPLER_STATE(samMirrorMinLinear)
 
 /// Resource Hash 재등록 방지 Define
-RESOURCE_DEFINE(DEFINE_SAMPLER)
+RESOURCE_DEFINE(DEFINE_SS)

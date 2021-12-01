@@ -62,6 +62,18 @@ void ShaderBase::Release()
 	m_SRVList.clear();
 }
 
+void ShaderBase::SetSamplerState(Hash_Code hash_code, ID3D11SamplerState** sampler)
+{
+	// 해당 Value 찾기..
+	std::unordered_map<Hash_Code, SamplerBuffer*>::iterator it = m_SamplerList.find(hash_code);
+
+	// 해당 Key에 대한 Value가 없다면..
+	if (it == m_SamplerList.end()) return;
+
+	// 해당 Register Slot에 삽입..
+	m_SamplerStates[it->second->register_number] = *sampler;
+}
+
 eShaderType ShaderBase::GetType()
 {
 	return m_ShaderType;

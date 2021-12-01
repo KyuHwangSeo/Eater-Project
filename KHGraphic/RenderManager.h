@@ -9,7 +9,7 @@ class LightPass;
 class RenderManager : public IRenderManager
 {
 public:
-	RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* factory);
+	RenderManager(D3D11Graphic* graphic, GraphicResourceFactory* factory);
 	~RenderManager();
 
 public:

@@ -67,8 +67,7 @@ public:
 	virtual void Release();
 
 	// Shader SamplerState 설정..
-	template<typename T>
-	void SetSamplerState(ID3D11SamplerState** sampler);
+	void SetSamplerState(Hash_Code hash_code, ID3D11SamplerState** sampler);
 
 	// Shader ConstantBuffer Resource Update..
 	template<typename T>
@@ -105,19 +104,6 @@ private:
 	// 현재 Shader Type..
 	eShaderType m_ShaderType;
 };
-
-template<typename T>
-inline void ShaderBase::SetSamplerState(ID3D11SamplerState** sampler)
-{
-	// 해당 Value 찾기..
-	std::unordered_map<Hash_Code, SamplerBuffer*>::iterator it = m_SamplerList.find(typeid(T).hash_code());
-
-	// 해당 Key에 대한 Value가 없다면..
-	if (it == m_SamplerList.end()) return;
-
-	// 해당 Register Slot에 삽입..
-	m_SamplerStates[it->second->register_number] = *sampler;
-}
 
 template<typename T>
 inline void ShaderBase::SetConstantBuffer(T cBuffer)

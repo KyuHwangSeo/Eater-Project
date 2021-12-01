@@ -1,8 +1,13 @@
 #include "DirectDefine.h"
 #include "D3D11Graphic.h"
-#include "ResourceFactoryBase.h"
+#include "GraphicState.h"
+#include "BufferData.h"
+#include "ViewPort.h"
+#include "Texture2D.h"
+#include "DepthStencilView.h"
 #include "ShaderManagerBase.h"
-#include "ResourceManagerBase.h"
+#include "ResourceFactory.h"
+#include "ResourceManager.h"
 #include "RenderPassBase.h"
 #include "RenderManager.h"
 
@@ -18,7 +23,7 @@
 #include "LightPass.h"
 #include "VertexDefine.h"
 
-RenderManager::RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* factory)
+RenderManager::RenderManager(D3D11Graphic* graphic, GraphicResourceFactory* factory)
 {
 	// Rendering Initialize..
 	RenderPassBase::Initialize(nullptr, factory, factory->GetResourceManager(), factory->GetShaderManager());

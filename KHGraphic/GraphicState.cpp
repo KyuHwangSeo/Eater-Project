@@ -9,7 +9,12 @@ DepthStencilState::DepthStencilState(ID3D11DepthStencilState** dss)
 
 DepthStencilState::~DepthStencilState()
 {
+	Reset();
+}
 
+void DepthStencilState::Reset()
+{
+	RESET_COM(m_DSS);
 }
 
 ID3D11DepthStencilState* DepthStencilState::Get()
@@ -30,7 +35,12 @@ RasterizerState::RasterizerState(ID3D11RasterizerState** rs)
 
 RasterizerState::~RasterizerState()
 {
+	Reset();
+}
 
+void RasterizerState::Reset()
+{
+	RESET_COM(m_RS);
 }
 
 ID3D11RasterizerState* RasterizerState::Get()
@@ -51,7 +61,12 @@ BlendState::BlendState(ID3D11BlendState** bs)
 
 BlendState::~BlendState()
 {
+	Reset();
+}
 
+void BlendState::Reset()
+{
+	RESET_COM(m_BS);
 }
 
 ID3D11BlendState* BlendState::Get()
@@ -72,12 +87,16 @@ SamplerState::SamplerState(ID3D11SamplerState** ss)
 
 SamplerState::~SamplerState()
 {
+	Reset();
+}
 
+void SamplerState::Reset()
+{
+	RESET_COM(m_SS);
 }
 
 ID3D11SamplerState* SamplerState::Get()
 {
-
 	return m_SS.Get();
 }
 

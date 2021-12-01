@@ -2,7 +2,7 @@
 #include "ShaderBase.h"
 #include "PixelShader.h"
 
-#include "ResourceBufferHashTable.h"
+#include "ShaderResourceHashTable.h"
 #include "CompilerDefine.h"
 #include <sstream>
 #include <fstream>
@@ -70,7 +70,7 @@ void PixelShader::LoadShader(std::string fileName)
 			cbuffer_register_slot = bindDesc.BindPoint;
 
 			// Key (Constant Buffer HashCode) && Value (Register Slot, Constant Buffer)
-			m_ConstantBufferList.insert(std::make_pair(hash_key, new ConstantBuffer(bindDesc.Name, cbuffer_register_slot, hash_key, &cBuffer)));
+			m_ConstantBufferList.insert(std::make_pair(hash_key, new ConstantBuffer(bindDesc.Name, cbuffer_register_slot, &cBuffer)));
 		}
 	}
 
@@ -93,7 +93,7 @@ void PixelShader::LoadShader(std::string fileName)
 			srv_register_slot = bindDesc.BindPoint;
 			
 			// SRV 추가..
-			m_SRVList.insert(std::make_pair(hash_key, new ShaderResourceBuffer(bindDesc.Name, srv_register_slot, hash_key)));
+			m_SRVList.insert(std::make_pair(hash_key, new ShaderResourceBuffer(bindDesc.Name, srv_register_slot)));
 		}
 			break;
 		case D3D_SIT_SAMPLER:
@@ -105,7 +105,7 @@ void PixelShader::LoadShader(std::string fileName)
 			sampler_register_slot = bindDesc.BindPoint;
 
 			// Sampler 추가..
-			m_SamplerList.insert(std::make_pair(hash_key, new SamplerBuffer(bindDesc.Name, sampler_register_slot, hash_key)));
+			m_SamplerList.insert(std::make_pair(hash_key, new SamplerBuffer(bindDesc.Name, sampler_register_slot)));
 		}
 			break;
 		default:

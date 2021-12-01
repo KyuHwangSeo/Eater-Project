@@ -1,4 +1,4 @@
-#include "ResourceBufferHashTable.h"
+#include "ShaderResourceHashTable.h"
 #include "ConstantBufferDefine.h"
 #include "SamplerBufferDefine.h"
 #include "ShaderResourceBufferDefine.h"
@@ -18,6 +18,45 @@ ShaderResourceHashTable* ShaderResourceHashTable::Get()
 	}
 
 	return instance;
+}
+
+bool ShaderResourceHashTable::Push(eResourceType type, std::string name, Hash_Code hash_code)
+{
+	switch (type)
+	{
+	case eResourceType::CB:
+	{
+		if (DEFINE_MASK & DEFINE_CB)
+			return false;
+		else
+			return CheckHashCode(g_CBuffer_HashTable, name, hash_code);
+	}
+	case eResourceType::SS:
+	{
+		if (DEFINE_MASK & DEFINE_SS)
+			return false;
+		else
+			return CheckHashCode(g_Sampler_HashTable, name, hash_code);
+	}
+	case eResourceType::SRV:
+	{
+		if (DEFINE_MASK & DEFINE_SRV)
+			return false;
+		else
+			return CheckHashCode(g_SRV_HashTable, name, hash_code);
+	}
+	case eResourceType::UAV:
+	{
+		if (DEFINE_MASK & DEFINE_UAV)
+			return false;
+		else
+			return CheckHashCode(g_UAV_HashTable, name, hash_code);
+	}
+	default:
+		break;
+	}
+
+	return true;
 }
 
 size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBufName)
@@ -67,53 +106,9 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 		}
 	}
 	break;
-	case eResourceType::DSV:
-	{
-		cHash = g_DSV_HashTable.find(cBufName);
-
-		if (cHash == g_DSV_HashTable.end())
-		{
-			return 0;
-		}
-	}
-	break;
-	case eResourceType::DSS:
-	{
-		cHash = g_DSS_HashTable.find(cBufName);
-
-		if (cHash == g_DSS_HashTable.end())
-		{
-			return 0;
-		}
-	}
-	break;
-	case eResourceType::RS:
-	{
-		cHash = g_RS_HashTable.find(cBufName);
-
-		if (cHash == g_RS_HashTable.end())
-		{
-			return 0;
-		}
-	}
-	break;
-	case eResourceType::BS:
-	{
-		cHash = g_BS_HashTable.find(cBufName);
-
-		if (cHash == g_BS_HashTable.end())
-		{
-			return 0;
-		}
-	}
-	break;
 	default:
-	{
 		return 0;
 	}
-	break;
-	}
-	
 	
 	return cHash->second;
 }
@@ -125,6 +120,14 @@ bool ShaderResourceHashTable::DefineCheck(Define_Mask nowDefine)
 	return true;
 }
 
+void ShaderResourceHashTable::Destroy()
+{
+	g_CBuffer_HashTable.clear();
+	g_Sampler_HashTable.clear();
+	g_SRV_HashTable.clear();
+	g_UAV_HashTable.clear();
+}
+
 bool ShaderResourceHashTable::CheckHashCode(std::unordered_map<std::string, Hash_Code>& table, std::string name, Hash_Code hash_code)
 {
 	if (table.find(name) == table.end())
@@ -133,16 +136,4 @@ bool ShaderResourceHashTable::CheckHashCode(std::unordered_map<std::string, Hash
 	}
 
 	return true;
-}
-
-void ShaderResourceHashTable::Destroy()
-{
-	g_CBuffer_HashTable.clear();
-	g_Sampler_HashTable.clear();
-	g_SRV_HashTable.clear();
-	g_UAV_HashTable.clear();
-	g_DSV_HashTable.clear();
-	g_DSS_HashTable.clear();
-	g_RS_HashTable.clear();
-	g_BS_HashTable.clear();
 }

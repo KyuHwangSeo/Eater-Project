@@ -15,8 +15,7 @@ public:
 	void Release() override;
 
 public:
-	template<typename T>
-	void AddSampler(Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler);
+	void AddSampler(Hash_Code hash_code, ID3D11SamplerState** sampler) override;
 
 public:
 	ShaderBase* LoadShader(eShaderType shaderType, std::string shaderName);
@@ -33,25 +32,3 @@ private:
 	// Shader List
 	std::unordered_map<std::string, ShaderBase*> m_ShaderList;
 };
-
-template<typename T>
-void ShaderManager::AddSampler(Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler)
-{
-	for (std::pair<std::string, ShaderBase*> shader : m_ShaderList)
-	{
-		ShaderBase* pShader = shader.second;
-		
-		switch (pShader->GetType())
-		{
-		case eShaderType::VERTEX:
-		case eShaderType::PIXEL:
-		case eShaderType::COMPUTE:
-		{
-			pShader->SetSamplerState<T>(sampler.GetAddressOf());
-		}
-		break;
-		default:
-			break;
-		}
-	}
-}

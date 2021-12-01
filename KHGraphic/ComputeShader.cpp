@@ -2,7 +2,7 @@
 #include "ShaderBase.h"
 #include "ComputeShader.h"
 
-#include "ResourceBufferHashTable.h"
+#include "ShaderResourceHashTable.h"
 #include "CompilerDefine.h"
 #include <sstream>
 #include <fstream>

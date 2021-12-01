@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 #include <typeinfo>
-#include "ResourceBufferHashTable.h"
+#include "ShaderResourceHashTable.h"
 
-#define CREATE_EMPTY_CLASS(ClassName, ResourceName) struct ClassName : public HashClass<ClassName>, public ResourceName {};
+#define CREATE_EMPTY_CLASS(ClassName, ResourceType) struct ClassName : public HashClass<ClassName>, public ResourceType {};
 #define RESOURCE_DEFINE(ResourceMask) static bool check_##ResourceMask = ShaderResourceHashTable::Get()->DefineCheck((int)ResourceMask);
 
 /// <summary>
@@ -30,6 +30,11 @@ struct HashClass
 	static size_t GetHashCode()
 	{
 		return typeid(T).hash_code();
+	}
+
+	static T Get()
+	{
+		return T();
 	}
 };
 
@@ -81,4 +86,9 @@ struct RT_Resource
 struct VP_Resource
 {
 	static eResourceType GetType() { return eResourceType::VP; }
+};
+
+struct BD_Resource
+{
+	static eResourceType GetType() { return eResourceType::BD; }
 };

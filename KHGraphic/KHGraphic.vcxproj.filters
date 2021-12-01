@@ -145,6 +145,12 @@
     <Filter Include="소스 파일\Resource\Graphic\GraphicState">
       <UniqueIdentifier>{10b1e356-c304-4831-90ea-72b5f29b7902}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\BufferData">
+      <UniqueIdentifier>{0f03d5b0-7669-462d-9988-c2b580cec79f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\HashTable\Table">
+      <UniqueIdentifier>{fae4a005-0afb-4544-ae6e-cbc3ac02db00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -173,9 +179,6 @@
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>소스 파일\Manager\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceBufferHashTable.h">
-      <Filter>소스 파일\HashTable</Filter>
     </ClInclude>
     <ClInclude Include="PixelShader.h">
       <Filter>소스 파일\Shader\ShaderClass\PixelShader</Filter>
@@ -303,6 +306,15 @@
     <ClInclude Include="GraphicState.h">
       <Filter>소스 파일\Resource\Graphic\GraphicState</Filter>
     </ClInclude>
+    <ClInclude Include="BufferData.h">
+      <Filter>소스 파일\Resource\Graphic\BufferData</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferDataDefine.h">
+      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderResourceHashTable.h">
+      <Filter>소스 파일\HashTable\Table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Graphic.cpp">
@@ -334,9 +346,6 @@
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>소스 파일\Manager\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceBufferHashTable.cpp">
-      <Filter>소스 파일\HashTable</Filter>
     </ClCompile>
     <ClCompile Include="KHGraphic.cpp">
       <Filter>소스 파일\Engine</Filter>
@@ -379,6 +388,12 @@
     </ClCompile>
     <ClCompile Include="GraphicState.cpp">
       <Filter>소스 파일\Resource\Graphic\GraphicState</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferData.cpp">
+      <Filter>소스 파일\Resource\Graphic\BufferData</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderResourceHashTable.cpp">
+      <Filter>소스 파일\HashTable\Table</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

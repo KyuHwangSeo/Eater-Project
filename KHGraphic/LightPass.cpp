@@ -8,6 +8,7 @@
 #include "RenderTargetBase.h"
 #include "BasicRenderTarget.h"
 #include "VertexDefine.h"
+#include "BufferData.h"
 #include "LightPass.h"
 
 #include "MathDefine.h"
@@ -29,28 +30,28 @@ LightPass::~LightPass()
 
 void LightPass::Create(int width, int height)
 {
-	// Buffer 설정..
-	m_ScreenBuffer = g_Resource->GetBuffer(eBuffer::SCREEN);
-
-	// Shader 설정..
-	m_ScreenVS = g_Shader->GetShader("FullScreenVS");
-	m_ScreenPS = g_Shader->GetShader("LightPS");
-
-	// DepthStencilView 설정..
-	m_DSV = g_Resource->GetDepthStencilView(eDepthStencilView::DEFALT);
-	m_DepthStencilView = m_DSV->Get();
-
-	m_DepthStencilState = g_Resource->GetDepthStencilState(eDepthStencilState::DEFALT);
-	m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::SOLID);
-	m_BlendState = g_Resource->GetBlendState(eBlendState::BLEND_ONE);
-
-	// ViewPort 설정..
-	m_ScreenViewport = g_Resource->GetViewPort(eViewPort::SCREEN);
-
-	// BackBuffer 생성..
-	m_BackBuffer = g_Resource->GetMainRenderTarget();
-	m_BackBufferRTV = m_BackBuffer->GetRTV();
-	m_BackBufferSRV = m_BackBuffer->GetSRV();
+	//// Buffer 설정..
+	//m_ScreenBuffer = g_Resource->GetBuffer(eBuffer::SCREEN);
+	//
+	//// Shader 설정..
+	//m_ScreenVS = g_Shader->GetShader("FullScreenVS");
+	//m_ScreenPS = g_Shader->GetShader("LightPS");
+	//
+	//// DepthStencilView 설정..
+	//m_DSV = g_Resource->GetDepthStencilView(eDepthStencilView::DEFALT);
+	//m_DepthStencilView = m_DSV->Get();
+	//
+	//m_DepthStencilState = g_Resource->GetDepthStencilState(eDepthStencilState::DEFALT);
+	//m_RasterizerState = g_Resource->GetRasterizerState(eRasterizerState::SOLID);
+	//m_BlendState = g_Resource->GetBlendState(eBlendState::BLEND_ONE);
+	//
+	//// ViewPort 설정..
+	//m_ScreenViewport = g_Resource->Get(eViewPort::SCREEN);
+	//
+	//// BackBuffer 생성..
+	//m_BackBuffer = g_Resource->GetMainRenderTarget();
+	//m_BackBufferRTV = m_BackBuffer->GetRTV();
+	//m_BackBufferSRV = m_BackBuffer->GetSRV();
 }
 
 void LightPass::Start()
@@ -60,21 +61,21 @@ void LightPass::Start()
 
 void LightPass::OnResize(int width, int height)
 {
-	// BackBuffer RenderTargetView 재설정..
-	m_BackBufferRTV = m_BackBuffer->GetRTV();
-
-	// BackBuffer ShaderResourceView 재설정..
-	m_BackBufferSRV = m_BackBuffer->GetSRV();
-
-	// DepthStencilView 재설성..
-	m_DepthStencilView = m_DSV->Get();
-
-	// ShaderResource 재설정..
-	m_ScreenPS->SetShaderResourceView<AlbedoSRV>(&m_AlbedoSRV);
-	m_ScreenPS->SetShaderResourceView<NormalSRV>(&m_NormalSRV);
-	m_ScreenPS->SetShaderResourceView<PositionSRV>(&m_PositionSRV);
-	m_ScreenPS->SetShaderResourceView<NormalSRV>(&m_ShadowSRV);
-	m_ScreenPS->SetShaderResourceView<SsaoSRV>(&m_SSAOSRV);
+	//// BackBuffer RenderTargetView 재설정..
+	//m_BackBufferRTV = m_BackBuffer->GetRTV();
+	//
+	//// BackBuffer ShaderResourceView 재설정..
+	//m_BackBufferSRV = m_BackBuffer->GetSRV();
+	//
+	//// DepthStencilView 재설성..
+	//m_DepthStencilView = m_DSV->Get();
+	//
+	//// ShaderResource 재설정..
+	//m_ScreenPS->SetShaderResourceView<AlbedoSRV>(&m_AlbedoSRV);
+	//m_ScreenPS->SetShaderResourceView<NormalSRV>(&m_NormalSRV);
+	//m_ScreenPS->SetShaderResourceView<PositionSRV>(&m_PositionSRV);
+	//m_ScreenPS->SetShaderResourceView<NormalSRV>(&m_ShadowSRV);
+	//m_ScreenPS->SetShaderResourceView<SsaoSRV>(&m_SSAOSRV);
 }
 
 void LightPass::Release()

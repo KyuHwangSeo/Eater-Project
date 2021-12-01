@@ -152,4 +152,4 @@ struct CB_Skinned : public cbSkinned
 
 
 /// Resource Hash 재등록 방지 Define
-RESOURCE_DEFINE(DEFINE_CBUFFER)
+RESOURCE_DEFINE(DEFINE_CB)

@@ -9,6 +9,9 @@ public:
 	~DepthStencilState();
 
 public:
+	void Reset();
+
+public:
 	ID3D11DepthStencilState* Get();
 	ID3D11DepthStencilState** GetAddress();
 
@@ -22,6 +25,9 @@ class RasterizerState : public ResourceBase
 public:
 	RasterizerState(ID3D11RasterizerState** rs);
 	~RasterizerState();
+
+public:
+	void Reset();
 
 public:
 	ID3D11RasterizerState* Get();
@@ -39,6 +45,9 @@ public:
 	~BlendState();
 
 public:
+	void Reset();
+
+public:
 	ID3D11BlendState* Get();
 	ID3D11BlendState** GetAddress();
 
@@ -52,6 +61,9 @@ class SamplerState : public ResourceBase
 public:
 	SamplerState(ID3D11SamplerState** ss);
 	~SamplerState();
+
+public:
+	void Reset();
 
 public:
 	ID3D11SamplerState* Get();
