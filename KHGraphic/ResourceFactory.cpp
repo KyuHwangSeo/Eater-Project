@@ -46,7 +46,11 @@ GraphicResourceFactory::GraphicResourceFactory(ID3D11Device** device, ID3D11Devi
 {
 	// Graphic Resource & Shader Manager »ý¼º..
 	m_ShaderManager = new ShaderManager();
-	m_ResourceManager = new GraphicResourceManager(m_ShaderManager);
+
+	GraphicResourceManager* m = new GraphicResourceManager(m_ShaderManager);
+	m_ResourceManager = m;
+
+	//m_ResourceManager = new GraphicResourceManager(m_ShaderManager);
 
 	m_Device = *device;
 	m_Context = *context;

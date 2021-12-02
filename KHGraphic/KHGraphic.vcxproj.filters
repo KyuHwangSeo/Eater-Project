@@ -106,14 +106,8 @@
     <Filter Include="소스 파일\HashTable">
       <UniqueIdentifier>{fb58e275-a01f-4160-83c7-b3f8167dcd12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\HashTable\ShaderResource">
-      <UniqueIdentifier>{d08157a1-f741-4559-bc7d-559abe20919c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\HashTable\HashBase">
       <UniqueIdentifier>{eeb7f629-8fe6-421b-8d89-6879e6788f0d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\HashTable\GraphicResource">
-      <UniqueIdentifier>{54986082-b5a5-4084-ac4c-dbf0bc405c28}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\Resource\Base">
       <UniqueIdentifier>{7b07810d-6638-4f15-8453-76f87c151ba8}</UniqueIdentifier>
@@ -151,6 +145,15 @@
     <Filter Include="소스 파일\HashTable\Table">
       <UniqueIdentifier>{fae4a005-0afb-4544-ae6e-cbc3ac02db00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\HashTable\HashClass">
+      <UniqueIdentifier>{45ee4f1d-d59a-42e1-abed-1a9ae9b63618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\HashTable\HashClass\ShaderResource">
+      <UniqueIdentifier>{d08157a1-f741-4559-bc7d-559abe20919c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\HashTable\HashClass\GraphicResource">
+      <UniqueIdentifier>{54986082-b5a5-4084-ac4c-dbf0bc405c28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -166,7 +169,7 @@
       <Filter>소스 파일\Shader\ShaderClass\VertexShader</Filter>
     </ClInclude>
     <ClInclude Include="ConstantBufferDefine.h">
-      <Filter>소스 파일\HashTable\ShaderResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
     </ClInclude>
     <ClInclude Include="ComputeShader.h">
       <Filter>소스 파일\Shader\ShaderClass\ComputeShader</Filter>
@@ -271,34 +274,34 @@
       <Filter>소스 파일\RendererPass\Forward</Filter>
     </ClInclude>
     <ClInclude Include="SamplerBufferDefine.h">
-      <Filter>소스 파일\HashTable\ShaderResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
     </ClInclude>
     <ClInclude Include="ShaderResourceBufferDefine.h">
-      <Filter>소스 파일\HashTable\ShaderResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
     </ClInclude>
     <ClInclude Include="UnorderedAccessBufferDefine.h">
-      <Filter>소스 파일\HashTable\ShaderResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
     </ClInclude>
     <ClInclude Include="HashBase.h">
       <Filter>소스 파일\HashTable\HashBase</Filter>
     </ClInclude>
     <ClInclude Include="DepthStencilViewDefine.h">
-      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
     </ClInclude>
     <ClInclude Include="DepthStencilStateDefine.h">
-      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
     </ClInclude>
     <ClInclude Include="RasterizerStateDefine.h">
-      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
     </ClInclude>
     <ClInclude Include="BlendStateDefine.h">
-      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
     </ClInclude>
     <ClInclude Include="RenderTargetDefine.h">
-      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
     </ClInclude>
     <ClInclude Include="ViewPortDefine.h">
-      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
     </ClInclude>
     <ClInclude Include="ResourceBase.h">
       <Filter>소스 파일\Resource\Base</Filter>
@@ -310,7 +313,7 @@
       <Filter>소스 파일\Resource\Graphic\BufferData</Filter>
     </ClInclude>
     <ClInclude Include="BufferDataDefine.h">
-      <Filter>소스 파일\HashTable\GraphicResource</Filter>
+      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
     </ClInclude>
     <ClInclude Include="ShaderResourceHashTable.h">
       <Filter>소스 파일\HashTable\Table</Filter>

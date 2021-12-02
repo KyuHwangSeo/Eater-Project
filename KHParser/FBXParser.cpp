@@ -700,11 +700,11 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 		int index2 = pMesh->m_MeshFace[i]->m_VertexIndex[2];
 
 		Vertex* vertex0 = pMesh->m_VertexList[index0];
-		Vertex* vertex1 = pMesh->m_VertexList[index0];
-		Vertex* vertex2 = pMesh->m_VertexList[index0];
+		Vertex* vertex1 = pMesh->m_VertexList[index1];
+		Vertex* vertex2 = pMesh->m_VertexList[index2];
 
 		DirectX::SimpleMath::Vector3 ep1 = vertex1->m_Pos - vertex0->m_Pos;
-		DirectX::SimpleMath::Vector3 ep2 = pMesh->m_VertexList[index2]->m_Pos - vertex0->m_Pos;
+		DirectX::SimpleMath::Vector3 ep2 = vertex2->m_Pos - vertex0->m_Pos;
 
 		DirectX::SimpleMath::Vector2 uv1 = { vertex1->m_UV.x - vertex0->m_UV.x,
 											 vertex1->m_UV.y - vertex0->m_UV.y };

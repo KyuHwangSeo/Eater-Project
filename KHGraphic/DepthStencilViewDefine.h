@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define DEPTH_STENCIL_VIEW(ClassName) CREATE_EMPTY_CLASS(ClassName, DSV_Resource)
+#define DEPTH_STENCIL_VIEW(ClassName) CREATE_EMPTY_CLASS(ClassName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global Depth Stencil View

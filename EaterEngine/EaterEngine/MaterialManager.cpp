@@ -23,7 +23,7 @@ void MaterialManager::Initialize()
 	MaterialData mat;
 	mat.Ambient = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	mat.Diffuse = Vector4(0.8f, 0.8f, 0.8f, 1.0f);
-	mat.Specular = Vector4(0.4f, 0.4f, 0.4f, 16.0f);
+	mat.Specular = Vector4(0.4f, 0.4f, 0.4f, 1.0f);
 	mat.Reflect = Vector4(0.4f, 0.4f, 0.4f, 1.0f);
 
 	Global->mMatData[m_MaterialCount++] = mat;

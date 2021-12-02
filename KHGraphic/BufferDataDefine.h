@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define BUFFER_DATA(ClassName) CREATE_EMPTY_CLASS(ClassName, BD_Resource)
+#define BUFFER_DATA(ClassName) CREATE_EMPTY_CLASS(ClassName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global BufferData

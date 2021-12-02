@@ -172,6 +172,9 @@ void GameEngine::Finish()
 
 void GameEngine::OnResize(int Change_Width, int Change_Height)
 {
+	// 창 최소화시는 제외
+	if (Change_Width == 0 || Change_Height == 0) return;
+
 	//윈도우 크기 재설정
 	WinSizeWidth	= Change_Width;
 	WinSizeHeight	= Change_Height;

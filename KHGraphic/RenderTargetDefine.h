@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define RANDER_TARGET(ClassName) CREATE_EMPTY_CLASS(ClassName, RT_Resource)
+#define RANDER_TARGET(ClassName) CREATE_EMPTY_CLASS(ClassName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global RenderTarget

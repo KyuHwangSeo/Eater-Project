@@ -15,10 +15,10 @@ void intro::Awake()
 	//불러오는 매쉬의 경로 파악
 	LoadMeshPath("../Resources/Mesh/");
 	LoadTesturePath("../Resources/Texture/");
-	
+
 	LoadMesh("Player_Idle");
 	//LoadMesh("EnemyB");
-	//LoadMesh("Field");
+	LoadMesh("Field");
 	//LoadMesh("Table");
 	//LoadMesh("box");
 	//LoadMesh("Dome_v03");
@@ -29,8 +29,8 @@ void intro::Awake()
 	//LoadMesh("Skinning");
 	//LoadMesh("Enemy_Run",false,false);
 	//LoadMesh("Enemy_Roll",false,true);
-	//LoadMesh("Anim_Run",false,false);
-	//LoadMesh("Anim_Idle",false,true);
+	//LoadMesh("Anim_Run", false, false);
+	//LoadMesh("Anim_Idle", false, true);
 	//LoadMesh("Anim_Idle",false,true);
 	//LoadMesh("box");
 	//LoadMesh("AnimeBox");
@@ -44,7 +44,7 @@ void intro::Awake()
 	testobj->AddComponent<Camera>();
 	testobj->AddComponent<Keyinput>();
 	testobj->GetTransform()->Position = { 0,0,-25 };
-	
+
 	///라이트
 	testobj = Instance("DirectionLight");
 	testobj->AddComponent<DirectionLight>();
@@ -53,18 +53,21 @@ void intro::Awake()
 	//MeshFilter* Filter		= testobj->AddComponent<MeshFilter>();
 	//AnimationController* AC = testobj->AddComponent<AnimationController>();
 	//Filter->SetMeshName("MOdNA09_highpoly_1123");
-
+	MeshFilter* Filter;
+	AnimationController* AC;
 	testobj = Instance("obj1");
-	MeshFilter* Filter = testobj->AddComponent<MeshFilter>();
-	AnimationController* AC = testobj->AddComponent<AnimationController>();
+	Filter = testobj->AddComponent<MeshFilter>();
+	AC = testobj->AddComponent<AnimationController>();
 	Filter->SetMeshName("Player_Idle");
-	//Filter->SetTextureName("Player");
-	//Filter->SetAnimationName("Anim");
-	//testobj->SetActive(false);
-	
-	testobj->GetTransform()->Position	= { 0 ,0, 0 };
-	testobj->GetTransform()->Scale		= { 0.01f ,0.01f, 0.01f };
-	testobj->GetTransform()->Rotation	= {90 ,0,0 };
+	Filter->SetAnimationName("Player");
+
+	testobj->GetTransform()->Position = { 0 ,0, 0 };
+	testobj->GetTransform()->Scale = { 1.0f, 1.0f, 1.0f };
+	testobj->GetTransform()->Rotation = { 0 ,0,0 };
+
+	testobj = Instance("obj2");
+	Filter = testobj->AddComponent<MeshFilter>();
+	Filter->SetMeshName("Field");
 }
 
 void intro::Start()
