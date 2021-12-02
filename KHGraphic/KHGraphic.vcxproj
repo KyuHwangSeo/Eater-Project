@@ -141,19 +141,19 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
       <PreprocessorDefinitions>_DEBUG;GRAPHIC_EXPORT;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\Library\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>..\Library\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Library\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy/Y "$(TargetDir)*.lib"   "$(SolutionDir)Library\lib"
 copy/Y "$(TargetDir)*.dll"   "$(SolutionDir)Library\lib"
-copy /Y "$(ProjectDir)KHGraphic.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
+
+copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,7 +165,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
       <PreprocessorDefinitions>NDEBUG;GRAPHIC_EXPORT;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\Library\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -173,13 +173,13 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>..\Library\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Library\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy/Y "$(TargetDir)*.lib"   "$(SolutionDir)Library\lib"
 copy/Y "$(TargetDir)*.dll"   "$(SolutionDir)Library\lib"
-copy /Y "$(ProjectDir)KHGraphic.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
+
+copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -188,6 +188,8 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="BufferDataDefine.h" />
     <ClInclude Include="DepthStencilStateDefine.h" />
     <ClInclude Include="DepthStencilViewDefine.h" />
+    <ClInclude Include="Export\GraphicDLL.h" />
+    <ClInclude Include="Export\GraphicsEngine.h" />
     <ClInclude Include="GraphicState.h" />
     <ClInclude Include="HashBase.h" />
     <ClInclude Include="CompilerDefine.h" />
@@ -198,7 +200,6 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClInclude Include="DeferredPass.h" />
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="ForwardPass.h" />
-    <ClInclude Include="GraphicDLL.h" />
     <ClInclude Include="LightPass.h" />
     <ClInclude Include="BasicRenderTarget.h" />
     <ClInclude Include="MathDefine.h" />
@@ -246,6 +247,7 @@ copy /Y "$(ProjectDir)GraphicDLL.h" "$(SolutionDir)Library\inc"</Command>
     <ClCompile Include="DeferredPass.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="ForwardPass.cpp" />
+    <ClCompile Include="GraphicEngine.cpp" />
     <ClCompile Include="GraphicState.cpp" />
     <ClCompile Include="KHGraphic.cpp" />
     <ClCompile Include="dllmain.cpp" />

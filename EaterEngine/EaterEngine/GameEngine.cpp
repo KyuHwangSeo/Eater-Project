@@ -23,11 +23,6 @@
 #include "SkinningFilter.h"
 #include "Light.h"
 
-//테스트용
-#include "HsGraphic.h"
-#include "DH3DEngine.h"
-#include "KHGraphic.h"
-
 GameEngine::GameEngine()
 {
 	mDebugManager	= nullptr;
@@ -84,52 +79,7 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 
 	Component::SetManager(mTimeManager, mKeyManager);
 
-
 	mGraphicManager->Initialize(Hwnd, WinSizeWidth, WinSizeHeight, mObjectManager);
-
-
-	//처음시작하기전 엔진의 구조간략설명
-
-	/// <summary>
-	/// 여기 두부분만 해주면 그래픽엔진 매니저에서 알아서 해줄꺼임
-	/// 다만 그래픽엔진의 순수가상함수로된건 무조건다만들어놔야함
-	/// </summary>
-	/////////////////////////////////////////////////////////////////
-
-	//mGraphicManager->PushEngine<HsGraphic>("형선");
-	//mGraphicManager->PushEngine<DH3DEngine>("동혁");
-	//mGraphicManager->PushEngine<KHGraphic>("규황");
-	//mGraphicManager->ChoiceEngine("형선");
-
-	//윈도를 가로 2 	세로3번으로 분할시키겠다 (총 윈도우의 수 = 2 * 3)
-	mGraphicManager->SplitWindow(1, 1);
-
-	//엔진을 지정된 넘버로 넣는다
-	//mGraphicManager->PushEngine(0, new HsGraphic(), "형선");
-	mGraphicManager->PushEngine(0, new KHGraphic(), "규황");
-	//mGraphicManager->PushEngine(2, new DH3DEngine(), "동혁");
-	//mGraphicManager->PushEngine(3, new DH3DEngine(), "동혁0");
-
-
-
-	//mGraphicManager->PushEngine(1, new HsGraphic(), "형선0");
-	//mGraphicManager->PushEngine(2, new HsGraphic(), "형선1");
-	//mGraphicManager->PushEngine(3, new DH3DEngine(), "동혁1");
-	//mGraphicManager->PushEngine(4, new HsGraphic(), "형선2");
-	//mGraphicManager->PushEngine(5, new KHGraphic(), "규황0");
-	//mGraphicManager->PushEngine(6, new KHGraphic(), "규황1");
-	//mGraphicManager->PushEngine(7, new HsGraphic(), "형선3");
-	//mGraphicManager->PushEngine(8, new HsGraphic(), "형선4");
-	//mGraphicManager->PushEngine(9, new KHGraphic(), "규황2");
-	//mGraphicManager->PushEngine(10, new KHGraphic(), "규황3");
-	//mGraphicManager->PushEngine(11, new HsGraphic(), "형선5");
-	//mGraphicManager->PushEngine(12, new DH3DEngine(), "동혁2");
-	//mGraphicManager->PushEngine(13, new HsGraphic(), "형선6");
-	//mGraphicManager->PushEngine(14, new HsGraphic(), "형선7");
-	//mGraphicManager->PushEngine(15, new DH3DEngine(), "동혁3");
-
-
-	/////////////////////////////////////////////////////////////////
 }
 
 void GameEngine::Update()

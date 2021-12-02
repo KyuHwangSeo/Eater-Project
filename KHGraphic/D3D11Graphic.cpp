@@ -1,9 +1,9 @@
 #include "DirectDefine.h"
 #include "D3D11Graphic.h"
 
-D3D11Graphic::D3D11Graphic()
+D3D11Graphic::D3D11Graphic(HWND hwnd, int screenWidth, int screenHeight)
 {
-
+	Initialize(hwnd, screenWidth, screenHeight);
 }
 
 D3D11Graphic::~D3D11Graphic()

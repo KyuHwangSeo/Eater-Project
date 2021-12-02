@@ -3,6 +3,8 @@
 #include "ShaderBase.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "ViewPort.h"
+#include "GraphicState.h"
 #include "Texture2D.h"
 #include "DepthStencilView.h"
 #include "RenderTargetBase.h"
@@ -15,6 +17,7 @@
 #include "ResourceFactoryBase.h"
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
+#include "ViewPortDefine.h"
 #include "ConstantBufferDefine.h"
 #include "ShaderResourceBufferDefine.h"
 #include "DepthStencilStateDefine.h"
@@ -34,13 +37,7 @@ ForwardPass::~ForwardPass()
 
 void ForwardPass::Create(int width, int height)
 {
-	// ViewPort 설정..
-	//m_ScreenViewport = g_Resource->GetViewPort(eViewPort::SCREEN);
-	
-	// BackBuffer 생성..
-	//m_BackBuffer = g_Resource->GetMainRenderTarget();
-	//m_BackBufferRTV = m_BackBuffer->GetRTV();
-	//m_BackBufferSRV = m_BackBuffer->GetSRV();
+
 }
 
 void ForwardPass::Start()
@@ -50,22 +47,30 @@ void ForwardPass::Start()
 	m_SkinVS = g_Shader->GetShader("SkinVS");
 	m_ForwardPS = g_Shader->GetShader("ForwardPS");
 
+	// ViewPort 설정..
+	m_ScreenViewport = g_Resource->GetViewPort<VP_FullScreen>()->Get();
+
+	// BackBuffer 생성..
+	m_BackBuffer = g_Resource->GetMainRenderTarget();
+	m_BackBufferRTV = m_BackBuffer->GetRTV();
+	m_BackBufferSRV = m_BackBuffer->GetSRV();
+
 	// DepthStencilView 설정..
 	m_DSV = g_Resource->GetDepthStencilView<DSV_Defalt>();
 	m_DepthStencilView = m_DSV->Get();
 
-	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>();
-	m_RasterizerState = g_Resource->GetRasterizerState<RS_Solid>();
-	m_BlendState = g_Resource->GetBlendState<BS_AlphaBlend>();
+	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
+	m_RasterizerState = g_Resource->GetRasterizerState<RS_Solid>()->Get();
+	m_BlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
 }
 
 void ForwardPass::OnResize(int width, int height)
 {
 	// BackBuffer RenderTargetView 재설정..
-	//m_BackBufferRTV = m_BackBuffer->GetRTV();
+	m_BackBufferRTV = m_BackBuffer->GetRTV();
 
 	// BackBuffer ShaderResourceView 재설정..
-	//m_BackBufferSRV = m_BackBuffer->GetSRV();
+	m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 재설정..
 	m_DepthStencilView = m_DSV->Get();
@@ -78,12 +83,12 @@ void ForwardPass::Release()
 
 void ForwardPass::BeginRender()
 {
-	//g_Context->OMSetRenderTargets(1, &m_BackBufferRTV, m_DepthStencilView);
-	//g_Context->OMSetDepthStencilState(m_DepthStencilState, 0);
+	g_Context->OMSetRenderTargets(1, &m_BackBufferRTV, m_DepthStencilView);
+	g_Context->OMSetDepthStencilState(m_DepthStencilState, 0);
 	g_Context->OMSetBlendState(m_BlendState, 0, 0xffffffff);
-	//g_Context->ClearRenderTargetView(m_BackBufferRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	//g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//g_Context->RSSetViewports(1, m_ScreenViewport);
+	g_Context->ClearRenderTargetView(m_BackBufferRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+	g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	g_Context->RSSetViewports(1, m_ScreenViewport);
 	g_Context->RSSetState(m_RasterizerState);
 }
 

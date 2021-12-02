@@ -2,8 +2,9 @@
 #include "D3D11Graphic.h"
 #include "KHGraphic.h"
 
-#include "ShaderManagerBase.h"
-#include "ResourceManagerBase.h"
+#include "ShaderBase.h"
+#include "ShaderManager.h"
+#include "ResourceManager.h"
 #include "ResourceFactory.h"
 #include "RenderManager.h"
 #include "RenderPassBase.h"
@@ -22,16 +23,29 @@ KHGraphic::~KHGraphic()
 void KHGraphic::Initialize(HWND hwnd, int screenWidth, int screenHeight)
 {
 	// DirectX11 Device 积己..
-	D3D11Graphic* graphic = new D3D11Graphic();
-	graphic->Initialize(hwnd, screenWidth, screenHeight);
+	D3D11Graphic* graphic = new D3D11Graphic(hwnd, screenWidth, screenHeight);
 
-	// Resource Factory 积己 棺 檬扁拳..
-	m_ResourceFactory = new GraphicResourceFactory(graphic);
-	m_ResourceFactory->Initialize(screenWidth, screenHeight);
+	// Shader Manager 积己..
+	ShaderManager* shader = new ShaderManager(graphic);
 
-	// Render Manager 积己 棺 檬扁拳..
-	m_RenderManager = new RenderManager(graphic, (GraphicResourceFactory*)m_ResourceFactory);
-	m_RenderManager->Initialize(screenWidth, screenHeight);
+	// Resource Manager 积己..
+	GraphicResourceManager* resource = new GraphicResourceManager(graphic, shader);
+
+	// Resource Factory 积己..
+	GraphicResourceFactory* factory = new GraphicResourceFactory(graphic, resource);
+
+	// Render Manager 积己..
+	RenderManager* renderer = new RenderManager(graphic, factory, resource, shader);
+
+	// Initialize..
+	factory->Initialize(screenWidth, screenHeight);
+	shader->Initialize();
+	resource->Initialize();
+	renderer->Initialize(screenWidth, screenHeight);
+
+	// Pointer 汲沥..
+	m_ResourceFactory = factory;
+	m_RenderManager = renderer;
 }
 
 void KHGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -77,27 +91,4 @@ Vertexbuffer* KHGraphic::CreateVertexBuffer(ParserData::Mesh* mesh)
 TextureBuffer* KHGraphic::CreateTextureBuffer(std::string path)
 {
 	return m_ResourceFactory->CreateTextureBuffer(path);
-}
-
-GRAPHIC_DLL void KHGraphic::SetViewPort(void* VPT, int Change_Width, int Change_Height)
-{
-	RenderManager* rm = reinterpret_cast<RenderManager*>(m_RenderManager);
-	rm->m_ViewPort = reinterpret_cast<D3D11_VIEWPORT*>(VPT);
-
-	m_ResourceFactory->Initialize(Change_Width, Change_Height);
-	m_RenderManager->Initialize(Change_Width, Change_Height);
-}
-
-GRAPHIC_DLL void KHGraphic::SetDevice(void* Devie, void* DevieContext)
-{
-	ID3D11Device** device = reinterpret_cast<ID3D11Device**>(&Devie);
-	ID3D11DeviceContext** context = reinterpret_cast<ID3D11DeviceContext**>(&DevieContext);
-
-	// Resource Factory 积己 棺 檬扁拳..
-	m_ResourceFactory = new GraphicResourceFactory(device, context);
-
-	// Render Manager 积己 棺 檬扁拳..
-	m_RenderManager = new RenderManager(nullptr, (GraphicResourceFactory*)m_ResourceFactory);
-
-	RenderPassBase::g_Context = *context;
 }

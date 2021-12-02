@@ -167,7 +167,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\DHEngine;$(SolutionDir)Library\inc\HSEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\Graphic</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -180,7 +180,6 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(ProjectDir)Export\*.h" "$(SolutionDir)Library\inc\Component"
-
 
 copy /Y "$(ProjectDir)GraphicsEngine.h" "$(SolutionDir)Library\inc"
 copy /Y "$(ProjectDir)ResourcesData.h" "$(SolutionDir)Library\inc"
@@ -205,7 +204,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\DHEngine;$(SolutionDir)Library\inc\HSEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\Graphic</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -219,7 +218,6 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(ProjectDir)Export\*.h" "$(SolutionDir)Library\inc\Component"
-
 
 copy /Y "$(ProjectDir)GraphicsEngine.h" "$(SolutionDir)Library\inc"
 copy /Y "$(ProjectDir)ResourcesData.h" "$(SolutionDir)Library\inc"

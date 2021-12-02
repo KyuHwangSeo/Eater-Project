@@ -45,6 +45,25 @@ D3D11_TEXTURE2D_DESC BasicRenderTarget::GetTextureDesc()
 	return texDesc;
 }
 
+D3D11_TEXTURE2D_DESC BasicRenderTarget::GetTextureDesc(int width, int height)
+{
+	ID3D11Resource* resource = nullptr;
+
+	// 현재 View의 Texture 2D Resource..
+	m_SRV->GetResource(&resource);
+
+	// Texture 2D Description 추출..
+	D3D11_TEXTURE2D_DESC texDesc;
+
+	((ID3D11Texture2D*)resource)->GetDesc(&texDesc);
+
+	// 설정한 비율에 따른 Description 설정..
+	texDesc.Width = (UINT)(width * m_Width_Ratio);
+	texDesc.Height = (UINT)(height * m_Height_Ratio);
+
+	return texDesc;
+}
+
 D3D11_SHADER_RESOURCE_VIEW_DESC BasicRenderTarget::GetSRVDesc()
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -61,4 +80,11 @@ ID3D11ShaderResourceView* BasicRenderTarget::GetSRV()
 ID3D11ShaderResourceView** BasicRenderTarget::GetAddressSRV()
 {
 	return m_SRV.GetAddressOf();
+}
+
+bool BasicRenderTarget::IsSRV()
+{
+	if (m_SRV) return true;
+
+	return false;
 }

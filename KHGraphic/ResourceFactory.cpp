@@ -31,29 +31,14 @@
 
 using namespace DirectX::SimpleMath;
 
-GraphicResourceFactory::GraphicResourceFactory(D3D11Graphic* graphic)
+GraphicResourceFactory::GraphicResourceFactory(D3D11Graphic* graphic, IGraphicResourceManager* resource)
 {
 	// Graphic Resource & Shader Manager 积己..
-	m_ShaderManager = new ShaderManager();
-	m_ResourceManager = new GraphicResourceManager(m_ShaderManager);
+	m_ResourceManager = resource;
 
 	m_Device = graphic->GetDevice();
 	m_Context = graphic->GetContext();
 	m_SwapChain = graphic->GetSwapChain();
-}
-
-GraphicResourceFactory::GraphicResourceFactory(ID3D11Device** device, ID3D11DeviceContext** context)
-{
-	// Graphic Resource & Shader Manager 积己..
-	m_ShaderManager = new ShaderManager();
-
-	GraphicResourceManager* m = new GraphicResourceManager(m_ShaderManager);
-	m_ResourceManager = m;
-
-	//m_ResourceManager = new GraphicResourceManager(m_ShaderManager);
-
-	m_Device = *device;
-	m_Context = *context;
 }
 
 GraphicResourceFactory::~GraphicResourceFactory()
@@ -64,7 +49,7 @@ GraphicResourceFactory::~GraphicResourceFactory()
 void GraphicResourceFactory::Initialize(int width, int height)
 {
 	// Back Buffer 积己..
-	//CreateMainRenderTarget(width, height);
+	CreateMainRenderTarget(width, height);
 
 	/// Global Resource 积己..
 	CreateDepthStencilState();
@@ -78,15 +63,6 @@ void GraphicResourceFactory::Initialize(int width, int height)
 	// FullScreen Buffer..
 	CreateQuadBuffer();
 	CreateSSAOQuadBuffer();
-
-	// Shader Manager 檬扁拳..
-	m_ShaderManager->Initialize(m_Device, m_Context);
-
-	// Graphic Resource Manager 檬扁拳..
-	m_ResourceManager->Initialize(m_Device, nullptr);
-
-	// Shader Hash Table Reset..
-	ShaderResourceHashTable::Get()->Destroy();
 }
 
 void GraphicResourceFactory::Release()

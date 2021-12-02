@@ -9,7 +9,7 @@ class LightPass;
 class RenderManager : public IRenderManager
 {
 public:
-	RenderManager(D3D11Graphic* graphic, GraphicResourceFactory* factory);
+	RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* factory, IGraphicResourceManager* resource, IShaderManager* shader);
 	~RenderManager();
 
 public:
@@ -23,12 +23,11 @@ public:
 
 	void OnResize(int width, int height) override;
 
-public:
-	D3D11_VIEWPORT* m_ViewPort;
+private:
+	Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
 
 private:
 	std::vector<RenderPassBase*> m_RenderPassList;
-
 
 	ForwardPass* m_Farward;
 	ShadowPass* m_Shadow;

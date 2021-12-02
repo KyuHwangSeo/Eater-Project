@@ -13,6 +13,7 @@ public:
 public:
 	ID3D11Texture2D* GetTexture2D() override;
 	D3D11_TEXTURE2D_DESC GetTextureDesc() override;
+	D3D11_TEXTURE2D_DESC GetTextureDesc(int width, int height) override;
 
 public:
 	ID3D11DepthStencilView* Get();

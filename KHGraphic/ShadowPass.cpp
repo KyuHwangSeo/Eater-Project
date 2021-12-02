@@ -4,6 +4,7 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "ViewPort.h"
+#include "GraphicState.h"
 #include "Texture2D.h"
 #include "DepthStencilView.h"
 #include "RenderTargetBase.h"
@@ -60,6 +61,7 @@ void ShadowPass::Create(int width, int height)
 	g_Factory->CreateTexture2D(&texDesc, tex2D.GetAddressOf());
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	ZeroMemory(&dsvDesc, sizeof(dsvDesc));
 	dsvDesc.Flags = 0;
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -69,6 +71,7 @@ void ShadowPass::Create(int width, int height)
 	g_Factory->CreateDSV<DSV_Shadow>(tex2D.Get(), &dsvDesc);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
 	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
@@ -93,11 +96,12 @@ void ShadowPass::Start()
 	
 	m_ShadowRT = g_Resource->GetRenderTarget<RT_Shadow>();
 	m_ShadowRT->SetRatio(4.0f, 4.0f);
-	m_ShadowViewport = g_Resource->GetViewPort<VP_Shadow>();
-	m_RasterizerState = g_Resource->GetRasterizerState<RS_Depth>();
 
 	m_ShadowDepthStencilView = g_Resource->GetDepthStencilView<DSV_Shadow>();
 	m_ShadowDepthStencilView->SetRatio(4.0f, 4.0f);
+
+	m_ShadowViewport = g_Resource->GetViewPort<VP_Shadow>()->Get();
+	m_RasterizerState = g_Resource->GetRasterizerState<RS_Depth>()->Get();
 
 	// Shadow DepthStencilView ¼³Á¤..
 	m_ShadowDSV = m_ShadowDepthStencilView->Get();

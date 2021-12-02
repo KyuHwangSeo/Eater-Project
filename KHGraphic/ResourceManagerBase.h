@@ -16,13 +16,17 @@ typedef size_t Hash_Code;
 //using TypeCheck = std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value;
 
 class ResourceBase;
-class BufferData;
 class DepthStencilView;
+class DepthStencilState;
+class BlendState;
+class RasterizerState;
+class BufferData;
+class ViewPort;
 
 interface IGraphicResourceManager
 {
 public:
-	virtual void Initialize(Microsoft::WRL::ComPtr<ID3D11Device> device, Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain) abstract;
+	virtual void Initialize() abstract;
 	virtual void OnResize(int width, int height) abstract;
 	virtual void Release() abstract;
 
@@ -39,18 +43,18 @@ public:
 
 	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
 	DepthStencilView* GetDepthStencilView();
+	
+	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	DepthStencilState* GetDepthStencilState();
+	
+	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	RasterizerState* GetRasterizerState();
 
 	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
-	ID3D11BlendState* GetBlendState();
+	BlendState* GetBlendState();
 
 	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
-	ID3D11RasterizerState* GetRasterizerState();
-
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
-	ID3D11DepthStencilState* GetDepthStencilState();
-
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
-	D3D11_VIEWPORT* GetViewPort();
+	ViewPort* GetViewPort();
 
 	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
 	BufferData* GetBuffer();
@@ -62,10 +66,10 @@ public:
 protected:
 	virtual OriginalRenderTarget GetRenderTarget(Hash_Code hash_code) abstract;
 	virtual DepthStencilView* GetDepthStencilView(Hash_Code hash_code) abstract;
-	virtual ID3D11BlendState* GetBlendState(Hash_Code hash_code) abstract;
-	virtual ID3D11RasterizerState* GetRasterizerState(Hash_Code hash_code) abstract;
-	virtual ID3D11DepthStencilState* GetDepthStencilState(Hash_Code hash_code) abstract;
-	virtual D3D11_VIEWPORT* GetViewPort(Hash_Code hash_code) abstract;
+	virtual BlendState* GetBlendState(Hash_Code hash_code) abstract;
+	virtual RasterizerState* GetRasterizerState(Hash_Code hash_code) abstract;
+	virtual DepthStencilState* GetDepthStencilState(Hash_Code hash_code) abstract;
+	virtual ViewPort* GetViewPort(Hash_Code hash_code) abstract;
 	virtual BufferData* GetBuffer(Hash_Code hash_code) abstract;
 	virtual void AddResource(Hash_Code hash_code, ResourceBase* resource) abstract;
 
@@ -88,25 +92,25 @@ inline DepthStencilView* IGraphicResourceManager::GetDepthStencilView()
 }
 
 template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
-inline ID3D11BlendState* IGraphicResourceManager::GetBlendState()
+inline BlendState* IGraphicResourceManager::GetBlendState()
 {
 	return GetBlendState(T::GetHashCode());
 }
 
 template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
-inline ID3D11RasterizerState* IGraphicResourceManager::GetRasterizerState()
+inline RasterizerState* IGraphicResourceManager::GetRasterizerState()
 {
 	return GetRasterizerState(T::GetHashCode());
 }
 
 template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
-inline ID3D11DepthStencilState* IGraphicResourceManager::GetDepthStencilState()
+inline DepthStencilState* IGraphicResourceManager::GetDepthStencilState()
 {
 	return GetDepthStencilState(T::GetHashCode());
 }
 
 template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
-inline D3D11_VIEWPORT* IGraphicResourceManager::GetViewPort()
+inline ViewPort* IGraphicResourceManager::GetViewPort()
 {
 	return GetViewPort(T::GetHashCode());
 }

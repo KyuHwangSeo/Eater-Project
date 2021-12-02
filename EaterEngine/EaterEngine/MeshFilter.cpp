@@ -105,7 +105,7 @@ void MeshFilter::PushModelData(LoadMeshData* mModel)
 	data->mWorld = *(mModel->WorldTM);
 
 	// Diffuse Map이 없는경우 Dump Map으로 기본 출력..
-	if (data->Diffuse == nullptr)
+	if (data->Diffuse->TextureBufferPointer == nullptr)
 	{
 		data->Diffuse = LoadManager::GetTexture("Dump");
 	}

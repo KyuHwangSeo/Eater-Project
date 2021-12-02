@@ -154,6 +154,9 @@
     <Filter Include="소스 파일\HashTable\HashClass\GraphicResource">
       <UniqueIdentifier>{54986082-b5a5-4084-ac4c-dbf0bc405c28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Engine\Base">
+      <UniqueIdentifier>{af030aa3-e2f1-487a-bc86-30a1d1a778cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -209,9 +212,6 @@
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>소스 파일\Manager\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicDLL.h">
-      <Filter>소스 파일\Define</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManagerBase.h">
       <Filter>소스 파일\Manager\Resource</Filter>
@@ -318,6 +318,12 @@
     <ClInclude Include="ShaderResourceHashTable.h">
       <Filter>소스 파일\HashTable\Table</Filter>
     </ClInclude>
+    <ClInclude Include="Export\GraphicsEngine.h">
+      <Filter>소스 파일\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\GraphicDLL.h">
+      <Filter>소스 파일\Engine\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Graphic.cpp">
@@ -397,6 +403,9 @@
     </ClCompile>
     <ClCompile Include="ShaderResourceHashTable.cpp">
       <Filter>소스 파일\HashTable\Table</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicEngine.cpp">
+      <Filter>소스 파일\Engine\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

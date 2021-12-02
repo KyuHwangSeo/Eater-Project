@@ -20,8 +20,8 @@ ViewPort::~ViewPort()
 
 void ViewPort::OnResize(int width, int height)
 {
-	m_ViewPort->Width = width * m_Width_Ratio;
-	m_ViewPort->Height = height * m_Height_Ratio;
+	m_ViewPort->Width = (float)(width * m_Width_Ratio);
+	m_ViewPort->Height = (float)(height * m_Height_Ratio);
 }
 
 D3D11_VIEWPORT* ViewPort::Get()

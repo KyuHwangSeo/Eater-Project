@@ -2,14 +2,17 @@
 #include <unordered_map>
 #include "ResourceManagerBase.h"
 
+class D3D11Graphic;
+class SamplerState;
+
 class GraphicResourceManager : public IGraphicResourceManager
 {
 public:
-	GraphicResourceManager(IShaderManager* shaderManager);
+	GraphicResourceManager(D3D11Graphic* graphic, IShaderManager* shaderManager);
 	~GraphicResourceManager();
 
 public:
-	void Initialize(Microsoft::WRL::ComPtr<ID3D11Device> device, Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain) override;
+	void Initialize() override;
 	void OnResize(int width, int height) override;
 	void Release() override;
 
@@ -20,10 +23,10 @@ public:
 public:
 	OriginalRenderTarget GetRenderTarget(Hash_Code hash_code) override;
 	DepthStencilView* GetDepthStencilView(Hash_Code hash_code) override;
-	ID3D11BlendState* GetBlendState(Hash_Code hash_code) override;
-	ID3D11RasterizerState* GetRasterizerState(Hash_Code hash_code) override;
-	ID3D11DepthStencilState* GetDepthStencilState(Hash_Code hash_code) override;
-	D3D11_VIEWPORT* GetViewPort(Hash_Code hash_code) override;
+	BlendState* GetBlendState(Hash_Code hash_code) override;
+	RasterizerState* GetRasterizerState(Hash_Code hash_code) override;
+	DepthStencilState* GetDepthStencilState(Hash_Code hash_code) override;
+	ViewPort* GetViewPort(Hash_Code hash_code) override;
 	BufferData* GetBuffer(Hash_Code hash_code) override;
 
 public:
@@ -51,7 +54,6 @@ private:
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	std::unordered_map<Hash_Code, DepthStencilView*> m_DepthStencilViewList;
-	std::unordered_map<Hash_Code, ViewPort*> m_ViewPortList;
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// State Resource List
@@ -61,6 +63,8 @@ private:
 	std::unordered_map<Hash_Code, RasterizerState*> m_RasterizerStateList;
 	std::unordered_map<Hash_Code, BlendState*> m_BlendStateList;
 	std::unordered_map<Hash_Code, SamplerState*> m_SamplerStateList;
+
+	std::unordered_map<Hash_Code, ViewPort*> m_ViewPortList;
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer Resource List

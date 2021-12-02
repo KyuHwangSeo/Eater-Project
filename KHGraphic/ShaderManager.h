@@ -1,17 +1,19 @@
 #pragma once
 #include "ShaderManagerBase.h"
 
+class D3D11Graphic;
+
 class ShaderManager : public IShaderManager
 {
 public:
-	ShaderManager();
+	ShaderManager(D3D11Graphic* graphic);
 	~ShaderManager();
 
 public:
 	friend class OriginalShader;
 
 public:
-	void Initialize(Microsoft::WRL::ComPtr<ID3D11Device> device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override;
+	void Initialize() override;
 	void Release() override;
 
 public:

@@ -9,8 +9,7 @@ class ComputeRenderTarget;
 class GraphicResourceFactory : public IGraphicResourceFactory
 {
 public:
-	GraphicResourceFactory(D3D11Graphic* graphic);
-	GraphicResourceFactory(ID3D11Device** device, ID3D11DeviceContext** context);
+	GraphicResourceFactory(D3D11Graphic* graphic, IGraphicResourceManager* resource);
 	~GraphicResourceFactory();
 
 public:

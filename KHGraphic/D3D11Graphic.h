@@ -4,7 +4,7 @@
 class D3D11Graphic : public ID3D11Graphic
 {
 public:
-	D3D11Graphic();
+	D3D11Graphic(HWND hwnd, int screenWidth, int screenHeight);
 	~D3D11Graphic();
 	 
 public:

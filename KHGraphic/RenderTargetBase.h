@@ -20,6 +20,7 @@ public:
 public:
 	ID3D11Texture2D* GetTexture2D() override;
 	D3D11_TEXTURE2D_DESC GetTextureDesc() override;
+	D3D11_TEXTURE2D_DESC GetTextureDesc(int width, int height) override;
 
 public:
 	ID3D11RenderTargetView* GetRTV();
@@ -29,6 +30,7 @@ public:
 public:
 	// 현재 RenderTarget Type 반환 함수..
 	eRenderTargetType GetType();
+	bool IsRTV();
 
 protected:
 	eRenderTargetType m_RenderTargetType;

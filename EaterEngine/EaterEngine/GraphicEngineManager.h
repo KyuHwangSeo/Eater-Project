@@ -12,7 +12,6 @@ class ObjectManager;
 class MeshData;
 class GlobalData;
 class GraphicEngine;
-class MultiRenderEngine;
 class Indexbuffer;
 class Vertexbuffer;
 class TextureBuffer;
@@ -50,17 +49,9 @@ public:
 	//선택한 그래픽 엔진으로 Resize
 	void OnReSize(int Change_Width, int Change_Height);
 
-	//엔진을 넣어준다
-	void PushEngine(int Number, GraphicEngine* Engine, std::string Name);
-
-	void SplitWindow(int X, int Y);
 private:
-	MultiRenderEngine* MultiEngine;
+	GraphicEngine* GEngine;
 
 	ObjectManager* ObjManager;
-
-	std::string EngineName;
-	//그래픽 엔진들을 관리할 리스트
-	std::map<std::string,GraphicEngine*> GEngineList;
 };
 

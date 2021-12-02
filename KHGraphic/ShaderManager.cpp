@@ -1,18 +1,19 @@
 #include "DirectDefine.h"
+#include "D3D11Graphic.h"
 #include "ShaderBase.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "ComputeShader.h"
-#include "windows.h"
 #include "ShaderManagerBase.h"
 #include "ShaderManager.h"
 #include "ShaderResourceHashTable.h"
 
 using namespace Microsoft::WRL;
 
-ShaderManager::ShaderManager()
+ShaderManager::ShaderManager(D3D11Graphic* graphic)
 {
-
+	// Shader Global Initialize..
+	IShader::Initialize(graphic->GetDevice(), graphic->GetContext());
 }
 
 ShaderManager::~ShaderManager()
@@ -20,10 +21,9 @@ ShaderManager::~ShaderManager()
 
 }
 
-void ShaderManager::Initialize(Microsoft::WRL::ComPtr<ID3D11Device> device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+void ShaderManager::Initialize()
 {
-	// Shader Global Initialize..
-	IShader::Initialize(device, context);
+	// Shader File Route Setting..
 	IShader::SetShaderRoute("../Resources/Shader/SKH/");
 
 	// Global Shader Create..
