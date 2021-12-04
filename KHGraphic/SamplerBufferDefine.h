@@ -1,8 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define ADD_SAMPLER_STATE(ClassName) static bool sampler_##ClassName = ShaderResourceHashTable::Get()->Push(eResourceType::SS, #ClassName, typeid(ClassName).hash_code());
-#define SAMPLER_STATE(ClassName) CREATE_HASH_CLASS(ClassName) ADD_SAMPLER_STATE(ClassName)
+#define SAMPLER_STATE(ClassName) CREATE_HASH_CLASS(ClassName, eResourceType::SS) RESOURCE_PUSH(ClassName, eResourceType::SS)
 
 /// <summary>
 /// SamplerState Resource Struct

@@ -29,10 +29,8 @@ GraphicResourceManager::~GraphicResourceManager()
 
 void GraphicResourceManager::Initialize()
 {
-	for (std::pair<Hash_Code, SamplerState*> sampler : m_SamplerStateList)
-	{
-		m_ShaderManager->AddSampler(sampler.first, sampler.second->GetAddress());
-	}
+	// Set Binded Sampler..
+	SetShaderSampler();
 
 	// Shader Hash Table Reset..
 	ShaderResourceHashTable::Get()->Destroy();
@@ -281,6 +279,14 @@ ComputeRenderTarget* GraphicResourceManager::GetComputeRenderTarget(Hash_Code ha
 		return reinterpret_cast<ComputeRenderTarget*>(renderTarget);
 	default:
 		return nullptr;
+	}
+}
+
+void GraphicResourceManager::SetShaderSampler()
+{
+	for (std::pair<Hash_Code, SamplerState*> sampler : m_SamplerStateList)
+	{
+		m_ShaderManager->AddSampler(sampler.first, sampler.second->GetAddress());
 	}
 }
 

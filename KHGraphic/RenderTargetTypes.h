@@ -11,6 +11,14 @@ class RenderTarget;
 class BasicRenderTarget;
 class ComputeRenderTarget;
 
+///
+/// 2021/11/07 23:02
+/// SeoKyuHwang
+///
+/// # OriginalRenderTarget Class
+///
+/// - OriginalRenderTarget Operator를 통해 해당 RenderTarget Class 반환
+/// - operator (BasicRenderTarget, ComputeRenderTarget)
 class OriginalRenderTarget
 {
 public:

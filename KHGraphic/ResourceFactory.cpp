@@ -70,7 +70,7 @@ void GraphicResourceFactory::Release()
 	RESET_COM(m_Device);
 	RESET_COM(m_Context);
 	RESET_COM(m_SwapChain);
-
+	
 	SAFE_RELEASE(m_ShaderManager);
 	SAFE_RELEASE(m_ResourceManager);
 }

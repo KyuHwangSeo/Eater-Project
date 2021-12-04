@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define BUFFER_DATA(ClassName) CREATE_HASH_CLASS(ClassName)
+#define BUFFER_DATA(ClassName) CREATE_HASH_CLASS(ClassName, eResourceType::BD)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global BufferData

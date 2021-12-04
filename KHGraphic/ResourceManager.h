@@ -37,6 +37,9 @@ private:
 	ComputeRenderTarget* GetComputeRenderTarget(Hash_Code hash_code) override;
 
 private:
+	void SetShaderSampler();
+
+private:
 	IShaderManager* m_ShaderManager;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
