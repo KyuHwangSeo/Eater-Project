@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define BLEND_STATE(ClassName) CREATE_EMPTY_CLASS(ClassName)
+#define BLEND_STATE(ClassName) CREATE_HASH_CLASS(ClassName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global Blend State

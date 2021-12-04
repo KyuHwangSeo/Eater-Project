@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define DEPTH_STENCIL_STATE(ClassName) CREATE_EMPTY_CLASS(ClassName)
+#define DEPTH_STENCIL_STATE(ClassName) CREATE_HASH_CLASS(ClassName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global Depth Stencil State

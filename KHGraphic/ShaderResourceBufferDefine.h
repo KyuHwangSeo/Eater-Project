@@ -2,7 +2,7 @@
 #include "HashBase.h"
 
 #define ADD_SHADER_RESOURCE_VIEW(ClassName) static bool srv_##ClassName = ShaderResourceHashTable::Get()->Push(eResourceType::SRV, #ClassName, typeid(ClassName).hash_code());
-#define SHADER_RESOURCE_VIEW(ClassName) CREATE_EMPTY_CLASS(ClassName) ADD_SHADER_RESOURCE_VIEW(ClassName)
+#define SHADER_RESOURCE_VIEW(ClassName) CREATE_HASH_CLASS(ClassName) ADD_SHADER_RESOURCE_VIEW(ClassName)
 
 /// <summary>
 /// ShaderResourceView Resource Struct

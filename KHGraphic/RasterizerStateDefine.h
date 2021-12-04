@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define RASTERIZER_STATE(ClassName) CREATE_EMPTY_CLASS(ClassName)
+#define RASTERIZER_STATE(ClassName) CREATE_HASH_CLASS(ClassName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global Rasterizer State

@@ -122,6 +122,8 @@ bool ShaderResourceHashTable::DefineCheck(Define_Mask nowDefine)
 
 void ShaderResourceHashTable::Destroy()
 {
+	DEFINE_MASK = 0x00000000;
+
 	g_CBuffer_HashTable.clear();
 	g_Sampler_HashTable.clear();
 	g_SRV_HashTable.clear();

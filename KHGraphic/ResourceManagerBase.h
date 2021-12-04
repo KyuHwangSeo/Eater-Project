@@ -12,8 +12,10 @@
 /// - GraphicResourceFactory에서 생성된 Resource 관리
 
 typedef size_t Hash_Code;
-//template<typename T>
-//using TypeCheck = std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value;
+
+// Template을 통해 들어오는 Class가 HashClass인지 체크..
+template<typename T>
+using Enable_Check = std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>*;
 
 class ResourceBase;
 class DepthStencilView;
@@ -38,32 +40,32 @@ public:
 	virtual BasicRenderTarget* GetMainRenderTarget() abstract;
 	virtual void AddMainRenderTarget(RenderTarget* rtv) abstract;
 
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	template<typename T, typename Enable_Check<T> = nullptr>
 	OriginalRenderTarget GetRenderTarget();
 
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	template<typename T, typename Enable_Check<T> = nullptr>
 	DepthStencilView* GetDepthStencilView();
-	
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+
+	template<typename T, typename Enable_Check<T> = nullptr>
 	DepthStencilState* GetDepthStencilState();
-	
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+
+	template<typename T, typename Enable_Check<T> = nullptr>
 	RasterizerState* GetRasterizerState();
 
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	template<typename T, typename Enable_Check<T> = nullptr>
 	BlendState* GetBlendState();
 
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	template<typename T, typename Enable_Check<T> = nullptr>
 	ViewPort* GetViewPort();
 
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	template<typename T, typename Enable_Check<T> = nullptr>
 	BufferData* GetBuffer();
 
 public:
-	template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type = std::is_base_of<HashClass<T>, T>::value>
+	template<typename T, typename Enable_Check<T> = nullptr>
 	void AddResource(ResourceBase* resource);
 
-protected:
+private:
 	virtual OriginalRenderTarget GetRenderTarget(Hash_Code hash_code) abstract;
 	virtual DepthStencilView* GetDepthStencilView(Hash_Code hash_code) abstract;
 	virtual BlendState* GetBlendState(Hash_Code hash_code) abstract;
@@ -78,50 +80,50 @@ private:
 	virtual ComputeRenderTarget* GetComputeRenderTarget(Hash_Code hash_code) abstract;
 };
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline OriginalRenderTarget IGraphicResourceManager::GetRenderTarget()
 {
 	return GetRenderTarget(T::GetHashCode());
 }
 
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline DepthStencilView* IGraphicResourceManager::GetDepthStencilView()
 {
 	return GetDepthStencilView(T::GetHashCode());
 }
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline BlendState* IGraphicResourceManager::GetBlendState()
 {
 	return GetBlendState(T::GetHashCode());
 }
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline RasterizerState* IGraphicResourceManager::GetRasterizerState()
 {
 	return GetRasterizerState(T::GetHashCode());
 }
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline DepthStencilState* IGraphicResourceManager::GetDepthStencilState()
 {
 	return GetDepthStencilState(T::GetHashCode());
 }
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline ViewPort* IGraphicResourceManager::GetViewPort()
 {
 	return GetViewPort(T::GetHashCode());
 }
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline BufferData* IGraphicResourceManager::GetBuffer()
 {
 	return GetBuffer(T::GetHashCode());
 }
 
-template<typename T, typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type>
+template<typename T, typename Enable_Check<T>>
 inline void IGraphicResourceManager::AddResource(ResourceBase* resource)
 {
 	AddResource(T::GetHashCode(), resource);

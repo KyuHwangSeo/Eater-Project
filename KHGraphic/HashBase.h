@@ -3,8 +3,8 @@
 #include <typeinfo>
 #include "ShaderResourceHashTable.h"
 
-#define CREATE_EMPTY_CLASS(ClassName) struct ClassName : public HashClass<ClassName> {};
-#define RESOURCE_DEFINE(ResourceMask) static bool check_##ResourceMask = ShaderResourceHashTable::Get()->DefineCheck((int)ResourceMask);
+#define CREATE_HASH_CLASS(ClassName) struct ClassName : public HashClass<ClassName> {};
+#define RESOURCE_DEFINE(ResourceMask) static bool check_##ResourceMask = ShaderResourceHashTable::Get()->DefineCheck(ResourceMask);
 
 /// <summary>
 /// BufferName Struct
@@ -30,10 +30,5 @@ struct HashClass
 	static size_t GetHashCode()
 	{
 		return typeid(T).hash_code();
-	}
-
-	static T Get()
-	{
-		return T();
 	}
 };

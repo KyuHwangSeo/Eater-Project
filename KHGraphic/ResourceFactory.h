@@ -17,25 +17,22 @@ public:
 	void Release() override;
 
 	void CreateTexture2D(D3D11_TEXTURE2D_DESC* texDesc, ID3D11Texture2D** tex2D) override;
-	void CreateRTV(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, ID3D11RenderTargetView** rtv) override;
-	void CreateSRV(ID3D11Texture2D* tex2D, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, ID3D11ShaderResourceView** srv) override;
-	void CreateUAV(ID3D11Texture2D* tex2D, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc, ID3D11UnorderedAccessView** uav) override;
+	void CreateRenderTargetView(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, ID3D11RenderTargetView** rtv) override;
+	void CreateShaderResourceView(ID3D11Texture2D* tex2D, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, ID3D11ShaderResourceView** srv) override;
+	void CreateUnorderedAccessView(ID3D11Texture2D* tex2D, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc, ID3D11UnorderedAccessView** uav) override;
 
-public:
-	void CreateMainRenderTarget(UINT width, UINT height) override;
-
-public:
+private:
 	void CreateDSV(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc) override;
 	void CreateDSS(Hash_Code hash_code, D3D11_DEPTH_STENCIL_DESC* dssDesc) override;
 	void CreateRS(Hash_Code hash_code, D3D11_RASTERIZER_DESC* rsDesc) override;
 	void CreateBS(Hash_Code hash_code, D3D11_BLEND_DESC* bsDesc) override;
 	void CreateSS(Hash_Code hash_code, D3D11_SAMPLER_DESC* ssDesc) override;
-	void CreateViewPort(Hash_Code hash_code, float topX, float topY, float width, float height, float width_ratio = 1.0f, float height_ratio = 1.0f) override;
+	void CreateVP(Hash_Code hash_code, float topX, float topY, float width, float height, float width_ratio = 1.0f, float height_ratio = 1.0f) override;
 
-	void CreateBasicRenderTarget(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv) override;
-	void CreateBasicRenderTarget(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) override;
-	void CreateComputeRenderTarget(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav) override;
-	void CreateComputeRenderTarget(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) override;
+	void CreateBasicRT(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv) override;
+	void CreateBasicRT(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) override;
+	void CreateComputeRT(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav) override;
+	void CreateComputeRT(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) override;
 
 public:
 	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
@@ -50,13 +47,15 @@ private:
 	template<typename T>
 	Vertexbuffer* CreateMeshVertexBuffer(ParserData::Mesh* mesh);
 
-	void CreateDepthStencilState();
-	void CreateRasterizerState();
-	void CreateSamplerState();
-	void CreateBlendState();
+	void CreateMainRenderTarget(UINT width, UINT height);
 
-	void CreateDepthStencilView(int width, int height);
-	void CreateViewPort(int width, int height);
+	void CreateDepthStencilStates();
+	void CreateRasterizerStates();
+	void CreateSamplerStates();
+	void CreateBlendStates();
+
+	void CreateDepthStencilViews(int width, int height);
+	void CreateViewPorts(int width, int height);
 
 	void CreateQuadBuffer();
 	void CreateSSAOQuadBuffer();

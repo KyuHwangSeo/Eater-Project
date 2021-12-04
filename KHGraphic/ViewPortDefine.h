@@ -1,7 +1,7 @@
 #pragma once
 #include "HashBase.h"
 
-#define VIEW_PORT(ClassName) CREATE_EMPTY_CLASS(ClassName)
+#define VIEW_PORT(ClassName) CREATE_HASH_CLASS(ClassName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Global ViewPort

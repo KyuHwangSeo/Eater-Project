@@ -35,10 +35,10 @@ RenderManager::RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* fac
 	//m_Light = new LightPass();
 	m_Shadow = new ShadowPass();
 
+	m_RenderPassList.push_back(m_Shadow);
 	m_RenderPassList.push_back(m_Farward);
 	//m_RenderPassList.push_back(m_Deferred);
 	//m_RenderPassList.push_back(m_Light);
-	m_RenderPassList.push_back(m_Shadow);
 }
 
 RenderManager::~RenderManager()

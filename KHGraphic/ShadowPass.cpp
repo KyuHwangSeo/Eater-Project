@@ -68,7 +68,7 @@ void ShadowPass::Create(int width, int height)
 	dsvDesc.Texture2D.MipSlice = 0;
 
 	// Shadow DepthStencilView 持失..
-	g_Factory->CreateDSV<DSV_Shadow>(tex2D.Get(), &dsvDesc);
+	g_Factory->CreateDepthStencilView<DSV_Shadow>(tex2D.Get(), &dsvDesc);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroMemory(&srvDesc, sizeof(srvDesc));
@@ -78,7 +78,7 @@ void ShadowPass::Create(int width, int height)
 	srvDesc.Texture2D.MostDetailedMip = 0;
 
 	// ShaderResourceView 持失..
-	g_Factory->CreateSRV(tex2D.Get(), &srvDesc, &m_ShadowSRV);
+	g_Factory->CreateShaderResourceView(tex2D.Get(), &srvDesc, &m_ShadowSRV);
 
 	// RenderTarget 持失..
 	g_Factory->CreateBasicRenderTarget<RT_Shadow>(nullptr, &m_ShadowSRV);
