@@ -29,7 +29,8 @@ SamplerState samWrapMinLinear : register(s1);
 
 struct PixelIn
 {
-    float4 PosW : SV_POSITION;
+    float4 PosH : SV_POSITION;
+    float3 PosW : POSITIONW;
     float2 Tex : TEXCOORD;
     float3 NormalW : NORMALW;
     float3 ShadowPosH : POS_SHADOW;
@@ -54,7 +55,7 @@ float4 main(PixelIn pin) : SV_Target0
     float shadows = CalcShadowFactor(gShadowSam, gShadowMap, pin.ShadowPosH);
     
     // View Direction
-    float3 ViewDirection = pin.PosW.xyz - gEyePosW;
+    float3 ViewDirection = gEyePosW - pin.PosW;
     ViewDirection = normalize(ViewDirection);
     
     // Start with a sum of zero.

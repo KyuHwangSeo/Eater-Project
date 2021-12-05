@@ -22,7 +22,6 @@ private:
 	VertexShader* m_SkinVS;
 	PixelShader* m_ForwardPS;
 
-	DepthStencilView* m_DSV;
 	ID3D11DepthStencilView* m_DepthStencilView;
 
 	ID3D11DepthStencilState* m_DepthStencilState;

@@ -10,8 +10,11 @@
 typedef unsigned int	Define_Mask;
 typedef size_t			Hash_Code;
 
+///
+/// 2021/11/08 1:22
+/// SeoKyuHwang
 /// 
-/// ShaderResourceHashTable Class
+/// # ShaderResourceHashTable Class
 /// 
 /// - ShaderResource Struct 기준 Hash Code 키값으로 설정하기 위한 Class..
 /// - Shader Reflect Load 시 Description과 비교하기 위해 필요..

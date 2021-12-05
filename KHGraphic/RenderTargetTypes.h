@@ -19,6 +19,7 @@ class ComputeRenderTarget;
 ///
 /// - OriginalRenderTarget Operator를 통해 해당 RenderTarget Class 반환
 /// - operator (BasicRenderTarget, ComputeRenderTarget)
+/// 
 class OriginalRenderTarget
 {
 public:

@@ -157,6 +157,27 @@
     <Filter Include="소스 파일\Engine\Base">
       <UniqueIdentifier>{af030aa3-e2f1-487a-bc86-30a1d1a778cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Shadow">
+      <UniqueIdentifier>{4a26ea54-3544-49d7-8690-9e8d80352211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Render">
+      <UniqueIdentifier>{7670020a-59b2-470e-8914-ae0c41d84ad6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Render\Forward">
+      <UniqueIdentifier>{b9904249-287d-460e-8271-5c5305113d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Render\Deffered">
+      <UniqueIdentifier>{62a0ec8b-43fd-47f0-9560-79e0af20a615}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Render\Object">
+      <UniqueIdentifier>{8eba24b1-4b5f-433c-bdd8-3a46b1e2ec81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Light">
+      <UniqueIdentifier>{7c75157b-90f4-4232-90ab-1ae19fcd9199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Object">
+      <UniqueIdentifier>{4da61ed5-edcc-4f6a-bdff-f06bc62c575d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -410,19 +431,31 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\MeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL</Filter>
+      <Filter>소스 파일\Shader\HLSL\Render\Forward</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\ShadowMeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL</Filter>
+      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\ShadowSkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL</Filter>
+      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\MeshVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\NormalTextureDeferredPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\TextureDeferredPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\LightPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\LightVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

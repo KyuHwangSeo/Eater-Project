@@ -22,6 +22,7 @@ interface IGraphicResourceManager;
 ///
 /// - GraphicResource를 생성해주는 Factory Class
 /// - 내부적으로 Resource Manager에서 Resource 관리
+/// 
 interface IGraphicResourceFactory
 {
 public:

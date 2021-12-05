@@ -59,18 +59,18 @@ private:
 	std::unordered_map<Hash_Code, DepthStencilView*> m_DepthStencilViewList;
 
 	/////////////////////////////////////////////////////////////////////////////////////////
-	// State Resource List
+	// Graphic State Resource List
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	std::unordered_map<Hash_Code, DepthStencilState*> m_DepthStencilStateList;
 	std::unordered_map<Hash_Code, RasterizerState*> m_RasterizerStateList;
 	std::unordered_map<Hash_Code, BlendState*> m_BlendStateList;
 	std::unordered_map<Hash_Code, SamplerState*> m_SamplerStateList;
-
 	std::unordered_map<Hash_Code, ViewPort*> m_ViewPortList;
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer Resource List
 	/////////////////////////////////////////////////////////////////////////////////////////
+	
 	std::unordered_map<Hash_Code, BufferData*> m_BufferList;
 };

@@ -1,18 +1,18 @@
 #pragma once
 
-///
-/// 2021/11/08 2:22
-/// SeoKyuHwang
-///
-/// RenderBase Class
-///
-/// - 각각 Rendering Class에서 해당 Rendering에 맞는 GraphicResource 생성을 위해
-///   각종 Manager & DeviceContext를 전역으로 두고 사용
-
 interface IShaderManager;
 interface IGraphicResourceManager;
 interface IGraphicResourceFactory;
 
+///
+/// 2021/11/08 2:22
+/// SeoKyuHwang
+///
+/// # RenderBase Class
+///
+/// - 각각 Rendering Class에서 해당 Rendering에 맞는 GraphicResource 생성을 위해
+///   각종 Manager & DeviceContext를 전역으로 두고 사용
+/// 
 class RenderPassBase
 {
 public:

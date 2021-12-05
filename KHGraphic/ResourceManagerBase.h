@@ -25,6 +25,7 @@ class ViewPort;
 ///
 /// - 葛电 GraphicResource甫 包府窍绰 Class
 /// - GraphicResourceFactory俊辑 积己等 Resource 包府
+/// 
 interface IGraphicResourceManager
 {
 public:

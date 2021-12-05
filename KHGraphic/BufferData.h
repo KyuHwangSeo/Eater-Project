@@ -1,6 +1,13 @@
 #pragma once
 #include "ResourceBase.h"
 
+/// 2021/12/05 21:17
+/// SeoKyuHwang
+///
+/// # BufferData Class
+///
+/// - Rendering에 필요한 기본 Buffer Class
+/// 
 class BufferData : public ResourceBase
 {
 public:

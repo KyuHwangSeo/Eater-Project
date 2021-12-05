@@ -56,9 +56,9 @@ void ForwardPass::Start()
 	m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 설정..
-	m_DSV = g_Resource->GetDepthStencilView<DSV_Defalt>();
-	m_DepthStencilView = m_DSV->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
 
+	// Graphic State 설정..
 	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
 	m_RasterizerState = g_Resource->GetRasterizerState<RS_Solid>()->Get();
 	m_BlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
@@ -73,7 +73,7 @@ void ForwardPass::OnResize(int width, int height)
 	m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 재설정..
-	m_DepthStencilView = m_DSV->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
 }
 
 void ForwardPass::Release()
@@ -164,7 +164,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	}
 
 	CB_Camera cameraBuf;
-	cameraBuf.gEyePosW = eye;
+	cameraBuf.gEyePosW = -eye;
 
 	CB_Materials matBuf;
 	for (int i = 0; i < 5; i++)
