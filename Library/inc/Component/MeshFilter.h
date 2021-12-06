@@ -34,8 +34,7 @@ public:
 	EATER_ENGINEDLL MeshFilter();
 	virtual ~MeshFilter();
 
-	virtual void Awake() override;
-
+	virtual void Start() override;
 public:
 	//메쉬의 이름을 넣으면 데이터 로드
 	EATER_ENGINEDLL void SetMeshName(std::string mMeshName);
@@ -49,6 +48,7 @@ private:
 	//Transform을 연결한다
 	void LinkHierarchy(Transform* my,Transform*parent);
 
+	void CreateMesh();
 	//LoadMeshData를 게임에 사용할 오브젝트로 생성하면서 값을 넣어준다
 	void CreateChild_Mesh(LoadMeshData* data,Transform* parent,  ModelData* modeldata);
 

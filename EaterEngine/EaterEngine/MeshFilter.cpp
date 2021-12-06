@@ -18,6 +18,9 @@ MaterialManager* MeshFilter::MAT_Manager = nullptr;
 MeshFilter::MeshFilter()
 {
 	MeshName = "";
+
+	//모든 컨퍼넌트들 Start함수보다 나중에 실행될것이다
+	Start_Order = FUNCTION_ORDER_LAST;
 }
 
 MeshFilter::~MeshFilter()
@@ -25,38 +28,16 @@ MeshFilter::~MeshFilter()
 
 }
 
-void MeshFilter::Awake()
+void MeshFilter::Start()
 {
-	if (isLoad_Mesh == true)
+	//클라이언트쪽에서 텍스쳐의 이름을 넣고 애니메이션을 넣고 모두 끝난상태
+	if (isLoad_Texture == true) 
 	{
-		////최상위 객체를 가져옴
-		ModelData* data = LoadManager::GetMesh(MeshName);
-		Transform* MyTr = gameobject->transform;
-
-		gameobject->OneMeshData->ObjType = OBJECT_TYPE::GAMEOBJECT;
-
-		
-		if(data->TopMeshList[0]->Skinning_Object)
-		{
-			BoneList.resize(data->BoneList->size());
-			BoneOffsetList.resize(data->BoneOffsetList->size());
-		}
-		
-		//본 오브젝트 만들기
-		for(int i = 0; i < data->TopBoneList.size(); i++)
-		{
-			CreateChild_Bone(data->TopBoneList[i], MyTr, &BoneList, &BoneOffsetList);
-		}
-
-
-		//매쉬 오브젝트 만들기
-		for(int i = 0; i < data->TopMeshList.size(); i++)
-		{
-			CreateChild_Mesh(data->TopMeshList[i], MyTr, data);
-		}
-
-		//Texture Check & Setting..
 		CheckTexture();
+	}
+
+	if (isLoad_Animation == true)
+	{
 		CheckAnimation();
 	}
 }
@@ -71,6 +52,7 @@ void MeshFilter::SetMeshName(std::string mMeshName)
 {
 	isLoad_Mesh = true;
 	MeshName = mMeshName;
+	CreateMesh();
 }
 
 void MeshFilter::SetTextureName(std::string mTextureName)
@@ -89,6 +71,7 @@ void MeshFilter::SetAnimationName(std::string mAnimeName)
 {
 	isLoad_Animation = true;
 	AnimationName = mAnimeName;
+	CheckAnimation();
 }
 
 void MeshFilter::PushModelData(LoadMeshData* mModel)
@@ -98,14 +81,14 @@ void MeshFilter::PushModelData(LoadMeshData* mModel)
 	data->IB = mModel->IB;
 	data->VB = mModel->VB;
 
-	data->Diffuse = mModel->Diffuse;
-	data->Normal = mModel->Normal;
+	data->Diffuse	= mModel->Diffuse;
+	data->Normal	= mModel->Normal;
 
 	data->mLocal = *(mModel->LocalTM);
 	data->mWorld = *(mModel->WorldTM);
 
 	// Diffuse Map이 없는경우 Dump Map으로 기본 출력..
-	if (data->Diffuse->TextureBufferPointer == nullptr)
+	if (data->Diffuse == nullptr)
 	{
 		data->Diffuse = LoadManager::GetTexture("Dump");
 	}
@@ -117,97 +100,93 @@ void MeshFilter::CheckTexture()
 	if (TextureName.empty() == false)
 	{
 		// 해당 Object Mesh Data..
-		MeshData* data = gameobject->OneMeshData;
 
-		// 설정 Texture Buffer..
-		TextureBuffer* texBuffer = LoadManager::GetTexture(TextureName);
-
-		// 해당 Texture가 Load되지 않은 경우 기존 Texture 사용..
-		if (texBuffer == nullptr)
+		for (int i = 0; i <(int)MeshList.size(); i++)
 		{
-			return;
-		}
+			MeshData* data = MeshList[i]->OneMeshData;
 
-		// Texture 설정..
-		data->Diffuse = texBuffer;
+			// 설정 Texture Buffer..
+			TextureBuffer* texBuffer = LoadManager::GetTexture(TextureName);
+		
+
+			// 해당 Texture가 Load되지 않은 경우 기존 Texture 사용..
+			if (texBuffer == nullptr)
+			{
+				return;
+			}
+
+			// Texture 설정..
+			data->Diffuse = texBuffer;
+		}
 	}
 }
 
 void MeshFilter::CheckAnimation()
 {
 	if (isLoad_Animation == false) { return; }
-
+	
 	ModelAnimationData* data		= LoadManager::GetAnimation(AnimationName);
 	AnimationController* Controller = gameobject->GetComponent<AnimationController>();
-
-	//컨퍼넌트를 생성해주고 애니메이션 넣어준다
-	Controller->SetBoneList(&BoneList);
-	Controller->SetAnimeList(data);
+	
+	//가져온 컨퍼넌트에 본 정보를 넘겨준다
+	if (Controller != nullptr)
+	{	
+		Controller->SetBoneList(&BoneList);
+		Controller->SetAnimeList(data);
+	}
 }
 
 void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelData* modeldata)
 {
-	int ChildCount = (int)data->Child.size();
-
 	DebugManager::Line("(Mesh)");
+
+	///게임 오브젝트 생성
 	GameObject* OBJ = new GameObject();
-	OBJ->Name = data->Name;
 
+	///컨퍼넌트 생성후 초기화
+	Transform* Tr		= OBJ->AddComponent<Transform>();
+	MeshFilter* Filter	= OBJ->AddComponent<MeshFilter>();
 
-	//컨퍼넌트 생성
-	Transform* Tr = OBJ->AddComponent<Transform>();
-	MeshFilter* Filter = OBJ->AddComponent<MeshFilter>();
-
-	//Transform 연결
-	OBJ->transform = Tr;
-
-	//스키닝 매쉬라면
+	///스키닝 오브젝트 여부
 	if (data->Skinning_Object == true)
 	{
 		SkinningFilter* SF = OBJ->AddComponent<SkinningFilter>();
-		//본 오프셋 넘겨주기 ,본 리스트 넘겨주기
 		SF->PushBoneList(&BoneList);
 		SF->PushBone_OffsetList(&BoneOffsetList);
-
 		OBJ->OneMeshData->ObjType = OBJECT_TYPE::SKINNING;
+		Tr->Rotation = { 180,0,0 };
 	}
 	else
 	{
+		LinkHierarchy(Tr, parent);
 		OBJ->OneMeshData->ObjType = OBJECT_TYPE::BASE;
 	}
 
-	// Material Data..
+	///메테리얼 정보 여부
 	if (data->Material)
 	{
 		Material* mat = OBJ->AddComponent<Material>();
-
-		// 해당 Material Data..
 		MaterialData matData;
-		matData.Ambient = data->Material->m_Material_Ambient;
-		matData.Diffuse = data->Material->m_Material_Diffuse;
-		matData.Specular = data->Material->m_Material_Specular;
-
-		// 해당 Material 삽입..
-		mat->SetMaterialData(matData);
-
-		// Material 등록..
-		MAT_Manager->AddMaterial(mat);
+		matData.Ambient		= data->Material->m_Material_Ambient;
+		matData.Diffuse		= data->Material->m_Material_Diffuse;
+		matData.Specular	= data->Material->m_Material_Specular;
+		mat->SetMaterialData(matData);	// 해당 Material 삽입..
+		MAT_Manager->AddMaterial(mat);	// Material 등록..
 	}
 
-	//데이터를 넘겨준다 
+	///기본 데이터 초기화
+	OBJ->Name = data->Name;
+	OBJ->transform = Tr;
 	Filter->PushModelData(data);
 	Tr->Load_Local = *data->LocalTM;
 	Tr->Load_World = *data->WorldTM;
-
-	//Transform 끼리 연결
-	//LinkHierarchy(Tr, parent);
-	//오브젝트 매니저에서 관리할수있도록 넣어준다
 	OBJ_Manager->PushCreateObject(OBJ);
+	MeshList.push_back(OBJ);
 
-	//자식객체 개수만큼 실행
+	///재귀 함수
+	int ChildCount = (int)data->Child.size();
 	for (int i = 0; i < ChildCount; i++)
 	{
-		//재귀 호출
 		Filter->CreateChild_Mesh(data->Child[i], Tr, modeldata);
 	}
 }
@@ -215,41 +194,35 @@ void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelDa
 void MeshFilter::CreateChild_Bone(LoadMeshData* data, Transform* parent, std::vector<GameObject*>* mBoneList, std::vector<DirectX::SimpleMath::Matrix>* BoneOffsetList)
 {
 	DebugManager::Line("(Bone)");
+
+	///오브젝트를 생성
 	GameObject* OBJ = new GameObject();
-	OBJ->Name = data->Name;
+
+	///컨퍼넌트 생성
+	Transform*	Tr	= OBJ->AddComponent<Transform>();
+	MeshFilter* MF	= OBJ->AddComponent<MeshFilter>();
+	Animator*	AN	= OBJ->AddComponent<Animator>();
+
+	///초기화 설정
+	if (data->Top_Object == true){Tr->Rotation = { -90,0,0 };}
 	OBJ->OneMeshData->ObjType = OBJECT_TYPE::BONE;
-
-	
-
-	//컨퍼넌트 생성
-	Transform* Tr		= OBJ->AddComponent<Transform>();
-	MeshFilter* Filter	= OBJ->AddComponent<MeshFilter>();
-	Animator* Anime		= OBJ->AddComponent<Animator>();
-	//애니메이션 데이터 넣어주기
-	//Anime->SetAnimation(data->Animation);
-
-	//Transform 연결
-	OBJ->transform = Tr;
-
-	Tr->Load_Local = *data->LocalTM;
-	Tr->Load_World = *data->WorldTM;
-
-
-	//Transform 끼리 연결
-	LinkHierarchy(Tr, parent);
-	//오브젝트 매니저에서 관리할수있도록 넣어준다
+	OBJ->transform	= Tr;
+	OBJ->Name		=  data->Name;
+	Tr->Load_Local	= *data->LocalTM;
+	Tr->Load_World	= *data->WorldTM;
+	gameobject->PushChildBoneObject(OBJ);
 	OBJ_Manager->PushCreateObject(OBJ);
-
-	//본에 해당하는 Transform과 오프셋을
+	LinkHierarchy(Tr, parent);
+	//본에 해당하는 Transform과 오프셋을넣어준다
 	(*mBoneList)[data->BoneIndex] = OBJ;
 	(*BoneOffsetList)[data->BoneIndex] = (*data->BoneOffset);
 
-	//자식객체 개수만큼 실행
+
+	///재귀 함수
 	int ChildCount = (int)data->Child.size();
 	for (int i = 0; i < ChildCount; i++)
 	{
-		//재귀 호출
-		Filter->CreateChild_Bone(data->Child[i], Tr, mBoneList, BoneOffsetList);
+		MF->CreateChild_Bone(data->Child[i], Tr, mBoneList, BoneOffsetList);
 	}
 }
 
@@ -257,6 +230,38 @@ void MeshFilter::LinkHierarchy(Transform* my, Transform* parent)
 {
 	my->SetParnet(parent);
 	parent->SetChild(my);
+}
+
+void MeshFilter::CreateMesh()
+{
+	///이름으로 로드할 데이터를 찾아서 가져옴
+	ModelData* data = LoadManager::GetMesh(MeshName);
+	Transform* Tr = gameobject->GetTransform();
+	if (data == nullptr) { return; }
+
+	///본 오브젝트 생성
+	int index = 0;
+	index = (int)data->TopBoneList.size();
+	if (data->BoneList != nullptr)
+	{
+		BoneList.resize((int)data->BoneList->size());
+		BoneOffsetList.resize((int)data->BoneOffsetList->size());
+
+		for (int i = 0; i < index; i++)
+		{
+			CreateChild_Bone(data->TopBoneList[i], Tr, &BoneList, &BoneOffsetList);
+		}
+	}
+
+	///메쉬 오브젝트 생성
+	index = (int)data->TopMeshList.size();
+	for (int i = 0; i < index; i++)
+	{
+		CreateChild_Mesh(data->TopMeshList[i], Tr, data);
+	}
+
+	///오브젝트 생성완료
+	isLoad_Mesh = true;
 }
 
 

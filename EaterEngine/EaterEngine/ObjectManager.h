@@ -39,15 +39,15 @@ public:
 	void Initialize(HWND _g_hWnd);
 
 	/// 시작 단계
-	static void PushStart(Component* obj);
-	static void PushAwake(Component* obj);
+	static void PushStart(Component* obj,int Order);
+	static void PushAwake(Component* obj, int Order);
 
 	/// 컨퍼넌트의 업데이트 함수를 넣어준다
-	static void PushStartUpdate(Component* obj);
-	static void PushTransformUpdate(Component* obj);
-	static void PushPhysicsUpdate(Component* obj);
-	static void PushEndUpdate(Component* obj);
-	static void PushUpdate(Component* obj);
+	static void PushStartUpdate(Component* obj, int Order);
+	static void PushTransformUpdate(Component* obj, int Order);
+	static void PushPhysicsUpdate(Component* obj, int Order);
+	static void PushEndUpdate(Component* obj, int Order);
+	static void PushUpdate(Component* obj, int Order);
 
 	/// 업데이트 함수 리스트를 실행시킴
 	void PlayUpdate();
@@ -65,6 +65,9 @@ public:
 	std::queue<MeshData*>* GetShadowQueue();
 	
 private:
+	//컨퍼넌트 데이터를 텀겨준다
+	static ComponentFunctionData PushComponentData(Component*);
+
 	///오브젝트 리스트
 	std::vector<GameObject*> ObjectList;
 	///삭제되면 안되는 오브젝트 리스트

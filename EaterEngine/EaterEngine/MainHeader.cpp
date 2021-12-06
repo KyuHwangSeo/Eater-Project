@@ -62,12 +62,12 @@ void EndEngine()
 	gGameEngine->LoadMeshPath(mPath);
 }
 
- void LoadTesture(std::string mPath)
+ void LoadTexture(std::string mPath)
 {
 	gGameEngine->LoadTexture(mPath);
 }
 
- void LoadTesturePath(std::string mPath)
+ void LoadTexturePath(std::string mPath)
 {
 	gGameEngine->LoadTexturePath(mPath);
 }

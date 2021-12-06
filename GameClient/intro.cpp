@@ -6,6 +6,7 @@
 #include "AnimationController.h"
 #include "Transform.h"
 #include "AI.h"
+#include "Player.h"
 #include "KeyInput.h"
 #include "Camera.h"
 #include "Light.h"
@@ -14,30 +15,18 @@ void intro::Awake()
 {
 	//불러오는 매쉬의 경로 파악
 	LoadMeshPath("../Resources/Mesh/");
-	LoadTesturePath("../Resources/Texture/");
+	LoadTexturePath("../Resources/Texture/");
 
-	LoadMesh("Player_Idle");
-	//LoadMesh("EnemyB");
 	LoadMesh("Field");
-	//LoadMesh("Table");
-	//LoadMesh("box");
-	//LoadMesh("Dome_v03");
-	//LoadMesh("1s_table_long_lower");
-	//LoadMesh("MOdNA09_highpoly_1123");
-	//LoadMesh("Enemy_Run",false, true);
-	//LoadMesh("Player_Attack");
-	//LoadMesh("Skinning");
-	//LoadMesh("Enemy_Run",false,false);
-	//LoadMesh("Enemy_Roll",false,true);
-	//LoadMesh("Anim_Run", false, false);
-	//LoadMesh("Anim_Idle", false, true);
-	//LoadMesh("Anim_Idle",false,true);
-	//LoadMesh("box");
-	//LoadMesh("AnimeBox");
-	//LoadTesture("body_normal_tangent_Base_color.png");
-	//LoadTesture("Dump.png");
-	//LoadTesture("Player.dds");
-	//LoadTesture("body_normal_tangent_Base_color.png");
+	LoadMesh("Player_Run", false, false);
+	LoadMesh("Player_Roll", false, true);
+	LoadMesh("Player_Idle", false, true);
+	LoadMesh("Pistol", true, false);
+	LoadMesh("Weapon", true, false);
+
+	LoadTexture("Player.dds");
+	LoadTexture("Dump.png");
+
 
 	///카메라
 	testobj = Instance("Cam");
@@ -49,25 +38,16 @@ void intro::Awake()
 	testobj = Instance("DirectionLight");
 	testobj->AddComponent<DirectionLight>();
 
-	//testobj = Instance("obj");
-	//MeshFilter* Filter		= testobj->AddComponent<MeshFilter>();
-	//AnimationController* AC = testobj->AddComponent<AnimationController>();
-	//Filter->SetMeshName("MOdNA09_highpoly_1123");
-	MeshFilter* Filter;
-	AnimationController* AC;
-	testobj = Instance("obj1");
-	Filter = testobj->AddComponent<MeshFilter>();
-	AC = testobj->AddComponent<AnimationController>();
-	Filter->SetMeshName("Player_Idle");
-	Filter->SetAnimationName("Player");
+	///캐릭터
+	testobj = Instance("Player");
+	testobj->AddComponent<AnimationController>();
+	testobj->AddComponent<MeshFilter>();
+	testobj->AddComponent<Player>();
 
-	testobj->GetTransform()->Position = { 0 ,0, 0 };
-	testobj->GetTransform()->Scale = { 1.0f, 1.0f, 1.0f };
-	testobj->GetTransform()->Rotation = { 0 ,0,0 };
-
-	testobj = Instance("obj2");
-	Filter = testobj->AddComponent<MeshFilter>();
-	Filter->SetMeshName("Field");
+	/// 바닥
+	testobj = Instance("Field");
+	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
+	testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
 }
 
 void intro::Start()

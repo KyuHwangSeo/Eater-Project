@@ -174,7 +174,10 @@ public:
 	std::function<void()> FunctionPointer;
 
 	//컨퍼넌트 포인터
-	Component* ComponentPoiner;
+	Component* ComponentPointer;
+
+	//컨퍼넌트 순서
+	int OrderCount = 0;
 };
 
 

@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "EaterEngineDLL.h"
 #include <vector>
+#include <string>
 
 /// <summary>
 /// Animator들을 관리하는 클래스
@@ -16,18 +17,22 @@ public:
 	EATER_ENGINEDLL AnimationController();
 	EATER_ENGINEDLL virtual ~AnimationController();
 
-	void Awake();
-	void Update();
-
 	void SetBoneList(std::vector<GameObject*>* mobjList);
 	void SetAnimeList(ModelAnimationData* data);
-	void ChoiceAnime(std::string Name);
-	void Play();
-	
+
+	EATER_ENGINEDLL void Choice(std::string Name);		//선택
+	EATER_ENGINEDLL void Play(float Speed, bool Loop);	//재생
+	EATER_ENGINEDLL void Stop();						//일시정지
+
+	EATER_ENGINEDLL int GetNowFrame();	//선택한 애니메이션 프레임
+	EATER_ENGINEDLL int GetEndFrame();	//선택한 애니메이션 끝 프레임
+private:
 	//본들의 애니메이터 리스트
 	std::vector<Animator*> AnimatorList;
 
 	//한개의 모델에 들어있는 애니메이션 리스트
 	ModelAnimationData* AnimationList;
+
+	std::string NowAnimationName;
 };
 

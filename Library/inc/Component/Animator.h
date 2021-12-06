@@ -28,12 +28,11 @@ public:
 	void Play(float Speed = 1 ,bool Loop = true);
 	void Stop();
 	void ReStart();
-
-
-	//애니메이션의 프레임수를 생성시킨다
-	void CreateFrame(int CreateCount);
-
 	void ChoiceAnime(ParserData::OneAnimation* Anime);
+
+
+	int GetNowFrame();
+	int GetEndFrame();
 private:
 	//1초에 애니메이션 한개가 돌아가야할떄 프레임시간
 	float GetOnePlayTime(float mPlayTime,int EndFrameCount);
@@ -54,7 +53,8 @@ private:
 	float	PlayTime;		//애니메이션을 한바퀴 도는 시간 
 	int		AnimeIndex;		//애니메이션 인덱스값
 	bool	mLoop;			//반복 재생 여부
-	bool	mStop;
+	bool	mStop;			//멈춤여부
+	bool	mPlay;			//재생여부
 
 
 	Transform* transfrom;

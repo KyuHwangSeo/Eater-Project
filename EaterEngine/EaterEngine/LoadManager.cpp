@@ -3,6 +3,7 @@
 #include "EngineData.h"
 #include "GraphicsEngine.h"
 #include "ModelParser.h"
+#include "MathHelper.h"
 #include "GraphicEngineManager.h"
 
 using namespace ParserData;
@@ -136,7 +137,10 @@ void LoadManager::LoadMesh(std::string Name, bool Scale, bool LoadAnime)
 
 
 	//최상위 오브젝트의 리스트를 넣어준다
-	ModelList.insert({ Name,SaveMesh });
+	std::string::size_type End = Name.rfind('_');
+	std::string::size_type start = 0;
+	std::string SaveName = Name.substr(start, End);
+	ModelList.insert({ SaveName,SaveMesh });
 }
 
 void LoadManager::LoadTexture(std::string Name)
@@ -284,12 +288,12 @@ void LoadManager::LoadAnimation(ModelData* SaveMesh, ParserData::Model* MeshData
 {
 	if (MeshData->m_isAnimation == false)
 	{
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_LOAD, "Animation", Name, true);
 		return;
 	}
 	else
 	{
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_LOAD, "Animation", Name, false);
+		CreateAnimationKeyFrame( &(MeshData->m_AnimationList) ,10);
 	}
 
 	//저장할 이름 설정 첫번째 key
@@ -317,6 +321,61 @@ void LoadManager::LoadAnimation(ModelData* SaveMesh, ParserData::Model* MeshData
 	//데이터 저장
 	ModelAnimationData* temp = AnimationList[SaveName];
 	temp->AnimList.insert({key, &(MeshData->m_AnimationList)});
+}
+
+void LoadManager::CreateAnimationKeyFrame(std::vector<ParserData::OneAnimation*>* Anime,int InputKeyCount)
+{
+	//기존 애니메이션
+	std::vector<ParserData::OneAnimation*>::iterator it = Anime->begin();
+
+	for (it; it != Anime->end(); it++)
+	{
+		std::vector<ParserData::OneFrame*> data = (*it)->m_AniData;
+		//새롭게 넣을 데이터 리스트
+		std::vector<ParserData::OneFrame*> CreateData;
+
+		int Size = (int)data.size();
+		for (int i = 0; i < Size-1; i++)
+		{
+			//보간할 처음값
+			DirectX::SimpleMath::Vector3 Start_Pos		= data[i]->m_Pos;
+			DirectX::SimpleMath::Quaternion Start_Rot	= data[i]->m_RotQt;
+			DirectX::SimpleMath::Vector3 Start_Scl		= data[i]->m_Scale;
+			float Start_Time = data[i]->m_Time;
+
+			//보간할 다음값
+			int NextIndex = i + 1;
+			DirectX::SimpleMath::Vector3 End_Pos		= data[NextIndex]->m_Pos;
+			DirectX::SimpleMath::Quaternion End_Rot		= data[NextIndex]->m_RotQt;
+			DirectX::SimpleMath::Vector3 End_Scl		= data[NextIndex]->m_Scale;
+			float End_Time = data[NextIndex]->m_Time;
+
+			///처음값 넣어주기
+			CreateData.push_back(data[i]);
+			
+			int KeyCount = InputKeyCount;		//생성할 키프레임
+			float CountLerp = (float)(1/InputKeyCount);	//생성할 키프레임 보간할 위치값을구함
+			for (int j = 0; j < KeyCount; j++)
+			{
+				//새로운 키 프레임 생성
+				ParserData::OneFrame* temp = new OneFrame();
+				temp->m_Pos		= Vector3::Lerp(Start_Pos, End_Pos, CountLerp);
+				temp->m_RotQt	= Quaternion::Lerp(Start_Rot, End_Rot, CountLerp);
+				temp->m_Scale	= Vector3::Lerp(Start_Scl, End_Scl, CountLerp);
+				temp->m_Time	= MathHelper::Lerp(Start_Time, End_Time, CountLerp);
+
+				CreateData.push_back(temp);
+				CountLerp += 0.1f;
+			}
+
+			///마지막값 넣어주기
+			CreateData.push_back(data[NextIndex]);
+		}
+
+		(*it)->m_AniData = CreateData;
+		(*it)->m_TicksPerFrame /= (InputKeyCount +2);
+		(*it)->m_EndFrame = (Size * (InputKeyCount + 2)) - (InputKeyCount + 2);
+	}
 }
 
 void LoadManager::SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData)

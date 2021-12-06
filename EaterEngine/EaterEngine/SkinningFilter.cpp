@@ -7,7 +7,8 @@
 
 SkinningFilter::SkinningFilter()
 {
-
+	BoneOffsetTM = nullptr;
+	BoneSize = 0;
 }
 
 SkinningFilter::~SkinningFilter()

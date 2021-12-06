@@ -31,8 +31,11 @@
     <Filter Include="소스 파일\Scene\inGame">
       <UniqueIdentifier>{e93e28d7-0fc6-4289-b4a5-74957091c4b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Component\GameManager">
+    <Filter Include="소스 파일\GameManager">
       <UniqueIdentifier>{f719478b-bad2-44d2-a53c-e5625be7e03e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\Player">
+      <UniqueIdentifier>{a59a5f89-b961-40e7-8282-6208957b9634}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -49,7 +52,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
-      <Filter>소스 파일\Component\GameManager</Filter>
+      <Filter>소스 파일\GameManager</Filter>
     </ClInclude>
     <ClInclude Include="AI.h">
       <Filter>소스 파일\Component\AI</Filter>
@@ -63,13 +66,16 @@
     <ClInclude Include="inGame.h">
       <Filter>소스 파일\Scene\inGame</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>소스 파일\Component\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameClient.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>소스 파일\Component\GameManager</Filter>
+      <Filter>소스 파일\GameManager</Filter>
     </ClCompile>
     <ClCompile Include="AI.cpp">
       <Filter>소스 파일\Component\AI</Filter>
@@ -82,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="inGame.cpp">
       <Filter>소스 파일\Scene\inGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>소스 파일\Component\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

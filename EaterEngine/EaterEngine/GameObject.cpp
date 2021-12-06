@@ -2,6 +2,9 @@
 #include "EngineData.h"
 #include "DebugManager.h"
 #include "ObjectManager.h"
+#include "Transform.h"
+#include "MeshFilter.h"
+
 GameObject::GameObject()
 {
 	Tag	= 0;			//테그
@@ -26,18 +29,41 @@ void GameObject::SetActive(bool active)
 	}
 }
 
-GameObject* GameObject::GetChild(std::string Name)
+GameObject* GameObject::GetChildBone(std::string FindName)
 {
-	return nullptr;
+	GameObject* temp = nullptr;
+	if (Name == FindName)
+	{
+		temp = this;
+		return temp;
+	}
+
+
+	std::vector<GameObject*>::iterator it = ChildBoneList.begin();
+	for (it; it != ChildBoneList.end(); it++)
+	{
+		temp = (*it)->GetChildBone(FindName);
+		if (temp != nullptr)
+		{
+			break;
+		}
+	}
+
+	return temp;
 }
 
-GameObject* GameObject::GetChild(int Number)
+GameObject* GameObject::GetChildMesh(std::string FindName)
 {
-	if (Number >= (int)ChildList.size())
+	if (Name == FindName)
 	{
-		return nullptr;
+		return this;
 	}
-	return ChildList[Number];
+
+	std::vector<GameObject*>::iterator it = ChildMeshList.begin();
+	for (it; it != ChildMeshList.end(); it++)
+	{
+		 (*it)->GetChildMesh(FindName);
+	}
 }
 
 Transform* GameObject::GetTransform()
@@ -54,58 +80,84 @@ Transform* GameObject::GetTransform()
 
 Component* GameObject::GetDeleteComponent(int i)
 {
+	//들어온 인덱스에 맞는 컨퍼넌트를 삭제시켜준다
 	Component* temp = ComponentList[i];
 	return temp;
 }
 
 int GameObject::GetComponentCount()
 {
+	//컨퍼넌트 리스트의 사이즈를 반환
 	return (int)ComponentList.size();
 }
 
 void GameObject::PushChildList(GameObject* obj)
 {
-	ChildList.push_back(obj);
+	//자식 오브젝트로 넣는다
+	ChildMeshList.push_back(obj);
+}
+
+void GameObject::ChoiceParent(GameObject* obj)
+{
+	//나자신을 선택한 오브젝트의 자식으로 넣는다
+	transform->SetParnet(obj->transform);
+	obj->transform->SetChild(transform);
+}
+
+void GameObject::ChoiceChild(GameObject* obj)
+{
+	//나자신을 선택한 오브젝트의 자식으로 넣는다
+	transform->SetChild(obj->transform);
+	obj->transform->SetParnet(transform);
+}
+
+void GameObject::PushChildMeshObject(GameObject* obj, std::string Name)
+{
+	ChildMeshList.push_back(obj);
+}
+
+void GameObject::PushChildBoneObject(GameObject* obj, std::string Name)
+{
+	ChildBoneList.push_back(obj);
 }
 
 void GameObject::PushComponentFunction(Component* con, unsigned int type)
 {
-	
 	switch (type)
 	{
 	case AWAKE:
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "1.Awake",false);
-		ObjectManager::PushAwake(con);
+		ObjectManager::PushAwake(con,con->Awake_Order);
 		con->FUNCTION_MASK |= AWAKE;
 		break;
 	case START:
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "2.Start", false);
-		ObjectManager::PushStart(con);
+		ObjectManager::PushStart(con, con->Start_Order);
 		con->FUNCTION_MASK |= START;
 		break;
 	case START_UPDATE:
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "3.StartUpdate", false);
-		ObjectManager::PushStartUpdate(con);
+		ObjectManager::PushStartUpdate(con, con->StartUpdate_Order);
 		con->FUNCTION_MASK |= START_UPDATE;
 		break;
 	case Transform_UPDATE:
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction","4.TransformUpdate", false);
-		ObjectManager::PushTransformUpdate(con);
+		ObjectManager::PushTransformUpdate(con, con->TransformUpdate_Order);
 		con->FUNCTION_MASK |= Transform_UPDATE;
 		break;
 	case Physics_UPDATE:
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "5.PhysicsUpdate", false);
-		ObjectManager::PushPhysicsUpdate(con);
+		ObjectManager::PushPhysicsUpdate(con, con->PhysicsUpdate_Order);
 		con->FUNCTION_MASK |= Physics_UPDATE;
 		break;
 	case UPDATE:
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "6,Update", false);
-		ObjectManager::PushUpdate(con);
+		ObjectManager::PushUpdate(con, con->DefaultUpdate_Order);
 		con->FUNCTION_MASK |= UPDATE;
 		break;
 	case END_UPDATE:
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "7.EndUpdate", false);
-		ObjectManager::PushEndUpdate(con);
+		ObjectManager::PushEndUpdate(con, con->EndUpdate_Order);
 		con->FUNCTION_MASK |= END_UPDATE;
 		break;
 	}

@@ -51,9 +51,7 @@ DirectX::XMFLOAT3* Camera::GetPos()
 
 void Camera::SetSize(int Change_Width, int Change_Height)
 {
-	
 	float Ratio = (float)(Change_Width / Change_Height);
-
 }
 
 void Camera::ChoiceMainCam()

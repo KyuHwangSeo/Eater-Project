@@ -28,8 +28,8 @@ EATER_ENGINEDLL void CreateSceneSub(Scene* mSceneTemp,std::string SceneName);	//
 ///매쉬 불러오기
 extern "C" EATER_ENGINEDLL void LoadMesh(std::string mMeshName, bool Scale = true,bool LoadAnime = false);	//매쉬 로드
 extern "C" EATER_ENGINEDLL void LoadMeshPath(std::string mPath);											//매쉬 로드 경로
-extern "C" EATER_ENGINEDLL void LoadTesture(std::string mPath);
-extern "C" EATER_ENGINEDLL void LoadTesturePath(std::string mPath);
+extern "C" EATER_ENGINEDLL void LoadTexture(std::string mPath);
+extern "C" EATER_ENGINEDLL void LoadTexturePath(std::string mPath);
 
 
 ///키입력

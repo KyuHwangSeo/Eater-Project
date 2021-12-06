@@ -5,31 +5,18 @@
 
 TimeManager* Component::mTimeManager = nullptr;
 KeyinputManager* Component::mKeyInputManger = nullptr;
+
+//함수포인터의 해쉬코드들
 Component::Component()
 {
 	gameobject = nullptr;
 	ComponentType = 0;
+	OrderCount = FUNCTION_ORDER_CENTER;
 }
 
 Component::~Component()
 {
 	gameobject = nullptr;
-}
-
-
-void Component::SetComponentType(size_t type)
-{
-	ComponentType = type;
-}
-
-size_t Component::GetComponentType()
-{
-	return ComponentType;
-}
-
-void Component::SetObject(GameObject* obj)
-{
-	gameobject = obj;
 }
 
 void Component::SetManager(TimeManager* time, KeyinputManager* key)

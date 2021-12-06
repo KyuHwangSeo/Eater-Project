@@ -29,36 +29,11 @@ Animator::~Animator()
 
 void Animator::Start()
 {
-	transfrom = gameobject->transform;
-	Play(1,true);
 }
 
 void Animator::StartUpdate()
 {
-	if (NowAnimationData != nullptr)
-	{
-		AnimeFrameIndex();
 	
-		DirectX::SimpleMath::Vector3	pos = NowAnimationData->m_AniData[AnimeIndex]->m_Pos;
-		DirectX::SimpleMath::Quaternion rot = NowAnimationData->m_AniData[AnimeIndex]->m_RotQt;
-		DirectX::SimpleMath::Vector3	scl = NowAnimationData->m_AniData[AnimeIndex]->m_Scale;
-		
-		XM_ROT = DirectX::XMMatrixRotationQuaternion(rot);
-		XM_POS = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
-		XM_SCL = DirectX::XMMatrixScaling(scl.x, scl.y, scl.z);
-		
-		transfrom->Load_Local = XM_SCL * XM_ROT * XM_POS;
-	}
-	
-	if (mKeyInputManger->GetKeyDown(VK_NUMPAD1))
-	{
-		Stop();
-	}
-	
-	if (mKeyInputManger->GetKeyDown(VK_NUMPAD2))
-	{
-		ReStart();
-	}
 }
 
 void Animator::SetAnimation(ParserData::OneAnimation* data)
@@ -70,6 +45,24 @@ void Animator::Play(float time, bool Loop)
 {
 	PlayTime = time;
 	mLoop = Loop;
+	mPlay = true;
+
+
+	if (NowAnimationData != nullptr && mPlay == true)
+	{
+		transfrom = gameobject->transform;
+		AnimeFrameIndex();
+
+		DirectX::SimpleMath::Vector3	pos = NowAnimationData->m_AniData[AnimeIndex]->m_Pos;
+		DirectX::SimpleMath::Quaternion rot = NowAnimationData->m_AniData[AnimeIndex]->m_RotQt;
+		DirectX::SimpleMath::Vector3	scl = NowAnimationData->m_AniData[AnimeIndex]->m_Scale;
+
+		XM_ROT = DirectX::XMMatrixRotationQuaternion(rot);
+		XM_POS = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+		XM_SCL = DirectX::XMMatrixScaling(scl.x, scl.y, scl.z);
+
+		transfrom->Load_Local = XM_SCL * XM_ROT * XM_POS;
+	}
 }
 
 void Animator::Stop()
@@ -82,20 +75,20 @@ void Animator::ReStart()
 	mStop = false;
 }
 
-void Animator::CreateFrame(int CreateCount)
-{
-	//보간을 해야하나?
-
-
-
-
-
-
-}
-
 void Animator::ChoiceAnime(ParserData::OneAnimation* Anime)
 {
 	NowAnimationData = Anime;
+	AnimeIndex = 0;
+}
+
+int Animator::GetNowFrame()
+{
+	return AnimeIndex;
+}
+
+int Animator::GetEndFrame()
+{
+	return NowAnimationData->m_EndFrame;
 }
 
 float Animator::GetOnePlayTime(float mPlayTime, int EndFrameCount)
@@ -107,7 +100,7 @@ void Animator::AnimeFrameIndex()
 {
 	if (mStop == false) 
 	{
-		mTime += mTimeManager->DeltaTime();
+		mTime += (mTimeManager->DeltaTime() * PlayTime);
 		if (mTime >= NowAnimationData->m_TicksPerFrame)
 		{
 			mTime = 0;
@@ -120,7 +113,7 @@ void Animator::AnimeFrameIndex()
 	{
 		if (mLoop == false)
 		{
-			AnimeIndex = NowAnimationData->m_EndFrame;
+			AnimeIndex = NowAnimationData->m_EndFrame-1;
 		}
 		else
 		{

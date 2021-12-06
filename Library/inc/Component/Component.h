@@ -6,18 +6,33 @@
 /// 업데이트 함수 포인터 리스트에 넣어줌
 /// </summary>
 
-//#include <Function>
 #include "EaterEngineDLL.h"
-#include <functional>
 class TimeManager;
 class KeyinputManager;
 class GameObject;
+
+
 class Component
 {
 public:
 	EATER_ENGINEDLL Component();
 	virtual EATER_ENGINEDLL ~Component();
 
+	//활성화 여부
+	bool Enabled	= true;
+public:
+	//매니저 넣어주기
+	static void SetManager(TimeManager* time, KeyinputManager* key);
+protected:
+	int OrderCount  = FUNCTION_ORDER_CENTER;
+
+	//이컨퍼넌트를 가지고 있는 게임오브젝트
+	GameObject* gameobject;
+
+	//Dll안에서만 사용될 매니저들
+	static TimeManager*		mTimeManager;
+	static KeyinputManager*	mKeyInputManger;
+protected:
 	//시작 단계에 가장먼저 실행되는 함수
 	virtual void Awake() {};
 	//시작 함수
@@ -32,31 +47,33 @@ public:
 	virtual void Update() {};
 	//마지막 업데이트
 	virtual void EndUpdate() {};
-
-	void (Component::* Test)();
+protected:
+	///어떤컨퍼넌트의 함수가 함수리스트에 몇번째로 실행될것인지 여부
+	//ex)MeshFilter의 StartUpdate가 Transform의 StartUpdate 보다 먼저 실행되어야 한다면
+	//MeshFileter 의 TransformUpdate_Order = 0; 가장첫번쨰
+	//Transform 의 TransformUpdate_Order = 4; 가장 마지막으로 넣는다
+	//0 = 제일 먼저 , 4 = 제일 나중에
+	const int FUNCTION_ORDER_FIRST		= 0;
+	const int FUNCTION_ORDER_CENTER		= 2;
+	const int FUNCTION_ORDER_LAST		= 4;
 	
-	//현재 이컨퍼넌트의 어떤함수가 오버라이딩되어있는지 확인하기위해
-	unsigned int FUNCTION_MASK = 0x00000000;
-
-	bool Enabled = true;
-public:
-	//컨퍼넌트 타입을 넣어준다
-	EATER_ENGINEDLL void SetComponentType(size_t type);
-	//컨퍼넌트 타입을 받아온다
-	EATER_ENGINEDLL size_t GetComponentType();
-	//오브젝트를 넣어준다
-	EATER_ENGINEDLL void SetObject(GameObject* obj);
-
-	static void SetManager(TimeManager* time, KeyinputManager* key);
-
-
-public:
-	//이컨퍼넌트를 가지고 있는 게임오브젝트
-	GameObject* gameobject;
+	unsigned int Awake_Order			= FUNCTION_ORDER_CENTER;
+	unsigned int Start_Order			= FUNCTION_ORDER_CENTER;
+	unsigned int StartUpdate_Order		= FUNCTION_ORDER_CENTER;
+	unsigned int TransformUpdate_Order	= FUNCTION_ORDER_CENTER;
+	unsigned int PhysicsUpdate_Order	= FUNCTION_ORDER_CENTER;
+	unsigned int DefaultUpdate_Order	= FUNCTION_ORDER_CENTER;
+	unsigned int EndUpdate_Order		= FUNCTION_ORDER_CENTER;
+private:
+	//게임 오브젝트 안에 컨퍼넌트를 찾을때 이값으로 찾아옴
 	size_t ComponentType;
 
-	static TimeManager*		mTimeManager;
-	static KeyinputManager*	mKeyInputManger;
+	//이컨퍼넌트의 어떤함수가 오버라이딩되어있는지 확인하기위해
+	unsigned int FUNCTION_MASK = 0x00000000;
+	
+	//접근 여부를 아래 클래스들에게는 열어둠
+	friend class GameObject;
+	friend class ObjectManager;
 };
 
 
