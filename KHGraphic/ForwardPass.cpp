@@ -25,6 +25,9 @@
 #include "RasterizerStateDefine.h"
 #include "BlendStateDefine.h"
 
+//#define ALBEDO_MAP 0x00000001
+//#define NORMAL_MAP 0x00000010
+
 ForwardPass::ForwardPass()
 {
 
@@ -166,17 +169,22 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	m_ForwardPS->SetConstantBuffer(lightBuf);
 	m_ForwardPS->SetConstantBuffer(lightsubBuf);
 
-	if (mesh->Diffuse)
+	//CB_Material materialBuf;
+
+	if (mesh->Albedo)
 	{
-		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Diffuse->TextureBufferPointer);
+		//materialBuf.gTexID |= ALBEDO_MAP;
+		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Albedo->TextureBufferPointer);
+		m_ForwardPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
 	}
 	if (mesh->Normal)
 	{
+		//materialBuf.gTexID |= NORMAL_MAP;
 		normal_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Normal->TextureBufferPointer);
+		m_ForwardPS->SetShaderResourceView<gNormalMap>(&normal_srv);
 	}
 
-	m_ForwardPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
-	m_ForwardPS->SetShaderResourceView<gNormalMap>(&normal_srv);
+	//m_ForwardPS->SetConstantBuffer(materialBuf);
 
 	// Pixel Shader Update..
 	m_ForwardPS->Update();

@@ -75,7 +75,10 @@ struct CB_Light : public cbLight
 CONSTANT_BUFFER(cbMaterial)
 struct CB_Material : public cbMaterial
 {
-	int gMatID = 0;
+	DirectX::SimpleMath::Vector4 gColor = DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+	
+	UINT gMatID = 0;
+	UINT gTexID = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////

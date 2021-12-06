@@ -100,9 +100,7 @@ void ShaderManager::CreateShader()
 	LoadShader(eShaderType::PIXEL, "ForwardPS.cso");
 
 	// Deffered Shader
-	LoadShader(eShaderType::PIXEL, "DeferredBasicPS.cso");
-	LoadShader(eShaderType::PIXEL, "DeferredTexturePS.cso");
-	LoadShader(eShaderType::PIXEL, "DeferredNormalTexturePS.cso");
+	LoadShader(eShaderType::PIXEL, "DeferredPS.cso");
 
 	// Light Shader
 	LoadShader(eShaderType::VERTEX, "LightVS.cso");

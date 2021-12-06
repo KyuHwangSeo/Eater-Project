@@ -26,6 +26,9 @@
 #include "RasterizerStateDefine.h"
 #include "BlendStateDefine.h"
 
+#define ALBEDO_MAP 0x00000001
+#define NORMAL_MAP 0x00000010
+
 DeferredPass::DeferredPass()
 {
 
@@ -130,8 +133,7 @@ void DeferredPass::Start()
 	// Shader 설정..
 	m_MeshVS = g_Shader->GetShader("NormalSkinVS");
 	m_SkinVS = g_Shader->GetShader("NormalTextureVS");
-	m_NormalDeferredPS = g_Shader->GetShader("NormalTextureDeferredPS");
-	m_TextureDeferredPS = g_Shader->GetShader("TextureDeferredPS");
+	m_DeferredPS = g_Shader->GetShader("DeferredPS");
 
 	// DepthStencilView 설정..
 	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
@@ -220,6 +222,8 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 	Matrix shadowTrans = *global->mShadowTrans;
 	Vector3 eye(view._41, view._42, view._43);
 	LightData* lightData = global->mLightData;
+
+	UINT texture_type = 0;
 	ID3D11ShaderResourceView* diffuse_srv = nullptr;
 	ID3D11ShaderResourceView* normal_srv = nullptr;
 
@@ -260,20 +264,26 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 		break;
 	}
 
-	if (mesh->Diffuse)
+	CB_Material materialBuf;
+	materialBuf.gMatID = mesh->Material_Index;
+	
+	if (mesh->Albedo)
 	{
-		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Diffuse->TextureBufferPointer);
+		materialBuf.gTexID |= ALBEDO_MAP;
+		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Albedo->TextureBufferPointer);
+		m_DeferredPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
 	}
 	if (mesh->Normal)
 	{
+		materialBuf.gTexID |= NORMAL_MAP;
 		normal_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Normal->TextureBufferPointer);
+		m_DeferredPS->SetShaderResourceView<gNormalMap>(&normal_srv);
 	}
 
-	m_NormalDeferredPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
-	m_NormalDeferredPS->SetShaderResourceView<gNormalMap>(&normal_srv);
+	m_DeferredPS->SetConstantBuffer(materialBuf);
 
 	// Pixel Shader Update..
-	m_NormalDeferredPS->Update();
+	m_DeferredPS->Update();
 }
 
 void DeferredPass::Render(MeshData* mesh)

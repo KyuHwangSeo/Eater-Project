@@ -49,7 +49,7 @@ public:
     FbxPropertyT<FbxDouble> AmbientFactor;
 
     //! Diffuse color property.
-    FbxPropertyT<FbxDouble3> Diffuse;
+    FbxPropertyT<FbxDouble3> Albedo;
 
     /** Diffuse factor property. This factor is used to
 	 * attenuate the diffuse color.

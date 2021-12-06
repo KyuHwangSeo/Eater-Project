@@ -397,7 +397,7 @@ void LoadManager::SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData)
 	{
 		if (mat->m_IsDiffuseMap == true)
 		{
-			MeshData->Diffuse = GEngine->CreateTextureBuffer(mat->m_DiffuseMap->m_BitMap);
+			MeshData->Albedo = GEngine->CreateTextureBuffer(mat->m_DiffuseMap->m_BitMap);
 		}
 		if (mat->m_IsBumpMap == true)
 		{

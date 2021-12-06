@@ -1008,9 +1008,9 @@ void FBXParser::SetMaterial(fbxsdk::FbxSurfaceMaterial* material)
 		m_MaterialData->m_Material_Ambient.w = 1.0f;
 
 		// Diffuse Data
-		m_MaterialData->m_Material_Diffuse.x = static_cast<float>(((FbxSurfacePhong*)material)->Diffuse.Get()[0]);
-		m_MaterialData->m_Material_Diffuse.y = static_cast<float>(((FbxSurfacePhong*)material)->Diffuse.Get()[1]);
-		m_MaterialData->m_Material_Diffuse.z = static_cast<float>(((FbxSurfacePhong*)material)->Diffuse.Get()[2]);
+		m_MaterialData->m_Material_Diffuse.x = static_cast<float>(((FbxSurfacePhong*)material)->Albedo.Get()[0]);
+		m_MaterialData->m_Material_Diffuse.y = static_cast<float>(((FbxSurfacePhong*)material)->Albedo.Get()[1]);
+		m_MaterialData->m_Material_Diffuse.z = static_cast<float>(((FbxSurfacePhong*)material)->Albedo.Get()[2]);
 		m_MaterialData->m_Material_Diffuse.w = 1.0f;
 
 		// Specular Data
@@ -1043,9 +1043,9 @@ void FBXParser::SetMaterial(fbxsdk::FbxSurfaceMaterial* material)
 		m_MaterialData->m_Material_Ambient.w = 1.0f;
 
 		// Diffuse Data
-		m_MaterialData->m_Material_Diffuse.x = static_cast<float>(((FbxSurfaceLambert*)material)->Diffuse.Get()[0]);
-		m_MaterialData->m_Material_Diffuse.y = static_cast<float>(((FbxSurfaceLambert*)material)->Diffuse.Get()[1]);
-		m_MaterialData->m_Material_Diffuse.z = static_cast<float>(((FbxSurfaceLambert*)material)->Diffuse.Get()[2]);
+		m_MaterialData->m_Material_Diffuse.x = static_cast<float>(((FbxSurfaceLambert*)material)->Albedo.Get()[0]);
+		m_MaterialData->m_Material_Diffuse.y = static_cast<float>(((FbxSurfaceLambert*)material)->Albedo.Get()[1]);
+		m_MaterialData->m_Material_Diffuse.z = static_cast<float>(((FbxSurfaceLambert*)material)->Albedo.Get()[2]);
 		m_MaterialData->m_Material_Diffuse.w = 1.0f;
 
 		// Emissive Data

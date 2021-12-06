@@ -1,10 +1,15 @@
+#define ALBEDO_MAP 0x00000001
+#define NORMAL_MAP 0x00000010
+
 cbuffer cbMaterial : register(b0)
 {
-    float4 gColor : packoffset(c0);
-    int gMatID : packoffset(c1.x);
+    float4 gColor   : packoffset(c0);
+    uint gMatID     : packoffset(c1.x);
+    uint gTexID     : packoffset(c1.y);
 };
 
 Texture2D gDiffuseMap : register(t0);
+Texture2D gNormalMap : register(t1);
 
 SamplerState gSamWrapLinear : register(s0);
 
@@ -32,11 +37,23 @@ struct PixelOut
 PixelOut main(VertexIn pin)
 {
 	PixelOut vout;
+
+    float4 albedo = gColor;
+    float3 normal = pin.NormalW;
+    
+    if (gTexID & ALBEDO_MAP)
+    {
+        albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
+    }
+    
+    if (gTexID & NORMAL_MAP)
+    {
+        float3 normalMapSample = 2.0f * gNormalMap.Sample(gSamWrapLinear, pin.Tex).rgb - 1.0f;
+        normal = mul(normalMapSample, pin.TBN);
+    }
 	
-    float4 albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
-	
-	vout.Albedo = albedo;
-    vout.Normal = float4(pin.NormalW, 0.0f);
+    vout.Albedo = albedo;
+    vout.Normal = float4(normal, 1.0f);
     vout.Position = float4(pin.PosW, gMatID);
     vout.Shadow = float4(pin.ShadowPosH.xyz, 0.0f);
     vout.NormalDepth = float4(pin.NormalV.xyz, pin.PosV.z);

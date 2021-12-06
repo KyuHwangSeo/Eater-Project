@@ -15,7 +15,7 @@ enum class OBJECT_TYPE
 {
 	///현재 기본형으로 넣어둔 오브젝트 종류
 	///나중에 필요한건 넣고 필요없는건 빼자
-	
+
 	DEFALT,		//값을 넣지않았을때 기본형
 	GAMEOBJECT,		//다른 오브젝트들을 묶어놓는 용도
 	BASE,			//상속구조로 되어있는 오브젝트
@@ -60,22 +60,24 @@ public:
 		VB = nullptr;
 	}
 
-
+public:
 	OBJECT_TYPE ObjType = OBJECT_TYPE::DEFALT;	//오브젝트 타입
 
-	Indexbuffer*  IB = nullptr;	//인덱스 버퍼
-	Vertexbuffer* VB = nullptr;	//버텍스 버퍼
+	Indexbuffer* IB = nullptr;			//인덱스 버퍼
+	Vertexbuffer* VB = nullptr;			//버텍스 버퍼
 
-	TextureBuffer* Diffuse = nullptr;	// Diffuse Texture
+	TextureBuffer* Albedo = nullptr;	// DiffuseMap Texture
 	TextureBuffer* Normal = nullptr;	// NormalMap Texture
+	TextureBuffer* Height = nullptr;	// HeightMap Texture
+	TextureBuffer* Roughness = nullptr;	// RoughnessMap Texture
+	TextureBuffer* Metallic = nullptr;	// MetallicMap Texture
 
-	UINT Material_Index = 0;			// Material Index;
+	UINT Material_Index = 0;			// Material Index
 
 	std::vector<DirectX::SimpleMath::Matrix> BoneOffsetTM; //본 오프셋 TM
 
 	DirectX::XMMATRIX mWorld = DirectX::XMMatrixIdentity();	//매쉬의 월드 행렬
 	DirectX::XMMATRIX mLocal = DirectX::XMMatrixIdentity();	//매쉬의 로컬행렬
-	DirectX::XMFLOAT3 Pos = { 0,0,0 };						//매쉬의 위치값
 };
 
 
@@ -93,45 +95,48 @@ public:
 		IB = nullptr;
 		VB = nullptr;
 
-		Material	= nullptr;
-		Animation	= nullptr;
+		Material = nullptr;
+		Animation = nullptr;
 
-		BoneTMList	= nullptr;
-		BoneList	= nullptr;
+		BoneTMList = nullptr;
+		BoneList = nullptr;
 
 		Parent = nullptr;
 	};
 
-	bool Top_Object			= false;		//가장 최상위 오브젝트인지 여부
-	bool Bone_Object		= false;		//본오브젝트 여부
-	bool Skinning_Object	= false;		//스키닝 오브젝트 여부
+	bool Top_Object = false;		//가장 최상위 오브젝트인지 여부
+	bool Bone_Object = false;		//본오브젝트 여부
+	bool Skinning_Object = false;		//스키닝 오브젝트 여부
 
 	int BoneIndex = -1;						//본일경우 자신의 인덱스
 
-	std::string ParentName	= "";			//부모의 이름
-	std::string	Name		= "";			//자기자신의 이름
+	std::string ParentName = "";			//부모의 이름
+	std::string	Name = "";			//자기자신의 이름
 
 	DirectX::SimpleMath::Matrix* WorldTM = nullptr;	//월드 매트릭스
 	DirectX::SimpleMath::Matrix* LocalTM = nullptr;	//로컬 매트릭스
-	
-	Indexbuffer*	IB = nullptr;			//인덱스 버퍼
-	Vertexbuffer*	VB = nullptr;			//버텍스 버퍼
 
-	TextureBuffer* Diffuse = nullptr;		//Diffuse Texture
-	TextureBuffer* Normal = nullptr;		//NormalMap Texture
+	Indexbuffer* IB = nullptr;			//인덱스 버퍼
+	Vertexbuffer* VB = nullptr;			//버텍스 버퍼
 
-	ParserData::CMaterial*		Material	= nullptr;	//메테리얼 정보
-	ParserData::OneAnimation*	Animation	= nullptr;	//애니메이션 정보
-	
-	std::vector<Matrix>*	BoneTMList		= nullptr;	//본 매트릭스
-	std::vector<Mesh*>*		BoneList		= nullptr;	//본 매쉬
+	TextureBuffer* Albedo = nullptr;	// DiffuseMap Texture
+	TextureBuffer* Normal = nullptr;	// NormalMap Texture
+	TextureBuffer* Height = nullptr;	// HeightMap Texture
+	TextureBuffer* Roughness = nullptr;	// RoughnessMap Texture
+	TextureBuffer* Metallic = nullptr;	// MetallicMap Texture
+
+	ParserData::CMaterial* Material = nullptr;	//메테리얼 정보
+	ParserData::OneAnimation* Animation = nullptr;	//애니메이션 정보
+
+	std::vector<Matrix>* BoneTMList = nullptr;	//본 매트릭스
+	std::vector<Mesh*>* BoneList = nullptr;	//본 매쉬
 
 	LoadMeshData* Parent = nullptr;			//부모 매쉬
 	std::vector<LoadMeshData*> Child;		//자식 매쉬 리스트
 
 
-	Matrix* BoneOffset	= nullptr;			//본 매트릭스
-	Mesh*	BoneNumber	= nullptr;			//본 매쉬
+	Matrix* BoneOffset = nullptr;			//본 매트릭스
+	Mesh* BoneNumber = nullptr;			//본 매쉬
 };
 
 /// <summary>
@@ -149,8 +154,8 @@ public:
 	std::vector<LoadMeshData*> TopMeshList;
 	std::vector<LoadMeshData*> TopBoneList;
 
-	std::vector<Matrix>*	BoneOffsetList	= nullptr;	//본 매트릭스
-	std::vector<Mesh*>*		BoneList		= nullptr;	//본 매쉬
+	std::vector<Matrix>* BoneOffsetList = nullptr;	//본 매트릭스
+	std::vector<Mesh*>* BoneList = nullptr;	//본 매쉬
 };
 
 class ModelAnimationData
@@ -158,7 +163,7 @@ class ModelAnimationData
 public:
 	~ModelAnimationData()
 	{
-		
+
 	}
 	std::map<std::string, std::vector<OneAnimation*>* > AnimList;
 };
@@ -179,10 +184,3 @@ public:
 	//컨퍼넌트 순서
 	int OrderCount = 0;
 };
-
-
-
- 
-
-
-

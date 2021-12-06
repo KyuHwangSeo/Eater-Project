@@ -1,7 +1,7 @@
 #include "AnimationController.h"
 #include "Animator.h"
 #include "GameObject.h"
-#include "KeyinputManager.h";
+#include "KeyinputManager.h"
 #include "MeshFilter.h"
 
 AnimationController::AnimationController()

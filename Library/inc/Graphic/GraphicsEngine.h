@@ -29,6 +29,9 @@ public:
 	///그래픽 엔진을 받을 수 있는 함수
 	static GRAPHIC_DLL GraphicEngine* Create();
 
+	/// 형선 킴 전용 그래픽 엔진 생성
+	static GRAPHIC_DLL GraphicEngine* CreateHS();
+
 	///그래픽 엔진과 게임엔진에서 주고받아야할 함수들
 	virtual GRAPHIC_DLL void Initialize(HWND _hWnd, int screenWidth, int screenHeight) = 0;	// 초기화 함수
 	virtual GRAPHIC_DLL Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mModel) = 0;		// 인덱스 버퍼를 만들어준다

@@ -81,16 +81,16 @@ void MeshFilter::PushModelData(LoadMeshData* mModel)
 	data->IB = mModel->IB;
 	data->VB = mModel->VB;
 
-	data->Diffuse	= mModel->Diffuse;
-	data->Normal	= mModel->Normal;
-
 	data->mLocal = *(mModel->LocalTM);
 	data->mWorld = *(mModel->WorldTM);
 
+	data->Albedo = mModel->Albedo;
+	data->Normal = mModel->Normal;
+
 	// Diffuse Map이 없는경우 Dump Map으로 기본 출력..
-	if (data->Diffuse == nullptr)
+	if (data->Albedo == nullptr)
 	{
-		data->Diffuse = LoadManager::GetTexture("Dump");
+		data->Albedo = LoadManager::GetTexture("Dump");
 	}
 }
 
@@ -116,7 +116,7 @@ void MeshFilter::CheckTexture()
 			}
 
 			// Texture 설정..
-			data->Diffuse = texBuffer;
+			data->Albedo = texBuffer;
 		}
 	}
 }

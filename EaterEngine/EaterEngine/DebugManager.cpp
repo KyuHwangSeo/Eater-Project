@@ -62,7 +62,7 @@ void DebugManager::Print(MSG_TYPE type, std::string typeData, std::string msg, b
 	
 
 	DWORD dwByte(0);
-	WriteFile(hConsole, MSG.c_str(), MSG.size(), &dwByte, NULL);
+	WriteFile(hConsole, MSG.c_str(), (DWORD)MSG.size(), &dwByte, NULL);
 }
 
 void DebugManager::Line(std::string ObjType)
@@ -74,7 +74,7 @@ void DebugManager::Line(std::string ObjType)
 
 	temp01 += temp02;
 	temp01 += temp03;
-	WriteFile(hConsole, temp01.c_str(), temp01.size(), &dwByte, NULL);
+	WriteFile(hConsole, temp01.c_str(), (DWORD)temp01.size(), &dwByte, NULL);
 }
 
 void DebugManager::Update()

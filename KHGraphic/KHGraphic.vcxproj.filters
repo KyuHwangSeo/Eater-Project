@@ -430,38 +430,32 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Forward</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ShadowMeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ShadowSkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\MeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DeferredNormalTexturePS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Object</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DeferredTexturePS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Object</Filter>
-    </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightPS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightVS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\DeferredPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Forward</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\ShadowSkinVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\ShadowMeshVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\MeshVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
+    </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightHelper.fx">
       <Filter>소스 파일\Shader\HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DeferredBasicPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Object</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

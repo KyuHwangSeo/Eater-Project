@@ -311,18 +311,15 @@ Indexbuffer* GraphicResourceFactory::CreateIndexBuffer(ParserData::Mesh* mesh)
 
 TextureBuffer* GraphicResourceFactory::CreateTextureBuffer(std::string path)
 {
-	TextureBuffer* tBuffer = new TextureBuffer();
+	TextureBuffer* tBuffer = nullptr;
 	
 	ID3D11Resource* texResource = nullptr;
 	ID3D11ShaderResourceView* newTex = nullptr;
 	
 	std::wstring wPath(path.begin(), path.end());
-	std::wstring file_extension(wPath);
-	size_t dotIndex = path.rfind(".");
-	file_extension = file_extension.substr(dotIndex, path.size() - dotIndex);
 
 	// 확장자에 따른 텍스처 파일 로드 방식..
-	if (file_extension.compare(L".dds") == 0)
+	if (path.rfind(".dds") != std::string::npos)
 	{
 		HR(DirectX::CreateDDSTextureFromFile(m_Device.Get(), wPath.c_str(), &texResource, &newTex));
 	}
@@ -331,11 +328,14 @@ TextureBuffer* GraphicResourceFactory::CreateTextureBuffer(std::string path)
 		HR(DirectX::CreateWICTextureFromFile(m_Device.Get(), wPath.c_str(), &texResource, &newTex));
 	}
 
-	// 넘겨줘야할 TextureBufferData 삽입..
-	tBuffer->TextureBufferPointer = newTex;
+	// Texture 생성 성공시 Texture Buffer 생성..
+	if (newTex)
+	{
+		tBuffer = new TextureBuffer();
+		tBuffer->TextureBufferPointer = newTex;
 
-	if (texResource != nullptr)
 		texResource->Release();
+	}
 
 	return tBuffer;
 }
