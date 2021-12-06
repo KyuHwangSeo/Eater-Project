@@ -1,31 +1,28 @@
 #include "LightHelper.fx"
 
-cbuffer cbLights : register(b0)
+cbuffer cbLightSub : register(b0)
 {
-    DirectionalLight gDirLights[3];
+    float3 gEyePosW         : packoffset(c0);
+    float4x4 gViewProjTex   : packoffset(c3);
+};
+
+cbuffer cbLight : register(b1)
+{
+    DirectionalLight gDirLights;
     PointLight gPointLights[5];
     SpotLight gSpotLights[5];
+    Material gMaterials[5];
 
     uint gPointLightCount;
     uint gSpotLightCount;
 };
 
-cbuffer cbCamera : register(b1)
-{
-    float3 gEyePosW : packoffset(c0);
-};
+Texture2D gDiffuseMap   : register(t0);
+Texture2D gNormalMap    : register(t1);
+Texture2D gShadowMap    : register(t2);
 
-cbuffer cbMaterials : register(b2)
-{
-    Material gMaterials[5];
-}
-
-Texture2D gDiffuseMap : register(t0);
-Texture2D gNormalMap : register(t1);
-Texture2D gShadowMap : register(t2);
-
-SamplerComparisonState gShadowSam : register(s0);
-SamplerState samWrapMinLinear : register(s1);
+SamplerComparisonState gSamBorderComparisonLinearPoint : register(s0);
+SamplerState gSamWrapLinear : register(s1);
 
 struct PixelIn
 {
@@ -41,18 +38,18 @@ struct PixelIn
 float4 main(PixelIn pin) : SV_Target0
 {
     float4 albedo = float4(0.0f, 0.0f, 0.0f, 1.0f);
-    albedo = gDiffuseMap.Sample(samWrapMinLinear, pin.Tex);
+    albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
     
     // Gamma Correction
 	// Gamma Space -> Linear Space
 	// 모든 라이팅 연산은 선형 공간에서 이루어져야 한다..
     albedo.rgb = pow(albedo.rgb, 2.2);
     
-    float3 normalMapSample = 2.0f * gNormalMap.Sample(samWrapMinLinear, pin.Tex).rgb - 1.0f;
+    float3 normalMapSample = 2.0f * gNormalMap.Sample(gSamWrapLinear, pin.Tex).rgb - 1.0f;
     float3 bumpedNormalW = mul(normalMapSample, pin.TBN);
     
     // Shadow
-    float shadows = CalcShadowFactor(gShadowSam, gShadowMap, pin.ShadowPosH);
+    float shadows = CalcShadowFactor(gSamBorderComparisonLinearPoint, gShadowMap, pin.ShadowPosH);
     
     // View Direction
     float3 ViewDirection = gEyePosW - pin.PosW;
@@ -68,16 +65,12 @@ float4 main(PixelIn pin) : SV_Target0
 	float4 litColor = albedo;
     
     // Directional Light
-	[unroll]
-    for (uint i = 0; i < 1; ++i)
-    {
-        ComputeDirectionalLight(gMaterials[0], gDirLights[i], bumpedNormalW, ViewDirection,
-				A, D, S);
+    ComputeDirectionalLight(gMaterials[0], gDirLights, bumpedNormalW, ViewDirection,
+	                        A, D, S);
     
-        ambient += A;
-        diffuse += shadows * D;
-        spec += shadows * S;
-    }
+    ambient += A;
+    diffuse += shadows * D;
+    spec += shadows * S;
     
     // Point Light
     if (gPointLightCount > 0)
@@ -86,7 +79,7 @@ float4 main(PixelIn pin) : SV_Target0
         for (uint i = 0; i < gPointLightCount; ++i)
         {
             ComputePointLight(gMaterials[0], gPointLights[i], pin.PosW.xyz, bumpedNormalW, ViewDirection,
-					A, D, S);
+			                  A, D, S);
     
             ambient += A;
             diffuse += D;
@@ -101,7 +94,7 @@ float4 main(PixelIn pin) : SV_Target0
         for (uint i = 0; i < gSpotLightCount; ++i)
         {
             ComputeSpotLight(gMaterials[0], gSpotLights[i], pin.PosW.xyz, bumpedNormalW, ViewDirection,
-					A, D, S);
+					         A, D, S);
     
             ambient += A;
             diffuse += D;

@@ -1,15 +1,11 @@
 #pragma pack_matrix(row_major)
 
-cbuffer cbObject : register(b0)
+cbuffer cbMeshObject : register(b0)
 {
-    float4x4 gWorld : packoffset(c0);
-    float4x4 gWorldViewProj : packoffset(c4);
-    float4x4 gTexTransform : packoffset(c8);
-};
-
-cbuffer cbShadow : register(b1)
-{
-    float4x4 gShadowTransform : packoffset(c0);
+    float4x4 gWorld             : packoffset(c0);
+    float4x4 gWorldViewProj     : packoffset(c4);
+    float4x4 gTexTransform      : packoffset(c8);
+    float4x4 gShadowTransform   : packoffset(c12);
 };
 
 struct VertexIn

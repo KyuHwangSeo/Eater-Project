@@ -92,55 +92,25 @@ ComputeShader* ShaderManager::GetComputeShader(std::string shaderName)
 
 void ShaderManager::CreateShader()
 {
+	// Object Shader
 	LoadShader(eShaderType::VERTEX, "MeshVS.cso");
 	LoadShader(eShaderType::VERTEX, "SkinVS.cso");
+
+	// Forward Shader
 	LoadShader(eShaderType::PIXEL, "ForwardPS.cso");
 
+	// Deffered Shader
+	LoadShader(eShaderType::PIXEL, "DeferredBasicPS.cso");
+	LoadShader(eShaderType::PIXEL, "DeferredTexturePS.cso");
+	LoadShader(eShaderType::PIXEL, "DeferredNormalTexturePS.cso");
+
+	// Light Shader
+	LoadShader(eShaderType::VERTEX, "LightVS.cso");
+	LoadShader(eShaderType::PIXEL, "LightPS.cso");
+
+	// Shadow Shader
 	LoadShader(eShaderType::VERTEX, "ShadowMeshVS.cso");
 	LoadShader(eShaderType::VERTEX, "ShadowSkinVS.cso");
-
-	//// Global Forward Shader
-	//LoadShader(eShaderType::VERTEX, "FinalVS.cso");
-	//LoadShader(eShaderType::PIXEL, "FinalPS.cso");
-	//
-	// Global Deferred Shader
-	//LoadShader(eShaderType::VERTEX, "FullScreenVS.cso");
-	//LoadShader(eShaderType::PIXEL, "LightPS.cso");
-	//
-	//LoadShader(eShaderType::VERTEX, "ColorVS.cso");
-	//LoadShader(eShaderType::PIXEL, "ColorPS.cso");
-	//
-	//LoadShader(eShaderType::VERTEX, "SkyCubeVS.cso");
-	//LoadShader(eShaderType::PIXEL, "SkyCubePS.cso");
-	//
-	//LoadShader(eShaderType::VERTEX, "NormalShadowVS.cso");
-	//LoadShader(eShaderType::VERTEX, "SkinShadowVS.cso");
-	//
-	//LoadShader(eShaderType::VERTEX, "TextureVS.cso");
-	//LoadShader(eShaderType::VERTEX, "SkinVS.cso");
-	//LoadShader(eShaderType::PIXEL, "TextureDeferredPS.cso");
-	//
-	//LoadShader(eShaderType::VERTEX, "NormalTextureVS.cso");
-	//LoadShader(eShaderType::PIXEL, "NormalTextureDeferredPS.cso");
-	//
-	//LoadShader(eShaderType::VERTEX, "NormalSkinVS.cso");
-	//LoadShader(eShaderType::PIXEL, "NormalTextureDeferredPS.cso");
-	//
-	//// SSAO Shader
-	//LoadShader(eShaderType::VERTEX, "SSAOVS.cso");
-	//LoadShader(eShaderType::PIXEL, "SSAOPS.cso");
-	//
-	//LoadShader(eShaderType::VERTEX, "SSAOBlurVS.cso");
-	//LoadShader(eShaderType::PIXEL, "SSAOHorizonBlurPS.cso");
-	//LoadShader(eShaderType::PIXEL, "SSAOVerticalBlurPS.cso");
-	//
-	//// Terrain Shader
-	//LoadShader(eShaderType::VERTEX, "TerrainVS.cso");
-	//LoadShader(eShaderType::PIXEL, "TerrainPS.cso");
-	//
-	//// Screen Blur Shader
-	//LoadShader(eShaderType::COMPUTE, "HorizonBlurCS.cso");
-	//LoadShader(eShaderType::COMPUTE, "VerticalBlurCS.cso");
 }
 
 void ShaderManager::AddSampler(Hash_Code hash_code, ID3D11SamplerState** sampler)

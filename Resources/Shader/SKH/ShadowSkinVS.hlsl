@@ -1,13 +1,9 @@
 #pragma pack_matrix(row_major)
     
-cbuffer cbShadowObject : register(b0)
+cbuffer cbShadowSkinObject : register(b0)
 {
-    float4x4 gWorldViewProj : packoffset(c0);
-};
-
-cbuffer cbSkinned : register(b1)
-{
-    float4x4 gBoneTransforms[96];
+    float4x4 gWorldViewProj         : packoffset(c0);
+    float4x4 gBoneTransforms[96]    : packoffset(c4);
 };
 
 struct SkinVertexIn

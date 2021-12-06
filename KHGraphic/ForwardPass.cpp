@@ -107,15 +107,12 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	{
 	case OBJECT_TYPE::BASE:
 	{
-		CB_Object objectBuf;
+		CB_MeshObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldViewProj = world * view * proj;
-
-		CB_Shadow shadowBuf;
-		shadowBuf.gShadowTransform = world * shadowTrans;
+		objectBuf.gShadowTransform = world * shadowTrans;
 
 		m_MeshVS->SetConstantBuffer(objectBuf);
-		m_MeshVS->SetConstantBuffer(shadowBuf);
 
 		// Vertex Shader Update..
 		m_MeshVS->Update();
@@ -123,22 +120,17 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		break;
 	case OBJECT_TYPE::SKINNING:
 	{
-		CB_Object objectBuf;
+		CB_SkinObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gShadowTransform = world * shadowTrans;
 
-		CB_Skinned skinBuf;
 		for (int i = 0; i < mesh->BoneOffsetTM.size(); i++)
 		{
-			skinBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
+			objectBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
 		}
 
-		CB_Shadow shadowBuf;
-		shadowBuf.gShadowTransform = world * shadowTrans;
-
 		m_SkinVS->SetConstantBuffer(objectBuf);
-		m_SkinVS->SetConstantBuffer(skinBuf);
-		m_SkinVS->SetConstantBuffer(shadowBuf);
 
 		// Vertex Shader Update..
 		m_SkinVS->Update();
@@ -148,11 +140,11 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		break;
 	}
 
-	CB_Lights lightBuf;
+	CB_Light lightBuf;
 	lightBuf.gPointLightCount = lightData->gPointLightCount;
 	lightBuf.gSpotLightCount = lightData->gSpotLightCount;
 
-	lightBuf.gDirLights[0] = *lightData->DirLights[0];
+	lightBuf.gDirLights = *lightData->DirLights[0];
 
 	for (UINT p = 0; p < lightBuf.gPointLightCount; p++)
 	{
@@ -163,18 +155,16 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
 	}
 
-	CB_Camera cameraBuf;
-	cameraBuf.gEyePosW = -eye;
-
-	CB_Materials matBuf;
-	for (int i = 0; i < 5; i++)
+	for (UINT m = 0; m < 5; m++)
 	{
-		matBuf.gMaterials[i] = global->mMatData[i];
+		lightBuf.gMaterials[m] = global->mMatData[m];
 	}
 
+	CB_LightSub lightsubBuf;
+	lightsubBuf.gEyePosW = -eye;
+
 	m_ForwardPS->SetConstantBuffer(lightBuf);
-	m_ForwardPS->SetConstantBuffer(cameraBuf);
-	m_ForwardPS->SetConstantBuffer(matBuf);
+	m_ForwardPS->SetConstantBuffer(lightsubBuf);
 
 	if (mesh->Diffuse)
 	{

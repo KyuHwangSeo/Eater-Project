@@ -1,11 +1,8 @@
-cbuffer cbID : register(b0)
+cbuffer cbMaterial : register(b0)
 {
-    int gMatID : packoffset(c0.x);
+    float4 gColor : packoffset(c0);
+    int gMatID : packoffset(c1.x);
 };
-
-Texture2D gDiffuseMap : register(t0);
-
-SamplerState samWrapMinLinear : register(s0);
 
 struct VertexIn
 {
@@ -31,11 +28,9 @@ struct PixelOut
 PixelOut main(VertexIn pin)
 {
 	PixelOut vout;
-	
-	float4 albedo = gDiffuseMap.Sample(samWrapMinLinear, pin.Tex);
-	
-	vout.Albedo = albedo;
-    vout.Normal = float4(pin.NormalW, 0.0f);
+
+    vout.Albedo = gColor;
+    vout.Normal = float4(pin.NormalW, 1.0f);
     vout.Position = float4(pin.PosW, gMatID);
     vout.Shadow = float4(pin.ShadowPosH.xyz, 0.0f);
     vout.NormalDepth = float4(pin.NormalV.xyz, pin.PosV.z);

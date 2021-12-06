@@ -21,15 +21,15 @@
 
 SHADER_RESOURCE_VIEW(gDiffuseMap)
 SHADER_RESOURCE_VIEW(gNormalMap)
-SHADER_RESOURCE_VIEW(gCubeMap)
 SHADER_RESOURCE_VIEW(gShadowMap)
+SHADER_RESOURCE_VIEW(gCubeMap)
 SHADER_RESOURCE_VIEW(gSSAOMap)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // SSAO ShaderResourceView Resource
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-SHADER_RESOURCE_VIEW(gNormalDepthMap)
+SHADER_RESOURCE_VIEW(gDepthMap)
 SHADER_RESOURCE_VIEW(gRandomVecMap)
 SHADER_RESOURCE_VIEW(gInputMap)
 
@@ -37,25 +37,24 @@ SHADER_RESOURCE_VIEW(gInputMap)
 // Deferred ShaderResourceView Resource
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-SHADER_RESOURCE_VIEW(AlbedoSRV)
-SHADER_RESOURCE_VIEW(NormalSRV)
-SHADER_RESOURCE_VIEW(PositionSRV)
-SHADER_RESOURCE_VIEW(ShadowSRV)
-SHADER_RESOURCE_VIEW(SsaoSRV)
+SHADER_RESOURCE_VIEW(gAlbedoRT)
+SHADER_RESOURCE_VIEW(gNormalRT)
+SHADER_RESOURCE_VIEW(gPositionRT)
+SHADER_RESOURCE_VIEW(gShadowRT)
+SHADER_RESOURCE_VIEW(gSSAORT)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Blur ShaderResourceView Resource
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-SHADER_RESOURCE_VIEW(gInput)
+SHADER_RESOURCE_VIEW(gBlurMap)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // MotionBlur ShaderResourceView Resource
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-SHADER_RESOURCE_VIEW(gDepthMap)
-SHADER_RESOURCE_VIEW(gOrigin)
-SHADER_RESOURCE_VIEW(gVelocity)
+SHADER_RESOURCE_VIEW(gOriginMap)
+SHADER_RESOURCE_VIEW(gVelocityMap)
 
 
 

@@ -1,6 +1,6 @@
 #pragma pack_matrix(row_major)
     
-cbuffer cbShadowObject : register(b0)
+cbuffer cbShadowMeshObject : register(b0)
 {
     float4x4 gWorldViewProj : packoffset(c0);
 };

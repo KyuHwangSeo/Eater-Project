@@ -18,90 +18,66 @@
 ///  1) 현재 struct의 이름과 변수 순서는 Shader 내부의 ConstantBuffer와 일치해야한다 (Struct Name을 통해 Constant Buffer를 찾기 때문)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Forward Constant Buffer
+// Deferred Constant Buffer
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-CONSTANT_BUFFER(cbObject)
-struct CB_Object : public cbObject
+CONSTANT_BUFFER(cbMeshObject)
+struct CB_MeshObject : public cbMeshObject
 {
 	DirectX::SimpleMath::Matrix gWorld;
-	//DirectX::SimpleMath::Matrix gWorldInvTranspose;
 	DirectX::SimpleMath::Matrix gWorldViewProj;
 	DirectX::SimpleMath::Matrix gTexTransform;
-	//DirectX::SimpleMath::Matrix gWorldView;
-	//DirectX::SimpleMath::Matrix gWorldInvTransposeView;
+	DirectX::SimpleMath::Matrix gShadowTransform;
 };
 
-CONSTANT_BUFFER(cbShadowObject)
-struct CB_ShadowObject : public cbShadowObject
+CONSTANT_BUFFER(cbShadowMeshObject)
+struct CB_ShadowMeshObject : public cbShadowMeshObject
 {
 	DirectX::SimpleMath::Matrix gWorldViewProj;
 };
 
-CONSTANT_BUFFER(cbLights)
-struct CB_Lights : public cbLights
+CONSTANT_BUFFER(cbSkinObject)
+struct CB_SkinObject : public cbSkinObject
 {
-	DirectionalLightData gDirLights[3];
+	DirectX::SimpleMath::Matrix gWorld;
+	DirectX::SimpleMath::Matrix gWorldViewProj;
+	DirectX::SimpleMath::Matrix gTexTransform;
+	DirectX::SimpleMath::Matrix gShadowTransform;
+	DirectX::SimpleMath::Matrix gBoneTransforms[96];
+};
+
+CONSTANT_BUFFER(cbShadowSkinObject)
+struct CB_ShadowSkinObject : public cbShadowSkinObject
+{
+	DirectX::SimpleMath::Matrix gWorldViewProj;
+	DirectX::SimpleMath::Matrix gBoneTransforms[96];
+};
+
+CONSTANT_BUFFER(cbLightSub)
+struct CB_LightSub : public cbLightSub
+{
+	DirectX::SimpleMath::Vector3 gEyePosW;
+	DirectX::SimpleMath::Matrix gViewProjTex;
+};
+
+CONSTANT_BUFFER(cbLight)
+struct CB_Light : public cbLight
+{
+	DirectionalLightData gDirLights;
 	PointLightData gPointLights[5];
 	SpotLightData gSpotLights[5];
+	MaterialData gMaterials[5];
 
 	UINT gPointLightCount;
 	UINT gSpotLightCount;
 };
 
-CONSTANT_BUFFER(cbMaterials)
-struct CB_Materials : public cbMaterials
+CONSTANT_BUFFER(cbMaterial)
+struct CB_Material : public cbMaterial
 {
-	MaterialData gMaterials[5];
+	int gMatID = 0;
 };
 
-CONSTANT_BUFFER(cbCamera)
-struct CB_Camera : public cbCamera
-{
-	DirectX::SimpleMath::Vector3 gEyePosW;
-};
-
-CONSTANT_BUFFER(cbShadow)
-struct CB_Shadow : public cbShadow
-{
-	DirectX::SimpleMath::Matrix gShadowTransform;
-};
-
-CONSTANT_BUFFER(cbSkinned)
-struct CB_Skinned : public cbSkinned
-{
-	DirectX::SimpleMath::Matrix gBoneTransforms[96];
-};
-
-//CONSTANT_BUFFER(cbID)
-//{
-//	int gMatID = 0;
-//};
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// Deferred Constant Buffer
-///////////////////////////////////////////////////////////////////////////////////////////
-
-//CONSTANT_BUFFER(cbLightList)
-//{
-//	DirectionalLightData gDirLights[3];
-//	PointLightData gPointLights[16];
-//	SpotLightData gSpotLights[16];
-//
-//	UINT gPointLightCount;
-//	UINT gSpotLightCount;
-//};
-//
-//CONSTANT_BUFFER(cbMaterialList)
-//{
-//	MaterialData gMaterials[20];
-//};
-//
-//CONSTANT_BUFFER(cbTexViewProj)
-//{
-//	DirectX::SimpleMath::Matrix gViewProjTex;
-//};
-//
 /////////////////////////////////////////////////////////////////////////////////////////////
 //// SSAO Constant Buffer
 /////////////////////////////////////////////////////////////////////////////////////////////

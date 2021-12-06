@@ -606,29 +606,6 @@ void GraphicResourceFactory::CreateRasterizerStates()
 void GraphicResourceFactory::CreateSamplerStates()
 {
 	D3D11_SAMPLER_DESC samplerDesc;
-	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.MaxAnisotropy = 4;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	// samClampMinLinear SamplerState 持失..
-	CreateSamplerState<samClampMinLinear>(&samplerDesc);
-
-	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	samplerDesc.MaxAnisotropy = 4;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	// samWrapAnisotropic SamplerState 持失..
-	CreateSamplerState<samWrapAnisotropic>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -641,19 +618,42 @@ void GraphicResourceFactory::CreateSamplerStates()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samWrapMinLinear SamplerState 持失..
-	CreateSamplerState<samWrapMinLinear>(&samplerDesc);
+	CreateSamplerState<gSamWrapLinear>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	// samMirrorMinLinear SamplerState 持失..
-	CreateSamplerState<samMirrorMinLinear>(&samplerDesc);
+	// samWrapLinerPoint SamplerState 持失..
+	CreateSamplerState<gSamWrapLinerPoint>(&samplerDesc);
+
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.MaxAnisotropy = 4;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// samWrapAnisotropic SamplerState 持失..
+	CreateSamplerState<gSamWrapAnisotropic>(&samplerDesc);
+
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MaxAnisotropy = 4;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// samClampMinLinear SamplerState 持失..
+	CreateSamplerState<gSamClampLinear>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -665,7 +665,7 @@ void GraphicResourceFactory::CreateSamplerStates()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samClampMinLinearPoint SamplerState 持失..
-	CreateSamplerState<samClampMinLinearPoint>(&samplerDesc);
+	CreateSamplerState<gSamClampLinearPoint>(&samplerDesc);
 	
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -678,18 +678,7 @@ void GraphicResourceFactory::CreateSamplerStates()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// samBorderLinerPoint SamplerState 持失..
-	CreateSamplerState<samBorderLinerPoint>(&samplerDesc);
-
-	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	// samWrapLinerPoint SamplerState 持失..
-	CreateSamplerState<samWrapLinerPoint>(&samplerDesc);
+	CreateSamplerState<gSamBorderLinearPoint>(&samplerDesc);
 
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
@@ -701,7 +690,19 @@ void GraphicResourceFactory::CreateSamplerStates()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// gShadowSam SamplerState 持失..
-	CreateSamplerState<gShadowSam>(&samplerDesc);
+	CreateSamplerState<gSamBorderComparisonLinearPoint>(&samplerDesc);
+
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// samMirrorMinLinear SamplerState 持失..
+	CreateSamplerState<gSamMirrorLinear>(&samplerDesc);
 }
 
 void GraphicResourceFactory::CreateBlendStates()

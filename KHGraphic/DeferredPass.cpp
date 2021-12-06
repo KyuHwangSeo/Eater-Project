@@ -130,7 +130,8 @@ void DeferredPass::Start()
 	// Shader 설정..
 	m_MeshVS = g_Shader->GetShader("NormalSkinVS");
 	m_SkinVS = g_Shader->GetShader("NormalTextureVS");
-	m_DeferredPS = g_Shader->GetShader("NormalTextureDeferredPS");
+	m_NormalDeferredPS = g_Shader->GetShader("NormalTextureDeferredPS");
+	m_TextureDeferredPS = g_Shader->GetShader("TextureDeferredPS");
 
 	// DepthStencilView 설정..
 	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
@@ -213,7 +214,66 @@ void DeferredPass::BeginRender()
 
 void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 {
+	Matrix world = mesh->mWorld;
+	Matrix view = *global->mViewMX;
+	Matrix proj = *global->mProj;
+	Matrix shadowTrans = *global->mShadowTrans;
+	Vector3 eye(view._41, view._42, view._43);
+	LightData* lightData = global->mLightData;
+	ID3D11ShaderResourceView* diffuse_srv = nullptr;
+	ID3D11ShaderResourceView* normal_srv = nullptr;
 
+	switch (mesh->ObjType)
+	{
+	case OBJECT_TYPE::BASE:
+	{
+		CB_MeshObject objectBuf;
+		objectBuf.gWorld = world;
+		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gShadowTransform = world * shadowTrans;
+
+		m_MeshVS->SetConstantBuffer(objectBuf);
+
+		// Vertex Shader Update..
+		m_MeshVS->Update();
+	}
+	break;
+	case OBJECT_TYPE::SKINNING:
+	{
+		CB_SkinObject objectBuf;
+		objectBuf.gWorld = world;
+		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gShadowTransform = world * shadowTrans;
+
+		for (size_t i = 0; i < mesh->BoneOffsetTM.size(); i++)
+		{
+			objectBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
+		}
+
+		m_SkinVS->SetConstantBuffer(objectBuf);
+
+		// Vertex Shader Update..
+		m_SkinVS->Update();
+	}
+	break;
+	default:
+		break;
+	}
+
+	if (mesh->Diffuse)
+	{
+		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Diffuse->TextureBufferPointer);
+	}
+	if (mesh->Normal)
+	{
+		normal_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Normal->TextureBufferPointer);
+	}
+
+	m_NormalDeferredPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
+	m_NormalDeferredPS->SetShaderResourceView<gNormalMap>(&normal_srv);
+
+	// Pixel Shader Update..
+	m_NormalDeferredPS->Update();
 }
 
 void DeferredPass::Render(MeshData* mesh)
