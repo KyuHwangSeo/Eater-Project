@@ -2,10 +2,11 @@
 #include "Texture2D.h"
 #include "DepthStencilView.h"
 
-DepthStencilView::DepthStencilView(ID3D11DepthStencilView** dsv)
+DepthStencilView::DepthStencilView(ID3D11DepthStencilView** dsv, ID3D11ShaderResourceView** srv)
 	:Texture2D(eResourceType::DSV), m_DSV(*dsv)
 {
-
+	if (dsv) m_DSV = *dsv;
+	if (srv) m_SRV = *srv;
 }
 
 DepthStencilView::~DepthStencilView()
@@ -62,20 +63,52 @@ D3D11_TEXTURE2D_DESC DepthStencilView::GetTextureDesc(int width, int height)
 	return texDesc;
 }
 
-ID3D11DepthStencilView* DepthStencilView::Get()
+ID3D11DepthStencilView* DepthStencilView::GetDSV()
 {
 	return m_DSV.Get();
 }
 
-ID3D11DepthStencilView** DepthStencilView::GetAddress()
+ID3D11DepthStencilView** DepthStencilView::GetAddressDSV()
 {
 	return m_DSV.GetAddressOf();
 }
 
-D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilView::GetDesc()
+D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilView::GetDSVDesc()
 {
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	m_DSV->GetDesc(&dsvDesc);
 
 	return dsvDesc;
+}
+
+ID3D11ShaderResourceView* DepthStencilView::GetSRV()
+{
+	return m_SRV.Get();
+}
+
+ID3D11ShaderResourceView** DepthStencilView::GetAddressSRV()
+{
+	return m_SRV.GetAddressOf();
+}
+
+D3D11_SHADER_RESOURCE_VIEW_DESC DepthStencilView::GetSRVDesc()
+{
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	m_SRV->GetDesc(&srvDesc);
+
+	return srvDesc;
+}
+
+bool DepthStencilView::IsDSV()
+{
+	if (m_DSV) return true;
+
+	return false;
+}
+
+bool DepthStencilView::IsSRV()
+{
+	if (m_SRV) return true;
+
+	return false;
 }

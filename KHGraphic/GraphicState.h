@@ -72,3 +72,24 @@ public:
 private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SS;
 };
+
+class ViewPort : public ResourceBase
+{
+public:
+	ViewPort(float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, float ratio_sizeY, float width, float height);
+	~ViewPort();
+
+public:
+	void OnResize(int width, int height);
+
+public:
+	D3D11_VIEWPORT* Get();
+
+private:
+	D3D11_VIEWPORT* m_ViewPort;
+
+	float m_OffsetX;
+	float m_OffsetY;
+	float m_SizeX;
+	float m_SizeY;
+};

@@ -33,7 +33,6 @@ private:
 	BasicRenderTarget* m_PositionRT;
 	BasicRenderTarget* m_ShadowRT;
 	BasicRenderTarget* m_DepthRT;
-	BasicRenderTarget* m_SSAORT;
 
 	std::vector<ID3D11ShaderResourceView*> m_SRVList;
 	std::vector<ID3D11RenderTargetView*> m_RTVList;

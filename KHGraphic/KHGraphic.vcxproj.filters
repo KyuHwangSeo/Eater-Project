@@ -133,9 +133,6 @@
     <Filter Include="소스 파일\Resource\Graphic\RenderTarget\Types">
       <UniqueIdentifier>{804d6fde-689c-439b-954b-77a331296f1d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\ViewPort">
-      <UniqueIdentifier>{b41d77db-812d-4ee8-8bb9-885c8256ee21}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Resource\Graphic\GraphicState">
       <UniqueIdentifier>{10b1e356-c304-4831-90ea-72b5f29b7902}</UniqueIdentifier>
     </Filter>
@@ -264,9 +261,6 @@
     <ClInclude Include="LightPass.h">
       <Filter>소스 파일\RendererPass\Light</Filter>
     </ClInclude>
-    <ClInclude Include="ViewPort.h">
-      <Filter>소스 파일\Resource\Graphic\ViewPort</Filter>
-    </ClInclude>
     <ClInclude Include="DeferredPass.h">
       <Filter>소스 파일\RendererPass\Deferred</Filter>
     </ClInclude>
@@ -388,9 +382,6 @@
     </ClCompile>
     <ClCompile Include="LightPass.cpp">
       <Filter>소스 파일\RendererPass\Light</Filter>
-    </ClCompile>
-    <ClCompile Include="ViewPort.cpp">
-      <Filter>소스 파일\Resource\Graphic\ViewPort</Filter>
     </ClCompile>
     <ClCompile Include="RenderPassBase.cpp">
       <Filter>소스 파일\RendererPass\Base</Filter>

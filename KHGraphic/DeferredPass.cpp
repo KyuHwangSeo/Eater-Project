@@ -3,7 +3,6 @@
 #include "ShaderBase.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
-#include "ViewPort.h"
 #include "GraphicState.h"
 #include "Texture2D.h"
 #include "DepthStencilView.h"
@@ -136,7 +135,7 @@ void DeferredPass::Start()
 	m_DeferredPS = g_Shader->GetShader("DeferredPS");
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->GetDSV();
 
 	// Graphic State 설정..
 	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
@@ -152,7 +151,6 @@ void DeferredPass::Start()
 	m_PositionRT = g_Resource->GetRenderTarget<RT_Deffered_Position>();
 	m_ShadowRT = g_Resource->GetRenderTarget<RT_Deffered_Shadow>();
 	m_DepthRT = g_Resource->GetRenderTarget<RT_Deffered_Depth>();
-	m_SSAORT = g_Resource->GetRenderTarget<RT_SSAO>();
 
 	// RenderTargetView 설정..
 	m_RTVList.resize(5);
@@ -174,7 +172,7 @@ void DeferredPass::Start()
 void DeferredPass::OnResize(int width, int height)
 {
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->GetDSV();
 	
 	// ShaderResourceView List 재설정..
 	m_SRVList[0] = m_AlbedoRT->GetSRV();
@@ -223,10 +221,6 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 	Vector3 eye(view._41, view._42, view._43);
 	LightData* lightData = global->mLightData;
 
-	UINT texture_type = 0;
-	ID3D11ShaderResourceView* diffuse_srv = nullptr;
-	ID3D11ShaderResourceView* normal_srv = nullptr;
-
 	switch (mesh->ObjType)
 	{
 	case OBJECT_TYPE::BASE:
@@ -270,14 +264,12 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 	if (mesh->Albedo)
 	{
 		materialBuf.gTexID |= ALBEDO_MAP;
-		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Albedo->TextureBufferPointer);
-		m_DeferredPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
+		m_DeferredPS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mesh->Albedo->TextureBufferPointer);
 	}
 	if (mesh->Normal)
 	{
 		materialBuf.gTexID |= NORMAL_MAP;
-		normal_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Normal->TextureBufferPointer);
-		m_DeferredPS->SetShaderResourceView<gNormalMap>(&normal_srv);
+		m_DeferredPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mesh->Normal->TextureBufferPointer);
 	}
 
 	m_DeferredPS->SetConstantBuffer(materialBuf);

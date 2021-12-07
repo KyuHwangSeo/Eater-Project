@@ -55,3 +55,7 @@ struct HashClass
 		return typeid(T).hash_code();
 	}
 };
+
+// Template을 통해 들어오는 Class가 HashClass를 상속 받았는지 체크..
+template<typename T>
+using Enable_Check = typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type;

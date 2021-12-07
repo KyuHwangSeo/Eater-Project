@@ -1,6 +1,13 @@
 #pragma once
 #include "EnumDefine.h"
 
+/// 2021/12/08 2:06
+/// SeoKyuHwang
+///
+/// # ResourceBase Class
+///
+/// - Graphic Resource Base Class
+/// 
 class ResourceBase
 {
 public:

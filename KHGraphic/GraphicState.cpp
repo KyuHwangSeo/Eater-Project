@@ -105,3 +105,38 @@ ID3D11SamplerState** SamplerState::GetAddress()
 	return m_SS.GetAddressOf();
 
 }
+
+ViewPort::ViewPort(float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, float ratio_sizeY, float width, float height)
+	:ResourceBase(eResourceType::VP)
+{
+	m_OffsetX = ratio_offsetX;
+	m_OffsetY = ratio_offsetY;
+	m_SizeX = ratio_sizeX;
+	m_SizeY = ratio_sizeY;
+
+	m_ViewPort = new D3D11_VIEWPORT();
+	m_ViewPort->TopLeftX = ratio_offsetX * width;
+	m_ViewPort->TopLeftY = ratio_offsetY * height;
+	m_ViewPort->Width = ratio_sizeX * width;
+	m_ViewPort->Height = ratio_sizeY * height;
+	m_ViewPort->MinDepth = 0.0f;
+	m_ViewPort->MaxDepth = 1.0f;
+}
+
+ViewPort::~ViewPort()
+{
+	SAFE_DELETE(m_ViewPort);
+}
+
+void ViewPort::OnResize(int width, int height)
+{
+	m_ViewPort->TopLeftX = m_OffsetX * (float)width;
+	m_ViewPort->TopLeftY = m_OffsetY * (float)height;
+	m_ViewPort->Width	 = m_SizeX * (float)width;
+	m_ViewPort->Height	 = m_SizeY * (float)height;
+}
+
+D3D11_VIEWPORT* ViewPort::Get()
+{
+	return m_ViewPort;
+}

@@ -17,6 +17,7 @@ public:
 	void Update(MeshData* mesh, GlobalData* global);
 	void Render(MeshData* mesh);
 
+	void StaticUpdate(StaticData* data);
 private:
 	VertexShader* m_MeshVS;
 	VertexShader* m_SkinVS;

@@ -23,7 +23,6 @@ SHADER_RESOURCE_VIEW(gDiffuseMap)
 SHADER_RESOURCE_VIEW(gNormalMap)
 SHADER_RESOURCE_VIEW(gShadowMap)
 SHADER_RESOURCE_VIEW(gCubeMap)
-SHADER_RESOURCE_VIEW(gSSAOMap)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // SSAO ShaderResourceView Resource
@@ -41,7 +40,7 @@ SHADER_RESOURCE_VIEW(gAlbedoRT)
 SHADER_RESOURCE_VIEW(gNormalRT)
 SHADER_RESOURCE_VIEW(gPositionRT)
 SHADER_RESOURCE_VIEW(gShadowRT)
-SHADER_RESOURCE_VIEW(gSSAORT)
+SHADER_RESOURCE_VIEW(gSSAOMap)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Blur ShaderResourceView Resource

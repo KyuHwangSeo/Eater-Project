@@ -5,7 +5,6 @@
 #include "BufferData.h"
 #include "GraphicState.h"
 #include "BufferData.h"
-#include "ViewPort.h"
 #include "Texture2D.h"
 #include "DepthStencilView.h"
 #include "RenderTargetBase.h"
@@ -40,7 +39,7 @@ void GraphicResourceManager::OnResize(int width, int height)
 {
 	ComPtr<ID3D11Texture2D> tex2D = nullptr;
 
-	bool isRTV, isSRV, isUAV = false;
+	bool isRTV, isSRV, isUAV, isDSV = false;
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
@@ -161,14 +160,26 @@ void GraphicResourceManager::OnResize(int width, int height)
 
 		HR(m_Device->CreateTexture2D(&texDesc, 0, tex2D.GetAddressOf()));
 
+		isDSV = depthStencilView->IsDSV();
+		isSRV = depthStencilView->IsSRV();
+
 		// DepthStencilView Description 추출..
-		dsvDesc = depthStencilView->GetDesc();
-		
+		if (isDSV)
+			dsvDesc = depthStencilView->GetDSVDesc();
+
+		// ShaderResourceView Description 추출..
+		if (isSRV)
+			srvDesc = depthStencilView->GetSRVDesc();
+
 		// Resource Reset..
 		depthStencilView->Reset();
 
 		// DepthStencilView Resize..
-		HR(m_Device->CreateDepthStencilView(tex2D.Get(), &dsvDesc, depthStencilView->GetAddress()));
+		if (isDSV)
+			HR(m_Device->CreateDepthStencilView(tex2D.Get(), &dsvDesc, depthStencilView->GetAddressDSV()));
+
+		if (isSRV)
+			HR(m_Device->CreateShaderResourceView(tex2D.Get(), &srvDesc, depthStencilView->GetAddressSRV()));
 
 		// Texture2D Reset..
 		RESET_COM(tex2D);

@@ -23,13 +23,8 @@ private:
 
 	DepthStencilView* m_ShadowDepthStencilView;
 	
-	BasicRenderTarget* m_ShadowRT;
-
 	ID3D11DepthStencilView* m_ShadowDSV;
-	ID3D11ShaderResourceView* m_ShadowSRV;
-
 	ID3D11RasterizerState* m_RasterizerState;
-
 	D3D11_VIEWPORT* m_ShadowViewport;
 };
 

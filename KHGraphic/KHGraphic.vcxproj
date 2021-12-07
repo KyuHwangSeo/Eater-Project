@@ -236,7 +236,6 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     <ClInclude Include="UnorderedAccessBufferDefine.h" />
     <ClInclude Include="VertexDefine.h" />
     <ClInclude Include="VertexShader.h" />
-    <ClInclude Include="ViewPort.h" />
     <ClInclude Include="ViewPortDefine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -266,7 +265,6 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     <ClCompile Include="ShaderTypes.cpp" />
     <ClCompile Include="ShadowPass.cpp" />
     <ClCompile Include="VertexShader.cpp" />
-    <ClCompile Include="ViewPort.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\SKH\DeferredPS.hlsl">

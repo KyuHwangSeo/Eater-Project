@@ -3,7 +3,6 @@
 #include "ShaderBase.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
-#include "ViewPort.h"
 #include "GraphicState.h"
 #include "Texture2D.h"
 #include "DepthStencilView.h"
@@ -59,7 +58,7 @@ void ForwardPass::Start()
 	m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->GetDSV();
 
 	// Graphic State 설정..
 	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
@@ -76,7 +75,7 @@ void ForwardPass::OnResize(int width, int height)
 	m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->GetDSV();
 }
 
 void ForwardPass::Release()
@@ -102,9 +101,6 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	Matrix proj = *global->mProj;
 	Matrix shadowTrans = *global->mShadowTrans;
 	Vector3 eye(view._41, view._42, view._43);
-	LightData* lightData = global->mLightData;
-	ID3D11ShaderResourceView* diffuse_srv = nullptr;
-	ID3D11ShaderResourceView* normal_srv = nullptr;
 
 	switch (mesh->ObjType)
 	{
@@ -143,6 +139,8 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		break;
 	}
 
+	LightData* lightData = global->mLightData;
+
 	CB_Light lightBuf;
 	lightBuf.gPointLightCount = lightData->gPointLightCount;
 	lightBuf.gSpotLightCount = lightData->gSpotLightCount;
@@ -162,11 +160,13 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	{
 		lightBuf.gMaterials[m] = global->mMatData[m];
 	}
+	m_ForwardPS->SetConstantBuffer(lightBuf);
+
+
 
 	CB_LightSub lightsubBuf;
 	lightsubBuf.gEyePosW = -eye;
 
-	m_ForwardPS->SetConstantBuffer(lightBuf);
 	m_ForwardPS->SetConstantBuffer(lightsubBuf);
 
 	CB_Material materialBuf;
@@ -175,14 +175,12 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	if (mesh->Albedo)
 	{
 		materialBuf.gTexID |= ALBEDO_MAP;
-		diffuse_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Albedo->TextureBufferPointer);
-		m_ForwardPS->SetShaderResourceView<gDiffuseMap>(&diffuse_srv);
+		m_ForwardPS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mesh->Albedo->TextureBufferPointer);
 	}
 	if (mesh->Normal)
 	{
 		materialBuf.gTexID |= NORMAL_MAP;
-		normal_srv = reinterpret_cast<ID3D11ShaderResourceView*>(mesh->Normal->TextureBufferPointer);
-		m_ForwardPS->SetShaderResourceView<gNormalMap>(&normal_srv);
+		m_ForwardPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mesh->Normal->TextureBufferPointer);
 	}
 
 	m_ForwardPS->SetConstantBuffer(materialBuf);
@@ -205,4 +203,30 @@ void ForwardPass::Render(MeshData* mesh)
 	g_Context->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	g_Context->DrawIndexed(indexCount, 0, 0);
+}
+
+void ForwardPass::StaticUpdate(StaticData* data)
+{
+	LightData* lightData = data->mLightData;
+
+	CB_Light lightBuf;
+	lightBuf.gPointLightCount = lightData->gPointLightCount;
+	lightBuf.gSpotLightCount = lightData->gSpotLightCount;
+
+	lightBuf.gDirLights = *lightData->DirLights[0];
+
+	for (UINT p = 0; p < lightBuf.gPointLightCount; p++)
+	{
+		lightBuf.gPointLights[p] = *lightData->PointLights[p];
+	}
+	for (UINT s = 0; s < lightBuf.gSpotLightCount; s++)
+	{
+		lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
+	}
+
+	for (UINT m = 0; m < 5; m++)
+	{
+		lightBuf.gMaterials[m] = data->mMatData[m];
+	}
+	m_ForwardPS->SetConstantBuffer(lightBuf);
 }

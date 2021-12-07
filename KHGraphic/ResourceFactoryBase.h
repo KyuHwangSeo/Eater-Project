@@ -6,11 +6,6 @@
 #include "ParserData.h"
 #include "HashBase.h"
 
-
-// Template을 통해 들어오는 Class가 HashClass를 상속 받았는지 체크..
-template<typename T>
-using Enable_Check = typename std::enable_if<std::is_base_of<HashClass<T>, T>::value, bool>::type;
-
 interface IShaderManager;
 interface IGraphicResourceManager;
 
@@ -43,46 +38,34 @@ public:
 	virtual void CreateShaderResourceView(ID3D11Texture2D* tex2D, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, ID3D11ShaderResourceView** srv) abstract;
 	virtual void CreateUnorderedAccessView(ID3D11Texture2D* tex2D, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc, ID3D11UnorderedAccessView** uav) abstract;
 
-	template<typename T, Enable_Check<T> = NULL> void CreateDepthStencilView(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc);
 	template<typename T, Enable_Check<T> = NULL> void CreateDepthStencilState(D3D11_DEPTH_STENCIL_DESC* dssDesc);
 	template<typename T, Enable_Check<T> = NULL> void CreateRasterizerState(D3D11_RASTERIZER_DESC* rsDesc);
 	template<typename T, Enable_Check<T> = NULL> void CreateBlendState(D3D11_BLEND_DESC* bsDesc);
 	template<typename T, Enable_Check<T> = NULL> void CreateSamplerState(D3D11_SAMPLER_DESC* ssDesc);
-	template<typename T, Enable_Check<T> = NULL> void CreateViewPort(float topX, float topY, float width, float height, float width_ratio = 1.0f, float height_ratio = 1.0f);
+	template<typename T, Enable_Check<T> = NULL> void CreateViewPort(float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, float ratio_sizeY, float width, float height);
 
 public:
-	template<typename T, Enable_Check<T> = NULL> void CreateBasicRenderTarget(ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv);
-	template<typename T, Enable_Check<T> = NULL> void CreateBasicRenderTarget(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc);
+	template<typename T, Enable_Check<T> = NULL> void CreateDepthStencilView(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc);
 
-	template<typename T, Enable_Check<T> = NULL> void CreateComputeRenderTarget(ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav);
+	template<typename T, Enable_Check<T> = NULL> void CreateBasicRenderTarget(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc);
 	template<typename T, Enable_Check<T> = NULL> void CreateComputeRenderTarget(ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc);
 
 private:
-	virtual void CreateDSV(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc) abstract;
 	virtual void CreateDSS(Hash_Code hash_code, D3D11_DEPTH_STENCIL_DESC* dssDesc) abstract;
 	virtual void CreateRS(Hash_Code hash_code, D3D11_RASTERIZER_DESC* rsDesc) abstract;
 	virtual void CreateBS(Hash_Code hash_code, D3D11_BLEND_DESC* bsDesc) abstract;
 	virtual void CreateSS(Hash_Code hash_code, D3D11_SAMPLER_DESC* ssDesc) abstract;
-	virtual void CreateVP(Hash_Code hash_code, float topX, float topY, float width, float height, float width_ratio = 1.0f, float height_ratio = 1.0f) abstract;
+	virtual void CreateVP(Hash_Code hash_code, float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, float ratio_sizeY, float width, float height) abstract;
 
-	virtual void CreateBasicRT(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv) abstract;
+	virtual void CreateDSV(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) abstract;
+
 	virtual void CreateBasicRT(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) abstract;
-	virtual void CreateComputeRT(Hash_Code hash_code, ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav) abstract;
 	virtual void CreateComputeRT(Hash_Code hash_code, ID3D11Texture2D* tex2D, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) abstract;
 
 public:
 	virtual IShaderManager* GetShaderManager() abstract;
 	virtual IGraphicResourceManager* GetResourceManager() abstract;
 };
-
-template<typename T, Enable_Check<T>>
-inline void IGraphicResourceFactory::CreateDepthStencilView(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc)
-{
-	// Template Struct Resource Type Check..
-	assert(T::GetType() == eResourceType::DSV);
-
-	CreateDSV(T::GetHashCode(), tex2D, dsvDesc);
-}
 
 template<typename T, Enable_Check<T>>
 inline void IGraphicResourceFactory::CreateDepthStencilState(D3D11_DEPTH_STENCIL_DESC* dssDesc)
@@ -121,21 +104,21 @@ inline void IGraphicResourceFactory::CreateSamplerState(D3D11_SAMPLER_DESC* ssDe
 }
 
 template<typename T, Enable_Check<T>>
-void IGraphicResourceFactory::CreateViewPort(float topX, float topY, float width, float height, float width_ratio, float height_ratio)
+void IGraphicResourceFactory::CreateViewPort(float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, float ratio_sizeY, float width, float height)
 {
 	// Template Struct Resource Type Check..
 	assert(T::GetType() == eResourceType::VP);
 
-	CreateVP(T::GetHashCode(), topX, topY, width, height, width_ratio, height_ratio);
+	CreateVP(T::GetHashCode(), ratio_offsetX, ratio_offsetY, ratio_sizeX, ratio_sizeY, width, height);
 }
 
 template<typename T, Enable_Check<T>>
-void IGraphicResourceFactory::CreateBasicRenderTarget(ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv)
+inline void IGraphicResourceFactory::CreateDepthStencilView(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
 {
 	// Template Struct Resource Type Check..
-	assert(T::GetType() == eResourceType::RT);
+	assert(T::GetType() == eResourceType::DSV);
 
-	CreateBasicRT(T::GetHashCode(), rtv, srv);
+	CreateDSV(T::GetHashCode(), tex2D, dsvDesc, srvDesc);
 }
 
 template<typename T, Enable_Check<T>>
@@ -145,15 +128,6 @@ void IGraphicResourceFactory::CreateBasicRenderTarget(ID3D11Texture2D* tex2D, D3
 	assert(T::GetType() == eResourceType::RT);
 
 	CreateBasicRT(T::GetHashCode(), tex2D, rtvDesc, srvDesc);
-}
-
-template<typename T, Enable_Check<T>>
-void IGraphicResourceFactory::CreateComputeRenderTarget(ID3D11RenderTargetView** rtv, ID3D11UnorderedAccessView** uav)
-{
-	// Template Struct Resource Type Check..
-	assert(T::GetType() == eResourceType::RT);
-
-	CreateComputeRT(T::GetHashCode(), rtv, uav);
 }
 
 template<typename T, Enable_Check<T>>

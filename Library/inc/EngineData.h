@@ -49,6 +49,17 @@ public:
 };
 
 /// <summary>
+/// 게임엔진에서 그래픽엔진으로 던저줄 정적 데이터
+/// </summary>
+class StaticData
+{
+public:
+	LightData* mLightData;
+	MaterialData mMatData[5];
+};
+
+
+/// <summary>
 /// 게임엔진에서 그래픽엔진으로 던저줄 한개의 메쉬 데이터
 /// </summary>
 class MeshData

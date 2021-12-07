@@ -75,7 +75,7 @@ public:
 
 	// Shader ShaderResourceView 설정..
 	template<typename T>
-	void SetShaderResourceView(ID3D11ShaderResourceView** srv);
+	void SetShaderResourceView(ID3D11ShaderResourceView* srv);
 
 public:
 	// 현재 Shader Type 반환 함수..
@@ -119,7 +119,7 @@ inline void ShaderBase::SetConstantBuffer(T cBuffer)
 }
 
 template<typename T>
-inline void ShaderBase::SetShaderResourceView(ID3D11ShaderResourceView** srv)
+inline void ShaderBase::SetShaderResourceView(ID3D11ShaderResourceView* srv)
 {
 	// 해당 Value 찾기..
 	std::unordered_map<Hash_Code, ShaderResourceBuffer*>::iterator it = m_SRVList.find(typeid(T).hash_code());
@@ -128,5 +128,5 @@ inline void ShaderBase::SetShaderResourceView(ID3D11ShaderResourceView** srv)
 	if (it == m_SRVList.end()) return;
 
 	// 해당 Register Slot에 삽입..
-	m_ShaderResourceViews[it->second->register_number] = *srv;
+	m_ShaderResourceViews[it->second->register_number] = srv;
 }
