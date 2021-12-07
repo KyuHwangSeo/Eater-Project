@@ -1,5 +1,8 @@
 #include "LightHelper.fx"
 
+#define ALBEDO_MAP 0x00000001
+#define NORMAL_MAP 0x00000010
+
 cbuffer cbLightSub : register(b0)
 {
     float3 gEyePosW         : packoffset(c0);
@@ -15,6 +18,13 @@ cbuffer cbLight : register(b1)
 
     uint gPointLightCount;
     uint gSpotLightCount;
+};
+
+cbuffer cbMaterial : register(b2)
+{
+    float4 gColor : packoffset(c0);
+    uint gMatID : packoffset(c1.x);
+    uint gTexID : packoffset(c1.y);
 };
 
 Texture2D gDiffuseMap   : register(t0);
@@ -37,17 +47,25 @@ struct PixelIn
 
 float4 main(PixelIn pin) : SV_Target0
 {
-    float4 albedo = float4(0.0f, 0.0f, 0.0f, 1.0f);
-    albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
+    float4 albedo = gColor;
+    float3 normal = pin.NormalW;
+    
+    if (gTexID & ALBEDO_MAP)
+    {
+        albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
+    }
+    
+    if (gTexID & NORMAL_MAP)
+    {
+        float3 normalMapSample = 2.0f * gNormalMap.Sample(gSamWrapLinear, pin.Tex).rgb - 1.0f;
+        normal = mul(normalMapSample, pin.TBN);
+    }
     
     // Gamma Correction
 	// Gamma Space -> Linear Space
 	// 모든 라이팅 연산은 선형 공간에서 이루어져야 한다..
     albedo.rgb = pow(albedo.rgb, 2.2);
-    
-    float3 normalMapSample = 2.0f * gNormalMap.Sample(gSamWrapLinear, pin.Tex).rgb - 1.0f;
-    float3 bumpedNormalW = mul(normalMapSample, pin.TBN);
-    
+
     // Shadow
     float shadows = CalcShadowFactor(gSamBorderComparisonLinearPoint, gShadowMap, pin.ShadowPosH);
     
@@ -65,7 +83,7 @@ float4 main(PixelIn pin) : SV_Target0
 	float4 litColor = albedo;
     
     // Directional Light
-    ComputeDirectionalLight(gMaterials[0], gDirLights, bumpedNormalW, ViewDirection,
+    ComputeDirectionalLight(gMaterials[gMatID], gDirLights, normal, ViewDirection,
 	                        A, D, S);
     
     ambient += A;
@@ -78,7 +96,7 @@ float4 main(PixelIn pin) : SV_Target0
 			[unroll]
         for (uint i = 0; i < gPointLightCount; ++i)
         {
-            ComputePointLight(gMaterials[0], gPointLights[i], pin.PosW.xyz, bumpedNormalW, ViewDirection,
+            ComputePointLight(gMaterials[gMatID], gPointLights[i], pin.PosW.xyz, normal, ViewDirection,
 			                  A, D, S);
     
             ambient += A;
@@ -90,10 +108,10 @@ float4 main(PixelIn pin) : SV_Target0
     // Spot Light
     if (gSpotLightCount > 0)
     {
-			[unroll]
+		[unroll]
         for (uint i = 0; i < gSpotLightCount; ++i)
         {
-            ComputeSpotLight(gMaterials[0], gSpotLights[i], pin.PosW.xyz, bumpedNormalW, ViewDirection,
+            ComputeSpotLight(gMaterials[gMatID], gSpotLights[i], pin.PosW.xyz, normal, ViewDirection,
 					         A, D, S);
     
             ambient += A;
@@ -106,9 +124,15 @@ float4 main(PixelIn pin) : SV_Target0
     litColor = albedo * (ambient + diffuse) + spec;
     
     // Common to take alpha from diffuse material and texture.
-    litColor.a = gMaterials[0].Diffuse.a * albedo.a;
+    litColor.a = gMaterials[gMatID].Diffuse.a * albedo.a;
     
-    
-    return litColor;
-    //return float4(1.0f, 0.0f, 0.0f, 1.0f);
+    if (gTexID & NORMAL_MAP)
+    {
+        return litColor;  
+    }
+    else
+    {
+        litColor.rgb = pow(litColor.rgb, 1.0f / 2.2f);
+        return litColor;  
+    }
 }

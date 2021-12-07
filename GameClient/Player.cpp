@@ -60,8 +60,6 @@ void Player::Start()
 
 	Weapon->transform->Scale = { 1,1 ,1 };
 	Weapon->transform->Rotation = { -90,90,0 };
-
-	
 }
 
 void Player::Update()

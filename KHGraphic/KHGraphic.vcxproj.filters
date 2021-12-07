@@ -178,6 +178,9 @@
     <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Object">
       <UniqueIdentifier>{4da61ed5-edcc-4f6a-bdff-f06bc62c575d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Shader\FX">
+      <UniqueIdentifier>{29b03060-c11e-4934-b1e3-daa832cda7d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -455,7 +458,7 @@
       <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightHelper.fx">
-      <Filter>소스 파일\Shader\HLSL</Filter>
+      <Filter>소스 파일\Shader\FX</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

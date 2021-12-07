@@ -21,6 +21,7 @@ MeshFilter::MeshFilter()
 
 	//모든 컨퍼넌트들 Start함수보다 나중에 실행될것이다
 	Start_Order = FUNCTION_ORDER_LAST;
+	//Awake_Order = FUNCTION_ORDER_CENTER;
 }
 
 MeshFilter::~MeshFilter()
