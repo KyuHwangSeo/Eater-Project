@@ -23,23 +23,22 @@ private:
 	VertexShader* m_LightVS;
 	PixelShader* m_LightPS; 
 	
-	DepthStencilView* m_DSV;
+	DepthStencil* m_DSV;
 	ID3D11DepthStencilView* m_DepthStencilView;
 
 	ID3D11DepthStencilState* m_DepthStencilState;
 	ID3D11RasterizerState* m_RasterizerState;
 	ID3D11BlendState* m_BlendState;
 
-	BasicRenderTarget* m_BackBuffer;
+	RenderTarget* m_BackBuffer;
 
 	ID3D11RenderTargetView* m_BackBufferRTV;
-	ID3D11ShaderResourceView* m_BackBufferSRV;
 
-	BasicRenderTarget* m_AlbedoRT;
-	BasicRenderTarget* m_NormalRT;
-	BasicRenderTarget* m_PositionRT;
-	BasicRenderTarget* m_ShadowRT;
-	BasicRenderTarget* m_SSAORT;
+	RenderTarget* m_AlbedoRT;
+	RenderTarget* m_NormalRT;
+	RenderTarget* m_PositionRT;
+	RenderTarget* m_ShadowRT;
+	RenderTarget* m_SSAORT;
 
 	D3D11_VIEWPORT* m_ScreenViewport;
 };

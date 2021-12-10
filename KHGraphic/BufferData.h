@@ -15,6 +15,9 @@ public:
 	~BufferData();
 
 public:
+	void Reset() override;
+
+public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> VB;		// Vertex Buffer
 	Microsoft::WRL::ComPtr<ID3D11Buffer> IB;		// Index Buffer
 

@@ -18,6 +18,7 @@ class GraphicEngineManager;
 class TimeManager;
 class MaterialManager;
 class LightManager;
+class PhysManager;
 
 class Scene;
 //게임 오브젝트
@@ -59,6 +60,11 @@ public:
 	float GetMousePosX();			//마우스 위치 X
 	float GetMousePosY();			//마우스 위치 Y
 public:
+	///카메라 관련
+	//Vector3 GetCameraLocalPosition_UP();
+	//Vector3 GetCameraLocalPosition_Right();
+	//Vector3 GetCameraLocalPosition_Look();
+public:
 	///시간 관련
 	float GetdeltaTime();
 
@@ -67,15 +73,16 @@ private:
 
 private:
 	///각종 매니저들
-	ObjectManager*			mObjectManager;		//오브젝트 관리 매니저
-	DebugManager*			mDebugManager;		//디버깅매니저
-	LoadManager*			mLoadManager;		//로드 관련 매니저
-	SceneManager*			mSceneManager;		//스크린 관리 매니저
-	KeyinputManager*		mKeyManager;		//키인풋 관련 매니저
-	GraphicEngineManager*	mGraphicManager;	//그래픽엔진 관리 매니저
-	TimeManager*			mTimeManager;		//시간 관련 타임매니저
+	ObjectManager*			mObjectManager;		// 오브젝트 관리 매니저
+	DebugManager*			mDebugManager;		// 디버깅매니저
+	LoadManager*			mLoadManager;		// 로드 관련 매니저
+	SceneManager*			mSceneManager;		// 스크린 관리 매니저
+	KeyinputManager*		mKeyManager;		// 키인풋 관련 매니저
+	GraphicEngineManager*	mGraphicManager;	// 그래픽엔진 관리 매니저
+	TimeManager*			mTimeManager;		// 시간 관련 타임매니저
 	MaterialManager*		mMaterialManager;	// 메테리얼 관리 매니저
 	LightManager*			mLightManager;		// 라이트 관리 매니저
+	PhysManager*			mPhysManager;		// 물리 관리 매니저
 private:
 	///클라쪽에서 받아야 하는 데이터
 	HWND mHwnd; //핸들

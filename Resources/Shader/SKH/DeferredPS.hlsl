@@ -10,6 +10,7 @@ cbuffer cbMaterial : register(b0)
 
 Texture2D gDiffuseMap : register(t0);
 Texture2D gNormalMap : register(t1);
+Texture2D gShadowMap : register(t2);
 
 SamplerState gSamWrapLinear : register(s0);
 
@@ -31,7 +32,7 @@ struct PixelOut
     float4 Normal       : SV_Target1;
     float4 Position     : SV_Target2;
     float4 Shadow       : SV_Target3;
-    float4 NormalDepth  : SV_Target4;
+    float4 Depth        : SV_Target4;
 };
 
 PixelOut main(VertexIn pin)
@@ -56,7 +57,7 @@ PixelOut main(VertexIn pin)
     vout.Normal = float4(normal, 1.0f);
     vout.Position = float4(pin.PosW, gMatID);
     vout.Shadow = float4(pin.ShadowPosH.xyz, 0.0f);
-    vout.NormalDepth = float4(pin.NormalV.xyz, pin.PosV.z);
+    vout.Depth = float4(pin.NormalV.xyz, pin.PosV.z);
     
 	return vout;
 }

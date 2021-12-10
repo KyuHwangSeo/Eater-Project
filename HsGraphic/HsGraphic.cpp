@@ -30,6 +30,10 @@ HsGraphic::HsGraphic()
 
 	mWireframe	= nullptr;
 	mSolid		= nullptr;
+
+	mShaderManager	= nullptr;
+	mRenderManager	= nullptr;
+	mDebugManager	= nullptr;
 }
 
 HsGraphic::~HsGraphic()
@@ -39,7 +43,29 @@ HsGraphic::~HsGraphic()
 
 void HsGraphic::Initialize(HWND _hWnd, int screenWidth, int screenHeight)
 {
-	
+	WinSizeX	= screenWidth;
+	WinSizeY	= screenHeight;
+	hwnd		= _hWnd;
+
+	//디바이스 생성
+	CreateDevice();
+	//뷰포트 생성
+	Create_ViewPort();
+	//스왑체인에서 렌더타겟을 생성
+	Create_SwapChain_RenderTarget();
+
+
+	//디바이스와 컨텍스트를 받은 동시에 각종 매니저 초기화
+	mShaderManager = new ShaderManager();
+	mShaderManager->Initialize(Device, DeviceContext);
+
+	//디버깅 매니저 초기화
+	mDebugManager = new GraphicDebugManager();
+	mDebugManager->Initialize(Device, DeviceContext);
+
+	//랜더링 매니저 초기화
+	mRenderManager = new RenderingManager();
+	mRenderManager->Initialize(Device, DeviceContext, mShaderManager, mDebugManager);
 }
 
 Indexbuffer* HsGraphic::CreateIndexBuffer(ParserData::Mesh* mModel)
@@ -110,105 +136,53 @@ ID3D11DepthStencilView* HsGraphic::GetEngineDSV()
 void HsGraphic::CreateDevice()
 {
 	UINT createDeviceFlags = 0;
-	D3D_FEATURE_LEVEL featureLevel;
 
-	HRESULT hr = D3D11CreateDevice
-	(
-		0,							//디스플레이 어뎁터  0 = 디폴트 
-		D3D_DRIVER_TYPE_HARDWARE,	// ???
-		0,							// 소프트웨어 구동기 지정
-		createDeviceFlags,			// ???
-		0,							// 점검순서
-		0,							// ???
-		D3D11_SDK_VERSION,			//항상 D3D11_SDK_VERSION 을 지정
-		&Device,					//함수가 생성한장치 돌려줌
-		&featureLevel,				//null 값으로 한경우 지원하는 가장 높은 기능수준으로
-		&DeviceContext			//원래값 돌려줌
-	);
+#ifdef _DEBUG
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
-	//생성 여부
-	if (FAILED(hr))
-	{
-		return;
-	}
+	// 스왑 체인 설정을 초기화..
+	DXGI_SWAP_CHAIN_DESC swapChainDesc;
+	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
-	//버전확인
-	if (featureLevel != D3D_FEATURE_LEVEL_11_0)
-	{
-		//MessageBox(0, L"Direct3D LEVEL 11", 0, MB_OK);
-		return;
-	}
+	// swapChainDesc을 단일 백 버퍼로 설정..
+	swapChainDesc.BufferCount = 1;
 
+	// 백 버퍼의 너비와 높이를 설정..
+	swapChainDesc.BufferDesc.Width = WinSizeX;
+	swapChainDesc.BufferDesc.Height = WinSizeY;
 
-	//4xMSAA 품질 수준 지원 점검??
-	//하드웨어가 4xMSAA를 위한 품질 수준을 지원하는지 점검
+	// 백 버퍼에 일반 32 비트 표면을 설정..
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-	UINT m4xMsaaQuality;
-	Device->CheckMultisampleQualityLevels
-	(
-		DXGI_FORMAT_R8G8_B8G8_UNORM,
-		4,
-		&m4xMsaaQuality
-	);
+	// 백 버퍼의 재생률을 설정..
+	swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
+	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 
-	//assert를 몰라서 써놓음
-	//assert는 조건이 맞지않을때 프로그램을 중단하며 참일때는 계속 실행시킴
-	//assert(m4xMsaaQuality > 0);
+	// 스캔 라인 순서 및 배율을 지정되지 않음으로 설정..
+	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-	//교환 사슬 설정?
-	//구조체 값 설정
-	DXGI_SWAP_CHAIN_DESC sd;
-	ZeroMemory(&sd, sizeof(sd));
-	//BufferDesc = 생성하고자 하는 후면 버퍼의 속성들을 서술하는 개별적인 구조체
+	// 백 버퍼의 사용 설정..
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
+	swapChainDesc.OutputWindow = (HWND)hwnd;
 
-	sd.BufferCount = 1;  //교환 사슬에서 사용할 후면 버퍼의 개수
-	sd.BufferDesc.Width = WinSizeX;
-	sd.BufferDesc.Height = WinSizeY;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
-	sd.BufferDesc.RefreshRate.Denominator = 1;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //버퍼의 용도
-	sd.OutputWindow = hwnd; //랜더링 결과를 표시할 창의 핸들
+	// 멀티 샘플링을 끕니다..
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.Windowed = true;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	//sampleDesc = 다중 표본화를 이해 추출할 표본 개수와 품질수준
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;	//
-	sd.Windowed = true;			//윈도우 창모드를 원하면 true 전체모드 false
+	// 추가 플래그 설정 안 함..
+	swapChainDesc.Flags = createDeviceFlags;
 
-	//교환 사슬의 생성
+	// featureLevel을 DirectX 11로 설정..
+	D3D_FEATURE_LEVEL featurelevel = D3D_FEATURE_LEVEL_11_0;
 
-	//이과정에서 오류를 피하려면 장치의 생성에 쓰인 IDXGIFactory 인스턴스를 사용해야한다
-	//그리고 그 인스턴스를 얻으려면 다음과 같이 일련의 COM 질의 과정을 거쳐야함..
-	IDXGIDevice* dxgiDevice = 0;
-	Device->QueryInterface
-	(
-		__uuidof(IDXGIDevice),
-		(void**)&dxgiDevice
-	);
-
-
-	IDXGIAdapter* dxgiAdapter = 0;
-	dxgiDevice->GetParent
-	(
-		__uuidof(IDXGIAdapter),
-		(void**)&dxgiAdapter
-	);
-
-	//IDXGIFactory 인터페이스 얻음
-	IDXGIFactory* dxgiFactory = 0;
-	dxgiAdapter->GetParent
-	(
-		__uuidof(IDXGIFactory),
-		(void**)&dxgiFactory
-	);
-
-	//사슬 교환 생성
-	dxgiFactory->CreateSwapChain(Device, &sd, &mSwapChain);
-
-	//필요없는건 삭제
-	dxgiAdapter->Release();
-	dxgiDevice->Release();
-	dxgiFactory->Release();
+	// 스왑 체인, Direct3D 장치 및 Direct3D 장치 컨텍스트 생성..
+	/// MSDN에선 SwapChain 과 Device 를 한번에 생성해주는 함수를 지향함..
+	(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featurelevel, 1,
+		D3D11_SDK_VERSION, &swapChainDesc, &mSwapChain, &Device, NULL, &DeviceContext));
 }
 
 void HsGraphic::BeginRender()
@@ -260,7 +234,7 @@ Vertexbuffer* HsGraphic::CreateBasicVertexBuffer(ParserData::Mesh* mModel)
 	//////////////////////////////////////////////////
 	
 
-	return nullptr;
+	return vertexbuffer;
 }
 
 Vertexbuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
@@ -326,21 +300,39 @@ Vertexbuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
 
 TextureBuffer* HsGraphic::CreateTextureBuffer(std::string path)
 {
-	ID3D11ShaderResourceView* Textures = nullptr;
+	TextureBuffer* buffer = nullptr;
+
 	ID3D11Resource* texResource = nullptr;
+	ID3D11ShaderResourceView* newTex = nullptr;
 
-
-	std::wstring _path = std::wstring(path.begin(), path.end());
-	const wchar_t* w_path = _path.c_str();
-
-	if (CreateDDSTextureFromFile(Device, w_path, &texResource, &Textures, 0))
+	//해당 문자열에 dds가있다면 (rfind 는 뒤에서부터 찾는다)
+	if (path.rfind(".dds") != std::string::npos)
 	{
-		return nullptr;
+		//문자열 변환
+		std::wstring _path = std::wstring(path.begin(), path.end());
+		const wchar_t* w_path = _path.c_str();
+
+		//생성
+		DirectX::CreateDDSTextureFromFile(Device, w_path, &texResource, &newTex);
 	}
-	
-	TextureBuffer* buffer = new TextureBuffer();
-	buffer->TextureBufferPointer = Textures;
-	texResource->Release();
+	else if (path.rfind(".png") != std::string::npos)
+	{
+		//문자열 변환
+		std::wstring _path = std::wstring(path.begin(), path.end());
+		const wchar_t* w_path = _path.c_str();
+
+		//생성
+		DirectX::CreateWICTextureFromFile(Device, w_path, &texResource, &newTex);
+	}
+
+	// Texture 생성 성공시 Texture Buffer 생성..
+	if (newTex)
+	{
+		buffer = new TextureBuffer();
+		buffer->TextureBufferPointer = newTex;
+
+		texResource->Release();
+	}
 
 	return buffer;
 }
@@ -383,7 +375,7 @@ void HsGraphic::OnReSize(int Change_Width, int Change_Height)
 void HsGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 	//멀티 랜더링 엔진에서 받아온 DSV, RTV, VPT로 그릴준비
-	//BeginRender();
+	BeginRender();
 
 	DeviceContext->RSSetViewports(1, mScreenViewport);
 
@@ -428,6 +420,8 @@ void HsGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 		//사용한것은 뺴준다
 		meshList->pop();
 	}
+	
+	EndRender();
 }
 
 void HsGraphic::Delete()
@@ -464,5 +458,39 @@ void HsGraphic::SetDevice(void* mDevie, void* mDevieContext)
 	mRenderManager = new RenderingManager();
 	mRenderManager->Initialize(Device, DeviceContext, mShaderManager, mDebugManager);
 }
+void HsGraphic::Create_SwapChain_RenderTarget()
+{
+	ID3D11Texture2D* backBuffer;
+	mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+	Device->CreateRenderTargetView(backBuffer, 0, &mRenderTargetView);
+	backBuffer->Release();
 
+	ID3D11Texture2D* mDepthStencilBuffer = nullptr;
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	depthStencilDesc.Width = WinSizeX;
+	depthStencilDesc.Height = WinSizeY;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
 
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+	Device->CreateTexture2D(&depthStencilDesc, 0, &mDepthStencilBuffer);
+	Device->CreateDepthStencilView(mDepthStencilBuffer, 0, &mDepthStencilView);
+	DeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+}
+void HsGraphic::Create_ViewPort()
+{
+	mScreenViewport = new D3D11_VIEWPORT();
+	mScreenViewport->TopLeftX = (float)0;
+	mScreenViewport->TopLeftY = (float)0;
+	mScreenViewport->Width = static_cast<float>(WinSizeX);
+	mScreenViewport->Height = static_cast<float>(WinSizeY);
+	mScreenViewport->MinDepth = 0.0f;
+	mScreenViewport->MaxDepth = 1.0f;
+}

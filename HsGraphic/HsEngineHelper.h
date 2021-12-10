@@ -17,7 +17,7 @@
 #endif
 ////////////////////////////////////////////////
 #include "DDSTextureLoader.h"
-
+#include "WICTextureLoader.h"
 
 #include <d3dcompiler.h>
 #include <winerror.h>

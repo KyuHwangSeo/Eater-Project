@@ -60,12 +60,22 @@ void KHGraphic::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global
 
 void KHGraphic::SSAORender()
 {
-
+	m_RenderManager->SSAORender();
 }
 
 void KHGraphic::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
+	m_RenderManager->UIRender(meshList, global);
+}
 
+void KHGraphic::LightRender(GlobalData* global)
+{
+	m_RenderManager->LightRender(global);
+}
+
+void KHGraphic::EndRender()
+{
+	m_RenderManager->EndRender();
 }
 
 void KHGraphic::OnReSize(int screenWidth, int screenheight)

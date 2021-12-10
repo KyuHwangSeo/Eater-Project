@@ -84,24 +84,37 @@ struct CB_Material : public cbMaterial
 /////////////////////////////////////////////////////////////////////////////////////////////
 //// SSAO Constant Buffer
 /////////////////////////////////////////////////////////////////////////////////////////////
-//
-//CONSTANT_BUFFER(cbTexel)
-//{
-//	float gTexelSize;
-//};
-//
-//CONSTANT_BUFFER(cbSsaoFrame)
-//{
-//	DirectX::SimpleMath::Matrix  gViewToTexSpace;
-//	DirectX::SimpleMath::Vector4 gOffsetVectors[14];
-//	DirectX::SimpleMath::Vector4 gFrustumCorners[4];
-//
-//	float    gOcclusionRadius = 0.5f;
-//	float    gOcclusionFadeStart = 0.2f;
-//	float    gOcclusionFadeEnd = 2.0f;
-//	float    gSurfaceEpsilon = 0.05f;
-//};
-//
+
+CONSTANT_BUFFER(cbBlurOption)
+struct CB_BlurOption : public cbBlurOption
+{
+	DirectX::SimpleMath::Vector2 gTexelSize;
+	bool gHorizon;
+};
+
+CONSTANT_BUFFER(cbSsaoObject)
+struct CB_SsaoObject : public cbSsaoObject
+{
+	DirectX::SimpleMath::Matrix  gViewToTexSpace;
+};
+
+CONSTANT_BUFFER(cbSsaoFrustum)
+struct CB_SsaoFrustum : public cbSsaoFrustum
+{
+	DirectX::SimpleMath::Vector4 gFrustumCorners[4];
+};
+
+CONSTANT_BUFFER(cbSsaoOption)
+struct CB_SsaoOption : public cbSsaoOption
+{
+	DirectX::SimpleMath::Vector4 gOffsetVectors[14];
+
+	float    gOcclusionRadius = 0.5f;
+	float    gOcclusionFadeStart = 0.2f;
+	float    gOcclusionFadeEnd = 2.0f;
+	float    gSurfaceEpsilon = 0.05f;
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 //// Full Screen Constant Buffer
 /////////////////////////////////////////////////////////////////////////////////////////////

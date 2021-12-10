@@ -1,12 +1,12 @@
 #pragma once
 #include "ShaderManagerBase.h"
 
-class D3D11Graphic;
+interface ID3D11Graphic;
 
 class ShaderManager : public IShaderManager
 {
 public:
-	ShaderManager(D3D11Graphic* graphic);
+	ShaderManager(ID3D11Graphic* graphic);
 	~ShaderManager();
 
 public:
@@ -17,7 +17,7 @@ public:
 	void Release() override;
 
 public:
-	void AddSampler(Hash_Code hash_code, ID3D11SamplerState** sampler) override;
+	void AddSampler(Hash_Code hash_code, ID3D11SamplerState* sampler) override;
 
 public:
 	ShaderBase* LoadShader(eShaderType shaderType, std::string shaderName);

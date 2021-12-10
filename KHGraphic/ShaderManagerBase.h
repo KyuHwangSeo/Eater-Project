@@ -19,7 +19,7 @@ public:
 	virtual void Release() abstract;
 	
 public:
-	virtual void AddSampler(Hash_Code hash_code, ID3D11SamplerState** sampler) abstract;
+	virtual void AddSampler(Hash_Code hash_code, ID3D11SamplerState* sampler) abstract;
 
 public:
 	// GetShader Original Pointer..

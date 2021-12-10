@@ -9,3 +9,4 @@
 
 VIEW_PORT(VP_FullScreen)
 VIEW_PORT(VP_Shadow)
+VIEW_PORT(VP_SSAO)

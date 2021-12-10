@@ -228,13 +228,14 @@ void ObjectManager::PlayUpdate()
 	EndUpdate.Play();
 
 	//글로벌 데이터
-	Global->mProj	= Camera::GetProj();
-	Global->mViewMX = Camera::GetMainView();
+	Global->mCamView	= Camera::g_MainCam->GetView();
+	Global->mCamProj	= Camera::g_MainCam->GetProj();
+	Global->mCamPT		= Camera::g_MainCam->GetViewTex();
 
 	//라이트 데이터
-	Global->mLightViewMX	= DirectionLight::g_DirLight->GetView();
-	Global->mLightProj		= DirectionLight::g_DirLight->GetProj();
-	Global->mShadowTrans	= DirectionLight::g_DirLight->GetShadowTranspose();
+	Global->mLightView	= DirectionLight::g_DirLight->GetView();
+	Global->mLightProj	= DirectionLight::g_DirLight->GetProj();
+	Global->mLightVPT	= DirectionLight::g_DirLight->GetShadowTranspose();
 }
 
 void ObjectManager::CreateRenderQueue()

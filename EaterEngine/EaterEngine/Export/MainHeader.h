@@ -40,6 +40,11 @@ extern "C" EATER_ENGINEDLL bool  GetTogle(byte number);		//키 토글
 extern "C" EATER_ENGINEDLL float GetMousePosX();			//마우스 위치 X
 extern "C" EATER_ENGINEDLL float GetMousePosY();			//마우스 위치 Y
 
+///카메라 관련
+EATER_ENGINEDLL Vector3 GetCameraLocalPosition_UP();
+EATER_ENGINEDLL Vector3 GetCameraLocalPosition_Right();
+EATER_ENGINEDLL Vector3 GetCameraLocalPosition_Look();
+
 ///시간 관련
 extern "C" EATER_ENGINEDLL float GetDeltaTime();
 

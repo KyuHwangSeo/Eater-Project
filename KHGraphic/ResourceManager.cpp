@@ -1,25 +1,22 @@
 #include <vector>
 #include "DirectDefine.h"
 #include "EnumDefine.h"
-#include "D3D11Graphic.h"
+#include "D3D11GraphicBase.h"
 #include "BufferData.h"
 #include "GraphicState.h"
+#include "GraphicView.h"
 #include "BufferData.h"
 #include "Texture2D.h"
-#include "DepthStencilView.h"
-#include "RenderTargetBase.h"
-#include "BasicRenderTarget.h"
-#include "ComputeRenderTarget.h"
+#include "DepthStencil.h"
+#include "RenderTarget.h"
 #include "ShaderManagerBase.h"
 #include "ResourceManager.h"
 
 #include "VertexDefine.h"
 
-GraphicResourceManager::GraphicResourceManager(D3D11Graphic* graphic, IShaderManager* shaderManager)
-	:m_ShaderManager(shaderManager), m_BackBuffer(nullptr)
+GraphicResourceManager::GraphicResourceManager(ID3D11Graphic* graphic, IShaderManager* shaderManager)
+	:m_Graphic(graphic), m_ShaderManager(shaderManager), m_BackBuffer(nullptr)
 {
-	m_Device = graphic->GetDevice();
-	m_SwapChain = graphic->GetSwapChain();
 }
 
 GraphicResourceManager::~GraphicResourceManager()
@@ -37,38 +34,15 @@ void GraphicResourceManager::Initialize()
 
 void GraphicResourceManager::OnResize(int width, int height)
 {
-	ComPtr<ID3D11Texture2D> tex2D = nullptr;
-
-	bool isRTV, isSRV, isUAV, isDSV = false;
-
-	D3D11_TEXTURE2D_DESC texDesc;
-	ZeroMemory(&texDesc, sizeof(texDesc));
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-	ZeroMemory(&rtvDesc, sizeof(rtvDesc));
-
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(srvDesc));
-
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
-	ZeroMemory(&uavDesc, sizeof(uavDesc));
-
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-	ZeroMemory(&dsvDesc, sizeof(dsvDesc));
-
-	// BackBuffer Reset..
-	m_BackBuffer->Reset();
-
-	// Swap Chain, Render Target View Resize
-	HR(m_SwapChain->ResizeBuffers(1, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
-
-	// Get Swap Chain Back Buffer Pointer..
-	HR(m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(tex2D.GetAddressOf())));
 
 	// BackBuffer Resize..
-	BasicRenderTarget* bRenderTarget = reinterpret_cast<BasicRenderTarget*>(m_BackBuffer);
-	HR(m_Device->CreateRenderTargetView(tex2D.Get(), nullptr, bRenderTarget->GetAddressRTV()));
-	HR(m_Device->CreateShaderResourceView(tex2D.Get(), nullptr, bRenderTarget->GetAddressSRV()));
+	m_Graphic->CreateBackBuffer((UINT)width, (UINT)height, tex2D.GetAddressOf(), m_BackBuffer->GetAddressRTV(true), m_BackBuffer->GetAddressSRV(true));
 
 	// Texture2D Reset..
 	RESET_COM(tex2D);
@@ -77,73 +51,40 @@ void GraphicResourceManager::OnResize(int width, int height)
 	for (std::pair<Hash_Code, RenderTarget*> rt : m_RenderTargetList)
 	{
 		RenderTarget* renderTarget = rt.second;
-		
-		// Texture2D Description 추출..
-		texDesc = renderTarget->GetTextureDesc(width, height);
+
+		// RenderTarget Resize..
+		renderTarget->OnResize(width, height);
 
 		// Texture2D Resize..
-		HR(m_Device->CreateTexture2D(&texDesc, 0, tex2D.GetAddressOf()));
+		m_Graphic->CreateTexture2D(renderTarget->GetTextureDesc(), tex2D.GetAddressOf());
 
-		switch (renderTarget->GetType())
-		{
-		case eRenderTargetType::BASIC:
-		{
-			BasicRenderTarget* bRenderTarget = reinterpret_cast<BasicRenderTarget*>(renderTarget);
-			
-			// Resource 여부 파악..
-			isRTV = bRenderTarget->IsRTV();
-			isSRV = bRenderTarget->IsSRV();
+		// Resource Bind Type..
+		Bind_Mask bindType = renderTarget->GetBindType();
 
+		if (bindType & BIND_RTV)
+		{
 			// RenderTargetView Description 추출..
-			if (isRTV)
-				rtvDesc = bRenderTarget->GetRTVDesc();
-
-			// ShaderResourceView Description 추출..
-			if (isSRV)
-				srvDesc = bRenderTarget->GetSRVDesc();
-
-			// Resource Reset..
-			bRenderTarget->Reset();
+			renderTarget->GetRTVDesc(&rtvDesc);
 
 			// RenderTargetView Resize..
-			if (isRTV)
-				HR(m_Device->CreateRenderTargetView(tex2D.Get(), &rtvDesc, bRenderTarget->GetAddressRTV()));
+			m_Graphic->CreateRenderTargetView(tex2D.Get(), &rtvDesc, renderTarget->GetAddressRTV(true));
+
+		}
+		if (bindType & BIND_SRV)
+		{
+			// ShaderResourceView Description 추출..
+			renderTarget->GetSRVDesc(&srvDesc);
 
 			// ShaderResourceView Resize..
-			if (isSRV)
-				HR(m_Device->CreateShaderResourceView(tex2D.Get(), &srvDesc, bRenderTarget->GetAddressSRV()));
+			m_Graphic->CreateShaderResourceView(tex2D.Get(), &srvDesc, renderTarget->GetAddressSRV(true));
 		}
-			break;
-		case eRenderTargetType::COMPUTE:
+		if (bindType & BIND_UAV)
 		{
-			ComputeRenderTarget* cRenderTarget = reinterpret_cast<ComputeRenderTarget*>(renderTarget);
-
-			// Resource 여부 파악..
-			isRTV = cRenderTarget->IsRTV();
-			isUAV = cRenderTarget->IsUAV();
-
-			// RenderTargetView Description 추출..
-			if (isRTV)
-				rtvDesc = cRenderTarget->GetRTVDesc();
-
 			// UnorderedAccessView Description 추출..
-			if (isUAV)
-				uavDesc = cRenderTarget->GetUAVDesc();
-
-			// Resource Reset..
-			cRenderTarget->Reset();
-
-			// RenderTargetView Resize..
-			if (isRTV)
-				HR(m_Device->CreateRenderTargetView(tex2D.Get(), &rtvDesc, cRenderTarget->GetAddressRTV()));
+			renderTarget->GetUAVDesc(&uavDesc);
 
 			// UnorderedAccessView Resize..
-			if (isUAV)
-				HR(m_Device->CreateUnorderedAccessView(tex2D.Get(), &uavDesc, cRenderTarget->GetAddressUAV()));
-		}
-			break;
-		default:
-			break;
+			m_Graphic->CreateUnorderedAccessView(tex2D.Get(), &uavDesc, renderTarget->GetAddressUAV(true));
 		}
 
 		// Texture2D Reset..
@@ -151,35 +92,35 @@ void GraphicResourceManager::OnResize(int width, int height)
 	}
 
 	// DepthStecilView Resize..
-	for (std::pair<Hash_Code, DepthStencilView*> dsv : m_DepthStencilViewList)
+	for (std::pair<Hash_Code, DepthStencil*> dsv : m_DepthStencilList)
 	{
-		DepthStencilView* depthStencilView = dsv.second;
+		DepthStencil* depthStencilView = dsv.second;
 
-		// Texture2D Description 추출..
-		texDesc = depthStencilView->GetTextureDesc(width, height);
+		// RenderTarget Resize..
+		depthStencilView->OnResize(width, height);
 
-		HR(m_Device->CreateTexture2D(&texDesc, 0, tex2D.GetAddressOf()));
+		// Texture2D Resize..
+		m_Graphic->CreateTexture2D(depthStencilView->GetTextureDesc(), tex2D.GetAddressOf());
 
-		isDSV = depthStencilView->IsDSV();
-		isSRV = depthStencilView->IsSRV();
+		// Resource Bind Type..
+		Bind_Mask bindType = depthStencilView->GetBindType();
 
-		// DepthStencilView Description 추출..
-		if (isDSV)
-			dsvDesc = depthStencilView->GetDSVDesc();
+		if (bindType & BIND_DSV)
+		{
+			// DepthStencilView Description 추출..
+			depthStencilView->GetDSVDesc(&dsvDesc);
 
-		// ShaderResourceView Description 추출..
-		if (isSRV)
-			srvDesc = depthStencilView->GetSRVDesc();
+			// DepthStencilView Resize..
+			m_Graphic->CreateDepthStencilView(tex2D.Get(), &dsvDesc, depthStencilView->GetAddressDSV(true));
+		}
+		if (bindType & BIND_SRV)
+		{
+			// ShaderResourceView Description 추출..
+			depthStencilView->GetSRVDesc(&srvDesc);
 
-		// Resource Reset..
-		depthStencilView->Reset();
-
-		// DepthStencilView Resize..
-		if (isDSV)
-			HR(m_Device->CreateDepthStencilView(tex2D.Get(), &dsvDesc, depthStencilView->GetAddressDSV()));
-
-		if (isSRV)
-			HR(m_Device->CreateShaderResourceView(tex2D.Get(), &srvDesc, depthStencilView->GetAddressSRV()));
+			// ShaderResourceView Resize..
+			m_Graphic->CreateShaderResourceView(tex2D.Get(), &srvDesc, depthStencilView->GetAddressSRV(true));
+		}
 
 		// Texture2D Reset..
 		RESET_COM(tex2D);
@@ -194,8 +135,7 @@ void GraphicResourceManager::OnResize(int width, int height)
 
 void GraphicResourceManager::Release()
 {
-	RESET_COM(m_Device);
-	RESET_COM(m_SwapChain);
+	RELEASE_COM(m_Graphic);
 
 	SAFE_DELETE(m_BackBuffer);
 
@@ -204,7 +144,7 @@ void GraphicResourceManager::Release()
 		SAFE_DELETE(rt.second);
 	}
 
-	for (std::pair<Hash_Code, DepthStencilView*> dsv : m_DepthStencilViewList)
+	for (std::pair<Hash_Code, DepthStencil*> dsv : m_DepthStencilList)
 	{
 		SAFE_DELETE(dsv.second);
 	}
@@ -238,9 +178,9 @@ void GraphicResourceManager::Release()
 	{
 		SAFE_DELETE(buffer.second);
 	}
-	
+
 	m_RenderTargetList.clear();
-	m_DepthStencilViewList.clear();
+	m_DepthStencilList.clear();
 	m_ViewPortList.clear();
 	m_DepthStencilStateList.clear();
 	m_RasterizerStateList.clear();
@@ -249,9 +189,9 @@ void GraphicResourceManager::Release()
 	m_BufferList.clear();
 }
 
-BasicRenderTarget* GraphicResourceManager::GetMainRenderTarget()
+RenderTarget* GraphicResourceManager::GetMainRenderTarget()
 {
-	return reinterpret_cast<BasicRenderTarget*>(m_BackBuffer);
+	return m_BackBuffer;
 }
 
 void GraphicResourceManager::AddMainRenderTarget(RenderTarget* rtv)
@@ -259,58 +199,46 @@ void GraphicResourceManager::AddMainRenderTarget(RenderTarget* rtv)
 	m_BackBuffer = rtv;
 }
 
-BasicRenderTarget* GraphicResourceManager::GetBasicRenderTarget(Hash_Code hash_code)
-{
-	std::unordered_map<Hash_Code, RenderTarget*>::iterator itor = m_RenderTargetList.find(hash_code);
-
-	if (itor == m_RenderTargetList.end()) return nullptr;
-
-	RenderTarget* renderTarget = itor->second;
-
-	switch (renderTarget->GetType())
-	{
-	case eRenderTargetType::BASIC:
-		return reinterpret_cast<BasicRenderTarget*>(renderTarget);
-	default:
-		return nullptr;
-	}
-}
-
-ComputeRenderTarget* GraphicResourceManager::GetComputeRenderTarget(Hash_Code hash_code)
-{
-	std::unordered_map<Hash_Code, RenderTarget*>::iterator itor = m_RenderTargetList.find(hash_code);
-
-	if (itor == m_RenderTargetList.end()) return nullptr;
-
-	RenderTarget* renderTarget = itor->second;
-
-	switch (renderTarget->GetType())
-	{
-	case eRenderTargetType::COMPUTE:
-		return reinterpret_cast<ComputeRenderTarget*>(renderTarget);
-	default:
-		return nullptr;
-	}
-}
-
 void GraphicResourceManager::SetShaderSampler()
 {
 	for (std::pair<Hash_Code, SamplerState*> sampler : m_SamplerStateList)
 	{
-		m_ShaderManager->AddSampler(sampler.first, sampler.second->GetAddress());
+		m_ShaderManager->AddSampler(sampler.first, sampler.second->Get());
 	}
 }
 
-OriginalRenderTarget GraphicResourceManager::GetRenderTarget(Hash_Code hash_code)
+RenderTarget* GraphicResourceManager::GetRenderTarget(Hash_Code hash_code)
 {
-	return OriginalRenderTarget{ this, hash_code };
+	std::unordered_map<Hash_Code, RenderTarget*>::iterator itor = m_RenderTargetList.find(hash_code);
+
+	if (itor == m_RenderTargetList.end()) return nullptr;
+
+	return itor->second;
 }
 
-DepthStencilView* GraphicResourceManager::GetDepthStencilView(Hash_Code hash_code)
+DepthStencil* GraphicResourceManager::GetDepthStencil(Hash_Code hash_code)
 {
-	std::unordered_map<Hash_Code, DepthStencilView*>::iterator itor = m_DepthStencilViewList.find(hash_code);
+	std::unordered_map<Hash_Code, DepthStencil*>::iterator itor = m_DepthStencilList.find(hash_code);
 
-	if (itor == m_DepthStencilViewList.end()) return nullptr;
+	if (itor == m_DepthStencilList.end()) return nullptr;
+
+	return itor->second;
+}
+
+ShaderResourceView* GraphicResourceManager::GetShaderResourceView(Hash_Code hash_code)
+{
+	std::unordered_map<Hash_Code, ShaderResourceView*>::iterator itor = m_ShaderResourceViewList.find(hash_code);
+
+	if (itor == m_ShaderResourceViewList.end()) return nullptr;
+
+	return itor->second;
+}
+
+UnorderedAccessView* GraphicResourceManager::GetUnorderedAccessView(Hash_Code hash_code)
+{
+	std::unordered_map<Hash_Code, UnorderedAccessView*>::iterator itor = m_UnorderedAccessViewList.find(hash_code);
+
+	if (itor == m_UnorderedAccessViewList.end()) return nullptr;
 
 	return itor->second;
 }
@@ -364,8 +292,11 @@ void GraphicResourceManager::AddResource(Hash_Code hash_code, ResourceBase* reso
 {
 	switch (resource->GetType())
 	{
-	case eResourceType::DSV:
-		m_DepthStencilViewList.insert(std::make_pair(hash_code, (DepthStencilView*)resource));
+	case eResourceType::SRV:
+		m_ShaderResourceViewList.insert(std::make_pair(hash_code, (ShaderResourceView*)resource));
+		break;
+	case eResourceType::UAV:
+		m_UnorderedAccessViewList.insert(std::make_pair(hash_code, (UnorderedAccessView*)resource));
 		break;
 	case eResourceType::DSS:
 		m_DepthStencilStateList.insert(std::make_pair(hash_code, (DepthStencilState*)resource));
@@ -378,6 +309,9 @@ void GraphicResourceManager::AddResource(Hash_Code hash_code, ResourceBase* reso
 		break;
 	case eResourceType::BS:
 		m_BlendStateList.insert(std::make_pair(hash_code, (BlendState*)resource));
+		break;
+	case eResourceType::DS:
+		m_DepthStencilList.insert(std::make_pair(hash_code, (DepthStencil*)resource));
 		break;
 	case eResourceType::RT:
 		m_RenderTargetList.insert(std::make_pair(hash_code, (RenderTarget*)resource));

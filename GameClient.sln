@@ -22,6 +22,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KHGraphic", "KHGraphic\KHGr
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HsGraphic", "HsGraphic\HsGraphic.vcxproj", "{AA6AEBCB-273F-4418-92FE-B311182322F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{69987C7E-41E8-402A-B94C-E17572B93288} = {69987C7E-41E8-402A-B94C-E17572B93288}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhysEngine", "PhysEngine\PhysEngine.vcxproj", "{69987C7E-41E8-402A-B94C-E17572B93288}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +76,14 @@ Global
 		{AA6AEBCB-273F-4418-92FE-B311182322F1}.Release|x64.Build.0 = Release|x64
 		{AA6AEBCB-273F-4418-92FE-B311182322F1}.Release|x86.ActiveCfg = Release|Win32
 		{AA6AEBCB-273F-4418-92FE-B311182322F1}.Release|x86.Build.0 = Release|Win32
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Debug|x64.ActiveCfg = Debug|x64
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Debug|x64.Build.0 = Debug|x64
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Debug|x86.ActiveCfg = Debug|Win32
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Debug|x86.Build.0 = Debug|Win32
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Release|x64.ActiveCfg = Release|x64
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Release|x64.Build.0 = Release|x64
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Release|x86.ActiveCfg = Release|Win32
+		{69987C7E-41E8-402A-B94C-E17572B93288}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

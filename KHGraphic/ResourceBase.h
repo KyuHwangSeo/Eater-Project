@@ -14,6 +14,9 @@ public:
 	ResourceBase(eResourceType type) : m_ResourceType(type) {}
 
 public:
+	virtual void Reset() abstract;
+
+public:
 	eResourceType GetType() { return m_ResourceType; }
 
 private:

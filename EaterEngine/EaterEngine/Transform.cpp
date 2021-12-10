@@ -36,7 +36,6 @@ void Transform::TransformUpdate()
 
 	//업데이트가 끝난후 오브젝트 안에 매쉬데이터를 업데이트
 	gameobject->OneMeshData->mWorld = *(GetWorld());
-
 }
 
 DirectX::XMFLOAT3 Transform::GetLocalPosition_UP()

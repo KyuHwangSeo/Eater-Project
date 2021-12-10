@@ -1,8 +1,7 @@
 #pragma once
 
 #include "HsGraphicDLL.h"
-#include "../KHGraphic/Export/GraphicsEngine.h"
-#include "d3d11.h"
+#include "GraphicsEngine.h"
 
 class ShaderManager;
 class RenderingManager;
@@ -10,6 +9,14 @@ class GraphicDebugManager;
 class TextureBuffer;
 class Indexbuffer;
 class Vertexbuffer;
+
+struct ID3D11Device;
+struct ID3D11DeviceContext;
+struct ID3D11RenderTargetView;
+struct ID3D11DepthStencilView;
+struct D3D11_VIEWPORT;
+struct IDXGISwapChain;
+struct ID3D11RasterizerState;
 
 class HsGraphic : public GraphicEngine
 {
@@ -35,11 +42,13 @@ public:
 	ID3D11RenderTargetView* GetEngineRTV();
 	ID3D11DepthStencilView* GetEngineDSV();
 private:
-	void CreateRenderTarget();	//랜더타겟 뎁스스텐실 뷰포트를 생성한다
+	void Create_SwapChain_RenderTarget();	//랜더타겟 생성
+	void Create_ViewPort();					//뷰포트 생성
 	void CreateDevice();		//엔진의 디바이스를 생성해준다
 	void BeginRender();			//랜더링 시작
 	void EndRender();			//랜더링 종료
 	
+	//메쉬 타입별 생성
 	Vertexbuffer* CreateBasicVertexBuffer(ParserData::Mesh* mModel);
 	Vertexbuffer* CreateSkinngingVertexBuffer(ParserData::Mesh* mModel);
 private:
@@ -53,11 +62,9 @@ private:
 	D3D11_VIEWPORT*			mScreenViewport;	//뷰포트
 	IDXGISwapChain*			mSwapChain;			//스왑체인	
 
-
 	//윈도우 사이즈
 	int WinSizeX;	//윈도우 사이즈 가로
 	int WinSizeY;	//윈도우 사이즈 세로
-
 
 	//랜더링 모드
 	ID3D11RasterizerState* mWireframe;

@@ -78,7 +78,7 @@ struct MaterialData
 
 	bool operator==(MaterialData mat)
 	{
-		if (Diffuse == mat.Diffuse && Diffuse == mat.Diffuse && Specular == mat.Specular && Reflect == mat.Reflect)
+		if (Ambient == mat.Ambient && Diffuse == mat.Diffuse && Specular == mat.Specular && Reflect == mat.Reflect)
 			return true;
 		else
 			return false;

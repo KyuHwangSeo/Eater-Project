@@ -64,9 +64,6 @@
     <Filter Include="소스 파일\Engine">
       <UniqueIdentifier>{05d1b672-0e21-4ea7-bc78-b86be73fda33}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Resource\Texture">
-      <UniqueIdentifier>{6b01d7c4-0f13-44d1-b572-0315e335ef46}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\RendererPass">
       <UniqueIdentifier>{751d4d6e-f5d6-40cf-a24b-01981c9a850e}</UniqueIdentifier>
     </Filter>
@@ -115,24 +112,6 @@
     <Filter Include="소스 파일\Resource\Graphic">
       <UniqueIdentifier>{7a610c07-d2f8-4cf5-b9e9-7fba292b1e0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\DepthStencilView">
-      <UniqueIdentifier>{2e35856f-0892-436c-91bc-2a06f8c44cac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\RenderTarget">
-      <UniqueIdentifier>{2cfc6906-592c-4161-875c-fe18f83b81ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\RenderTarget\Base">
-      <UniqueIdentifier>{3c520278-a6aa-4a2b-be04-fd06f30144ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\RenderTarget\Basic">
-      <UniqueIdentifier>{53c7edfd-c7d5-46d1-94ba-93b064e4b63d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\RenderTarget\Compute">
-      <UniqueIdentifier>{8eb5fd7a-31b0-4d04-9a5f-2aea98aa7a8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\RenderTarget\Types">
-      <UniqueIdentifier>{804d6fde-689c-439b-954b-77a331296f1d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Resource\Graphic\GraphicState">
       <UniqueIdentifier>{10b1e356-c304-4831-90ea-72b5f29b7902}</UniqueIdentifier>
     </Filter>
@@ -172,11 +151,26 @@
     <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Light">
       <UniqueIdentifier>{7c75157b-90f4-4232-90ab-1ae19fcd9199}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Object">
-      <UniqueIdentifier>{4da61ed5-edcc-4f6a-bdff-f06bc62c575d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Shader\FX">
       <UniqueIdentifier>{29b03060-c11e-4934-b1e3-daa832cda7d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicView">
+      <UniqueIdentifier>{2cfc6906-592c-4161-875c-fe18f83b81ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\SSAO">
+      <UniqueIdentifier>{16b6d3a3-83f6-4a74-95a4-71fd8d42067f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\SSAO\Blur">
+      <UniqueIdentifier>{53483858-9f41-44ab-b9da-83fd9d2fe4df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\DepthStencil">
+      <UniqueIdentifier>{2e35856f-0892-436c-91bc-2a06f8c44cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\RenderTarget">
+      <UniqueIdentifier>{3c520278-a6aa-4a2b-be04-fd06f30144ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\Texture2D">
+      <UniqueIdentifier>{6b01d7c4-0f13-44d1-b572-0315e335ef46}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +180,7 @@
     <ClInclude Include="D3D11Graphic.h">
       <Filter>소스 파일\Graphic\DirectX11</Filter>
     </ClInclude>
-    <ClInclude Include="ID3D11Graphic.h">
+    <ClInclude Include="D3D11GraphicBase.h">
       <Filter>소스 파일\Graphic\DirectX11</Filter>
     </ClInclude>
     <ClInclude Include="VertexShader.h">
@@ -264,26 +258,17 @@
     <ClInclude Include="DeferredPass.h">
       <Filter>소스 파일\RendererPass\Deferred</Filter>
     </ClInclude>
-    <ClInclude Include="RenderTargetBase.h">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicRenderTarget.h">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Basic</Filter>
-    </ClInclude>
-    <ClInclude Include="ComputeRenderTarget.h">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Compute</Filter>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>소스 파일\Resource\Graphic\RenderTarget</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.h">
-      <Filter>소스 파일\Resource\Texture</Filter>
+      <Filter>소스 파일\Resource\Graphic\Texture2D</Filter>
     </ClInclude>
-    <ClInclude Include="DepthStencilView.h">
-      <Filter>소스 파일\Resource\Graphic\DepthStencilView</Filter>
+    <ClInclude Include="DepthStencil.h">
+      <Filter>소스 파일\Resource\Graphic\DepthStencil</Filter>
     </ClInclude>
     <ClInclude Include="MathDefine.h">
       <Filter>소스 파일\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTargetTypes.h">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Types</Filter>
     </ClInclude>
     <ClInclude Include="ShaderTypes.h">
       <Filter>소스 파일\Shader\ShaderClass\Types</Filter>
@@ -342,6 +327,12 @@
     <ClInclude Include="Export\GraphicDLL.h">
       <Filter>소스 파일\Engine\Base</Filter>
     </ClInclude>
+    <ClInclude Include="SSAOPass.h">
+      <Filter>소스 파일\RendererPass\SSAO</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicView.h">
+      <Filter>소스 파일\Resource\Graphic\GraphicView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Graphic.cpp">
@@ -389,20 +380,11 @@
     <ClCompile Include="DeferredPass.cpp">
       <Filter>소스 파일\RendererPass\Deferred</Filter>
     </ClCompile>
-    <ClCompile Include="RenderTargetBase.cpp">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Base</Filter>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>소스 파일\Resource\Graphic\RenderTarget</Filter>
     </ClCompile>
-    <ClCompile Include="BasicRenderTarget.cpp">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Basic</Filter>
-    </ClCompile>
-    <ClCompile Include="ComputeRenderTarget.cpp">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Compute</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthStencilView.cpp">
-      <Filter>소스 파일\Resource\Graphic\DepthStencilView</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderTargetTypes.cpp">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget\Types</Filter>
+    <ClCompile Include="DepthStencil.cpp">
+      <Filter>소스 파일\Resource\Graphic\DepthStencil</Filter>
     </ClCompile>
     <ClCompile Include="ShaderTypes.cpp">
       <Filter>소스 파일\Shader\ShaderClass\Types</Filter>
@@ -422,17 +404,17 @@
     <ClCompile Include="GraphicEngine.cpp">
       <Filter>소스 파일\Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>소스 파일\Resource\Graphic\Texture2D</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAOPass.cpp">
+      <Filter>소스 파일\RendererPass\SSAO</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicView.cpp">
+      <Filter>소스 파일\Resource\Graphic\GraphicView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resources\Shader\SKH\LightPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\LightVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DeferredPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Object</Filter>
-    </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Forward</Filter>
     </FxCompile>
@@ -450,6 +432,27 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightHelper.fx">
       <Filter>소스 파일\Shader\FX</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\DeferredPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\LightPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\LightVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\SSAOPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\SSAO</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\SSAOVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\SSAO</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\SSAOBlurPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\SSAO\Blur</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\SSAOBlurVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\SSAO\Blur</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

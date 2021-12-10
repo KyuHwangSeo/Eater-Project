@@ -17,6 +17,9 @@ public:
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void SSAORender() override;
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
+	void LightRender(GlobalData* global) override;
+	void EndRender() override;
+
 	void OnReSize(int screenWidth, int screenheight) override;
 	void Delete() override;
 

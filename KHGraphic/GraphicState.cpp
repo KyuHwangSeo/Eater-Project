@@ -1,10 +1,9 @@
 #include "DirectDefine.h"
 #include "GraphicState.h"
 
-DepthStencilState::DepthStencilState(ID3D11DepthStencilState** dss)
-	:ResourceBase(eResourceType::DSS)
+DepthStencilState::DepthStencilState(ID3D11DepthStencilState* dss)
+	:ResourceBase(eResourceType::DSS), m_DSS(dss)
 {
-	if (dss) m_DSS = *dss;
 }
 
 DepthStencilState::~DepthStencilState()
@@ -27,10 +26,9 @@ ID3D11DepthStencilState** DepthStencilState::GetAddress()
 	return m_DSS.GetAddressOf();
 }
 
-RasterizerState::RasterizerState(ID3D11RasterizerState** rs)
-	:ResourceBase(eResourceType::RS)
+RasterizerState::RasterizerState(ID3D11RasterizerState* rs)
+	:ResourceBase(eResourceType::RS), m_RS(rs)
 {
-	if (rs) m_RS = *rs;
 }
 
 RasterizerState::~RasterizerState()
@@ -53,10 +51,9 @@ ID3D11RasterizerState** RasterizerState::GetAddress()
 	return m_RS.GetAddressOf();
 }
 
-BlendState::BlendState(ID3D11BlendState** bs)
-	:ResourceBase(eResourceType::BS)
+BlendState::BlendState(ID3D11BlendState* bs)
+	:ResourceBase(eResourceType::BS), m_BS(bs)
 {
-	if (bs) m_BS = *bs;
 }
 
 BlendState::~BlendState()
@@ -79,10 +76,9 @@ ID3D11BlendState** BlendState::GetAddress()
 	return m_BS.GetAddressOf();
 }
 
-SamplerState::SamplerState(ID3D11SamplerState** ss)
-	:ResourceBase(eResourceType::SS)
+SamplerState::SamplerState(ID3D11SamplerState* ss)
+	:ResourceBase(eResourceType::SS), m_SS(ss)
 {
-	if (ss) m_SS = *ss;
 }
 
 SamplerState::~SamplerState()
@@ -124,6 +120,11 @@ ViewPort::ViewPort(float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, 
 }
 
 ViewPort::~ViewPort()
+{
+	Reset();
+}
+
+void ViewPort::Reset()
 {
 	SAFE_DELETE(m_ViewPort);
 }

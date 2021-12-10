@@ -1,23 +1,33 @@
 #pragma once
 #include "ResourceBase.h"
 
+#define BIND_DSV 0x00000001
+#define BIND_RTV 0x00000010
+#define BIND_SRV 0x00000100
+#define BIND_UAV 0x00001000
+
+typedef unsigned int Bind_Mask;
+
 class Texture2D : public ResourceBase
 {
 public:
-	Texture2D(eResourceType resourceType) : ResourceBase(resourceType), m_Width_Ratio(1.0f), m_Height_Ratio(1.0f) {}
+	Texture2D(eResourceType resourceType, ID3D11Texture2D* tex2D);
 	virtual ~Texture2D() = default;
 
 public:
-	virtual ID3D11Texture2D* GetTexture2D() abstract;
-	virtual D3D11_TEXTURE2D_DESC GetTextureDesc() abstract;
-	virtual D3D11_TEXTURE2D_DESC GetTextureDesc(int width, int height) abstract;
+	void OnResize(int width, int height);
+	void SetRatio(float width_ratio, float height_ratio);
+	void SetResourceBind(Bind_Mask bind_type);
 
 public:
-	void SetRatio(float width_ratio, float height_ratio) { m_Width_Ratio = width_ratio; m_Height_Ratio = height_ratio; }
-	float GetRatioWidth() { return m_Width_Ratio; }
-	float GetRatioHeight() { return m_Height_Ratio; }
+	Bind_Mask GetBindType();
+	D3D11_TEXTURE2D_DESC* GetTextureDesc();
 
 protected:
+	Bind_Mask m_BindResource = 0x00000001;
+
+	D3D11_TEXTURE2D_DESC m_TexDesc;
+
 	float m_Width_Ratio;
 	float m_Height_Ratio;
 };

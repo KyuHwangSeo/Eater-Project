@@ -65,6 +65,13 @@ void DebugManager::Print(MSG_TYPE type, std::string typeData, std::string msg, b
 	WriteFile(hConsole, MSG.c_str(), (DWORD)MSG.size(), &dwByte, NULL);
 }
 
+void DebugManager::Print(std::string str)
+{
+	str += "\n";
+	DWORD dwByte(0);
+	WriteFile(hConsole, str.c_str(), str.size(), &dwByte, NULL);
+}
+
 void DebugManager::Line(std::string ObjType)
 {
 	DWORD dwByte(0);

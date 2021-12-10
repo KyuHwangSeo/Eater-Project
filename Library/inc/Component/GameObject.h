@@ -30,7 +30,7 @@ public:
 
 public:
 	std::string Name;						//이름
-	int			Tag;						//테그
+
 
 	MeshData* OneMeshData;					//그래픽 엔진으로 넘겨줄 데이터
 	Transform* transform;					//기본적으로 생성해주는 Transform 커너넌트
@@ -43,6 +43,7 @@ public:
 
 	EATER_ENGINEDLL void ChoiceParent(GameObject* obj);		//나자신을 선택한 오브젝트의 자식으로 넣는다
 	EATER_ENGINEDLL void ChoiceChild(GameObject* obj);		//선택한 오브젝트를 나의 자식으로 넣는다
+
 public:
 	Component* GetDeleteComponent(int i);	//삭제할 컨퍼넌트를 가져옴
 	int GetComponentCount();				//오브젝트의 컨퍼넌트 갯수를 가져옴
@@ -54,19 +55,27 @@ public:
 	//컨퍼넌트를 추가 시킨다
 	template<typename T>
 	T* AddComponent(typename std::enable_if<std::is_base_of<Component, T>::value, bool>::type t = std::is_base_of<Component, T>::value);
+	
 	//컨퍼넌트를 가져온다
 	template<typename T>
 	T* GetComponent(typename std::enable_if<std::is_base_of<Component, T>::value, bool>::type t = std::is_base_of<Component, T>::value);
+	
 	//자식객체에서 찾고자하는 컨퍼넌트가있다면 그오브젝트에 컨퍼넌트를 가져옴
 	template<typename T>
 	T* GetChildComponent(typename std::enable_if<std::is_base_of<Component, T>::value, bool>::type t = std::is_base_of<Component, T>::value);
+	
+	//테그를 넣어준다
+	template<typename T>
+	void SetTag();
 private:
 	bool IsActive;							//기능 중지여부
 	unsigned int FunctionMask;				//어떤 함수포인터에 넣었는지 여부
+	size_t	Tag;							//오브젝트의 테그
 private:
 	std::vector<Component*> ComponentList;
 	std::vector<GameObject*> ChildMeshList;
 	std::vector<GameObject*> ChildBoneList;
+	
 	EATER_ENGINEDLL void PushComponentFunction(Component* con, unsigned int type);
 };
 
@@ -172,3 +181,9 @@ inline T* GameObject::GetChildComponent(typename std::enable_if<std::is_base_of<
 	return nullptr;
 }
 
+template<typename T>
+inline void GameObject::SetTag()
+{
+	//클래스를 해쉬코드값으로 변경후 저장
+	Tag = typeid(T).hash_code();
+}

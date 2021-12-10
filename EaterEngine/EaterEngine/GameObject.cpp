@@ -123,40 +123,41 @@ void GameObject::PushChildBoneObject(GameObject* obj, std::string Name)
 
 void GameObject::PushComponentFunction(Component* con, unsigned int type)
 {
+	std::string ComponentFunction = typeid(*con).name();
 	switch (type)
 	{
 	case AWAKE:
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "1.Awake",false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, ComponentFunction, "1.Awake",false);
 		ObjectManager::PushAwake(con,con->Awake_Order);
 		con->FUNCTION_MASK |= AWAKE;
 		break;
 	case START:
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "2.Start", false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, ComponentFunction, "2.Start", false);
 		ObjectManager::PushStart(con, con->Start_Order);
 		con->FUNCTION_MASK |= START;
 		break;
 	case START_UPDATE:
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "3.StartUpdate", false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, ComponentFunction, "3.StartUpdate", false);
 		ObjectManager::PushStartUpdate(con, con->StartUpdate_Order);
 		con->FUNCTION_MASK |= START_UPDATE;
 		break;
 	case Transform_UPDATE:
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction","4.TransformUpdate", false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, ComponentFunction,"4.TransformUpdate", false);
 		ObjectManager::PushTransformUpdate(con, con->TransformUpdate_Order);
 		con->FUNCTION_MASK |= Transform_UPDATE;
 		break;
 	case Physics_UPDATE:
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "5.PhysicsUpdate", false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, ComponentFunction, "5.PhysicsUpdate", false);
 		ObjectManager::PushPhysicsUpdate(con, con->PhysicsUpdate_Order);
 		con->FUNCTION_MASK |= Physics_UPDATE;
 		break;
 	case UPDATE:
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "6,Update", false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, ComponentFunction, "6,Update", false);
 		ObjectManager::PushUpdate(con, con->DefaultUpdate_Order);
 		con->FUNCTION_MASK |= UPDATE;
 		break;
 	case END_UPDATE:
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, "ComponentFunction", "7.EndUpdate", false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_PUSH, ComponentFunction, "7.EndUpdate", false);
 		ObjectManager::PushEndUpdate(con, con->EndUpdate_Order);
 		con->FUNCTION_MASK |= END_UPDATE;
 		break;

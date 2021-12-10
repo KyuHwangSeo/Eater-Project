@@ -2,14 +2,14 @@
 #include "RenderManagerBase.h"
 
 class RenderPassBase;
-class ForwardPass;
 class ShadowPass;
 class DeferredPass;
 class LightPass;
+class SSAOPass;
 class RenderManager : public IRenderManager
 {
 public:
-	RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* factory, IGraphicResourceManager* resource, IShaderManager* shader);
+	RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* factory, IGraphicResourceManager* resource, IShaderManager* shader);
 	~RenderManager();
 
 public:
@@ -20,6 +20,8 @@ public:
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) override; 
 	void SSAORender() override;
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
+	void LightRender(GlobalData* global) override;
+	void EndRender() override;
 
 	void OnResize(int width, int height) override;
 
@@ -29,8 +31,8 @@ private:
 private:
 	std::vector<RenderPassBase*> m_RenderPassList;
 
-	ForwardPass* m_Farward;
-	ShadowPass* m_Shadow;
 	DeferredPass* m_Deferred;
 	LightPass* m_Light;
+	ShadowPass* m_Shadow;
+	SSAOPass* m_SSAO;
 };

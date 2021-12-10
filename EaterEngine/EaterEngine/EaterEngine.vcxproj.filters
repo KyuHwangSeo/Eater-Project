@@ -103,6 +103,9 @@
     <Filter Include="소스 파일\MainHeader">
       <UniqueIdentifier>{f73757eb-5a6f-4d7b-9396-09c400c48563}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Manager\PhysManager">
+      <UniqueIdentifier>{1045462d-8dcb-4189-9e4f-6ffb8c70e6dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -198,6 +201,9 @@
     <ClInclude Include="Export\AnimationController.h">
       <Filter>소스 파일\Component\AnimationController</Filter>
     </ClInclude>
+    <ClInclude Include="PhysManager.h">
+      <Filter>소스 파일\Manager\PhysManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -274,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="AnimationController.cpp">
       <Filter>소스 파일\Component\AnimationController</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysManager.cpp">
+      <Filter>소스 파일\Manager\PhysManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

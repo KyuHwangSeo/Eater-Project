@@ -1,9 +1,9 @@
 #include "DirectDefine.h"
-#include "D3D11Graphic.h"
+#include "D3D11GraphicBase.h"
 #include "GraphicState.h"
 #include "BufferData.h"
 #include "Texture2D.h"
-#include "DepthStencilView.h"
+#include "DepthStencil.h"
 #include "ShaderManagerBase.h"
 #include "ResourceFactory.h"
 #include "ResourceManager.h"
@@ -16,28 +16,30 @@
 #include "ComputeShader.h"
 
 #include "MathDefine.h"
-#include "ForwardPass.h"
+#include "ConstantBufferDefine.h"
+
 #include "ShadowPass.h"
 #include "DeferredPass.h"
 #include "LightPass.h"
+#include "SSAOPass.h"
 #include "VertexDefine.h"
 
-RenderManager::RenderManager(D3D11Graphic* graphic, IGraphicResourceFactory* factory, IGraphicResourceManager* resource, IShaderManager* shader)
+RenderManager::RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* factory, IGraphicResourceManager* resource, IShaderManager* shader)
 {
 	// Rendering Initialize..
 	RenderPassBase::Initialize(graphic->GetContext(), factory, resource, shader);
 
 	m_SwapChain = graphic->GetSwapChain();
 
-	m_Farward = new ForwardPass();
-	//m_Deferred = new DeferredPass();
-	//m_Light = new LightPass();
+	m_Deferred = new DeferredPass();
+	m_Light = new LightPass();
 	m_Shadow = new ShadowPass();
+	m_SSAO = new SSAOPass();
 
+	m_RenderPassList.push_back(m_Deferred);
+	m_RenderPassList.push_back(m_Light);
 	m_RenderPassList.push_back(m_Shadow);
-	m_RenderPassList.push_back(m_Farward);
-	//m_RenderPassList.push_back(m_Deferred);
-	//m_RenderPassList.push_back(m_Light);
+	m_RenderPassList.push_back(m_SSAO);
 }
 
 RenderManager::~RenderManager()
@@ -72,7 +74,8 @@ void RenderManager::Release()
 
 void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
-	m_Farward->BeginRender();
+	/// Deferred Render..
+	m_Deferred->BeginRender();
 
 	while (meshList->size() != 0)
 	{
@@ -82,16 +85,13 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 		{
 		case OBJECT_TYPE::BASE:
 		case OBJECT_TYPE::SKINNING:
-			m_Farward->Update(mesh, global);
-			m_Farward->Render(mesh);
+			m_Deferred->Update(mesh, global);
+			m_Deferred->Render(mesh);
 			break;
 		}
 
 		meshList->pop();
 	}
-
-	// 최종 출력..
-	m_SwapChain->Present(0, 0);
 }
 
 void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -123,6 +123,18 @@ void RenderManager::SSAORender()
 void RenderManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 
+}
+
+void RenderManager::LightRender(GlobalData* global)
+{
+	m_Light->BeginRender();
+	m_Light->Render(global);
+}
+
+void RenderManager::EndRender()
+{
+	// 최종 출력..
+	m_SwapChain->Present(0, 0);
 }
 
 void RenderManager::OnResize(int width, int height)

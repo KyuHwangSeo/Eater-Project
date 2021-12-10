@@ -13,3 +13,7 @@
 	#endif
 
 #endif
+
+#include "SimpleMath.h"
+using namespace DirectX;
+using namespace SimpleMath;

@@ -5,9 +5,8 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "Texture2D.h"
-#include "DepthStencilView.h"
-#include "RenderTargetBase.h"
-#include "BasicRenderTarget.h"
+#include "DepthStencil.h"
+#include "RenderTarget.h"
 #include "VertexDefine.h"
 #include "EngineData.h"
 #include "ForwardPass.h"
@@ -58,7 +57,7 @@ void ForwardPass::Start()
 	m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->GetDSV();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV();
 
 	// Graphic State 설정..
 	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
@@ -75,7 +74,7 @@ void ForwardPass::OnResize(int width, int height)
 	m_BackBufferSRV = m_BackBuffer->GetSRV();
 
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencilView<DSV_Defalt>()->GetDSV();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV();
 }
 
 void ForwardPass::Release()
@@ -97,9 +96,9 @@ void ForwardPass::BeginRender()
 void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 {
 	Matrix world = mesh->mWorld;
-	Matrix view = *global->mViewMX;
-	Matrix proj = *global->mProj;
-	Matrix shadowTrans = *global->mShadowTrans;
+	Matrix view = *global->mCamView;
+	Matrix proj = *global->mCamProj;
+	Matrix shadowTrans = *global->mLightVPT;
 	Vector3 eye(view._41, view._42, view._43);
 
 	switch (mesh->ObjType)
@@ -161,8 +160,6 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		lightBuf.gMaterials[m] = global->mMatData[m];
 	}
 	m_ForwardPS->SetConstantBuffer(lightBuf);
-
-
 
 	CB_LightSub lightsubBuf;
 	lightsubBuf.gEyePosW = -eye;

@@ -67,7 +67,7 @@ public:
 	virtual void Release();
 
 	// Shader SamplerState 설정..
-	void SetSamplerState(Hash_Code hash_code, ID3D11SamplerState** sampler);
+	void SetSamplerState(Hash_Code hash_code, ID3D11SamplerState* sampler);
 
 	// Shader ConstantBuffer Resource Update..
 	template<typename T>
@@ -128,5 +128,5 @@ inline void ShaderBase::SetShaderResourceView(ID3D11ShaderResourceView* srv)
 	if (it == m_SRVList.end()) return;
 
 	// 해당 Register Slot에 삽입..
-	m_ShaderResourceViews[it->second->register_number] = srv;
+ 	m_ShaderResourceViews[it->second->register_number] = srv;
 }

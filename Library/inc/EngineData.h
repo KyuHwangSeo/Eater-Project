@@ -37,12 +37,13 @@ class GlobalData
 {
 public:
 	//카메라 정보들
-	DirectX::XMMATRIX* mViewMX;
-	DirectX::XMMATRIX* mProj;
+	DirectX::XMMATRIX* mCamView;	// Camera View Matrix
+	DirectX::XMMATRIX* mCamProj;	// Camera Proj Matrix
+	DirectX::XMMATRIX* mCamPT;		// Camera Proj * TexSpace Matrix
 
-	DirectX::XMMATRIX* mLightViewMX;
-	DirectX::XMMATRIX* mLightProj;
-	DirectX::XMMATRIX* mShadowTrans;
+	DirectX::XMMATRIX* mLightView;	// Light View Matrix
+	DirectX::XMMATRIX* mLightProj;	// Light Proj Matrix
+	DirectX::XMMATRIX* mLightVPT;	// Light View * Proj * TexSpace Matrix
 
 	LightData* mLightData;
 	MaterialData mMatData[5];

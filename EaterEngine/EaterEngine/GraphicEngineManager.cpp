@@ -64,6 +64,17 @@ void GraphicEngineManager::UIRender(std::queue<MeshData*>* meshList, GlobalData*
 	//}
 }
 
+void GraphicEngineManager::LightRender(GlobalData* global)
+{
+	GEngine->LightRender(global);
+}
+
+void GraphicEngineManager::EndRender()
+{
+	//해당 엔진을 랜더링
+	GEngine->EndRender();
+}
+
 Indexbuffer* GraphicEngineManager::CreateIndexBuffer(ParserData::Mesh* mModel)
 {
 	//인덱스버퍼 생성

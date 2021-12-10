@@ -10,6 +10,7 @@
 #include "TimeManager.h"
 #include "MaterialManager.h"
 #include "LightManager.h"
+#include "PhysManager.h"
 
 #include "ParserData.h"
 #include "EngineData.h"
@@ -30,7 +31,11 @@ GameEngine::GameEngine()
 	mObjectManager	= nullptr;
 	mSceneManager	= nullptr;
 	mKeyManager		= nullptr;
-
+	mPhysManager	= nullptr;
+	mLightManager	= nullptr;
+	mMaterialManager = nullptr;
+	mTimeManager	= nullptr;
+	mGraphicManager = nullptr;
 
 	//기본 윈도우 사이즈 설정
 	WinSizeWidth	= 1920;
@@ -38,6 +43,8 @@ GameEngine::GameEngine()
 
 	//윈도우 핸들
 	mHwnd = NULL;
+
+	ConsoleDebug = true;
 }
 
 GameEngine::~GameEngine()
@@ -61,6 +68,7 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mTimeManager		= new TimeManager();
 	mMaterialManager	= new MaterialManager();
 	mLightManager		= new LightManager();
+	mPhysManager		= new PhysManager();
 
 	//매니저들 인풋
 	MeshFilter::SetManager(mObjectManager, mMaterialManager);
@@ -76,6 +84,7 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mTimeManager->Initialize();
 	mLightManager->Initialize();
 	mMaterialManager->Initialize();
+	mPhysManager->Initialize();
 
 	Component::SetManager(mTimeManager, mKeyManager);
 
@@ -103,7 +112,8 @@ void GameEngine::Update()
 	mGraphicManager->Render(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->SSAORender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->UIRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
-
+	mGraphicManager->LightRender(mObjectManager->GetGlobalData());
+	mGraphicManager->EndRender();
 
 	//랜더링이 끝나고 오브젝트 Delete
 	mObjectManager->DeleteObject();
@@ -131,17 +141,17 @@ void GameEngine::OnResize(int Change_Width, int Change_Height)
 		
 
 	//카메라의 변화할 사이즈를 넣어준다
-	Camera::SetSize(Change_Width, Change_Height);
+	Camera::g_MainCam->SetSize(Change_Width, Change_Height);
 
 	//그래픽쪽에 랜더타겟을 변경해야하기때문에 
 	mGraphicManager->OnReSize(Change_Width, Change_Height);
-	Camera::CreateProj(Change_Width, Change_Height);
+	Camera::g_MainCam->CreateProj(Change_Width, Change_Height);
 
 
 	std::string Width = std::to_string(Change_Width);
 	std::string Height = std::to_string(Change_Height);;
 	std::string temp = "윈도우 사이즈 변경:"+ Width+","+ Height;
-	Camera::SetSize(Change_Width, Change_Height);
+	Camera::g_MainCam->SetSize(Change_Width, Change_Height);
 }
 
 ///오브젝트 생성 삭제

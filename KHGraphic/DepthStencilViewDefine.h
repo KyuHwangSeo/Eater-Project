@@ -1,11 +1,11 @@
 #pragma once
 #include "HashBase.h"
 
-#define DEPTH_STENCIL_VIEW(ClassName) CREATE_HASH_CLASS(ClassName, eResourceType::DSV)
+#define DEPTH_STENCIL_VIEW(ClassName) CREATE_HASH_CLASS(ClassName, eResourceType::DS)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Global Depth Stencil View
+// Global Depth Stencil
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-DEPTH_STENCIL_VIEW(DSV_Defalt)
-DEPTH_STENCIL_VIEW(DSV_Shadow)
+DEPTH_STENCIL_VIEW(DS_Defalt)
+DEPTH_STENCIL_VIEW(DS_Shadow)

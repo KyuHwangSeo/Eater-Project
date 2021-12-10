@@ -13,6 +13,9 @@ public:
 	virtual void Update();
 	virtual void End();
 
+	void CreatePlayer();
+	void CreateLignt();
+	void CreateCam();
 private:
 	GameObject* testobj;
 };

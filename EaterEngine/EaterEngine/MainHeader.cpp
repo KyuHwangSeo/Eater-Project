@@ -103,6 +103,26 @@ void EndEngine()
 	return gGameEngine->GetMousePosY();
 }
 
+ //Vector3 GetCameraLocalPosition_UP()
+ //{
+//	 return gGameEngine->GetCameraLocalPosition_UP();
+ //}
+ //
+ //Vector3 GetCameraLocalPosition_Right()
+ //{
+//	 return gGameEngine->GetCameraLocalPosition_Right();
+ //}
+ //
+ //Vector3 GetCameraLocalPosition_Look()
+ //{
+//	 return gGameEngine->GetCameraLocalPosition_Look();
+ //}
+
+ /*DirectX::SimpleMath::Vector3 GetCameraLocalPosition_UP()
+ {
+	 return DirectX::SimpleMath::Vector3;
+ }*/
+
 
  /// 시간 관련
  float GetDeltaTime()

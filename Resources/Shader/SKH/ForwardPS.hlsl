@@ -38,8 +38,10 @@ struct PixelIn
 {
     float4 PosH : SV_POSITION;
     float3 PosW : POSITIONW;
-    float2 Tex : TEXCOORD;
+    float3 PosV : POSITIONV;
     float3 NormalW : NORMALW;
+    float3 NormalV : NORMALV;
+    float2 Tex : TEXCOORD;
     float3 ShadowPosH : POS_SHADOW;
     
     float3x3 TBN : TANGENT;

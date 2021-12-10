@@ -52,11 +52,9 @@ void TimeManager::Update()
 	if (debugTime >= 5) 
 	{
 		std::string temp = "FPS :" + std::to_string(_FPS);
-		DebugManager::Print(DebugManager::MSG_TYPE::MSG_SYSTEM,"Time",temp,false);
+		//DebugManager::Print(DebugManager::MSG_TYPE::MSG_SYSTEM,"Time",temp,false);
 		debugTime = 0;
 	}
-
-
 }
 
 // Returns the total time elapsed since Reset() was called, NOT counting any
