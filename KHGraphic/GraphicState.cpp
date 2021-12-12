@@ -8,12 +8,17 @@ DepthStencilState::DepthStencilState(ID3D11DepthStencilState* dss)
 
 DepthStencilState::~DepthStencilState()
 {
-	Reset();
+	Release();
 }
 
 void DepthStencilState::Reset()
 {
 	RESET_COM(m_DSS);
+}
+
+void DepthStencilState::Release()
+{
+	RELEASE_COM(m_DSS);
 }
 
 ID3D11DepthStencilState* DepthStencilState::Get()
@@ -33,12 +38,17 @@ RasterizerState::RasterizerState(ID3D11RasterizerState* rs)
 
 RasterizerState::~RasterizerState()
 {
-	Reset();
+	Release();
 }
 
 void RasterizerState::Reset()
 {
 	RESET_COM(m_RS);
+}
+
+void RasterizerState::Release()
+{
+	RELEASE_COM(m_RS);
 }
 
 ID3D11RasterizerState* RasterizerState::Get()
@@ -58,12 +68,17 @@ BlendState::BlendState(ID3D11BlendState* bs)
 
 BlendState::~BlendState()
 {
-	Reset();
+	Release();
 }
 
 void BlendState::Reset()
 {
 	RESET_COM(m_BS);
+}
+
+void BlendState::Release()
+{
+	RELEASE_COM(m_BS);
 }
 
 ID3D11BlendState* BlendState::Get()
@@ -83,12 +98,17 @@ SamplerState::SamplerState(ID3D11SamplerState* ss)
 
 SamplerState::~SamplerState()
 {
-	Reset();
+	Release();
 }
 
 void SamplerState::Reset()
 {
 	RESET_COM(m_SS);
+}
+
+void SamplerState::Release()
+{
+	RELEASE_COM(m_SS);
 }
 
 ID3D11SamplerState* SamplerState::Get()
@@ -121,10 +141,15 @@ ViewPort::ViewPort(float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, 
 
 ViewPort::~ViewPort()
 {
-	Reset();
+	Release();
 }
 
 void ViewPort::Reset()
+{
+	SAFE_DELETE(m_ViewPort);
+}
+
+void ViewPort::Release()
 {
 	SAFE_DELETE(m_ViewPort);
 }

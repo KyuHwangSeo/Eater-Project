@@ -57,7 +57,7 @@ void Player::Start()
 	//각각의 무기들의 위치값을 조정
 	Gun->transform->Scale = { 1,1 ,1 };
 	Gun->transform->Rotation = { -90,-90,0 };
-
+	
 	Weapon->transform->Scale = { 1,1 ,1 };
 	Weapon->transform->Rotation = { -90,90,0 };
 }

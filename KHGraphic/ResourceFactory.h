@@ -23,11 +23,15 @@ private:
 	void CreateSS(Hash_Code hash_code, D3D11_SAMPLER_DESC* ssDesc) override;
 	void CreateVP(Hash_Code hash_code, float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, float ratio_sizeY, float width, float height) override;
 
-	void CreateDSV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) override;
-	void CreateRT(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) override;
+	void CreateDS(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) override;
+	void CreateRT(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) override;
 
-	void CreateSRV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) override;
-	void CreateUAV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) override;
+	void CreateSRV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) override;
+	void CreateUAV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) override;
+
+private:
+	template<typename ResourceClass, typename Resource>
+	ResourceClass* RegisterResource(Hash_Code hash_code, Resource* resource);
 
 public:
 	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
@@ -42,7 +46,7 @@ private:
 	template<typename T>
 	Vertexbuffer* CreateMeshVertexBuffer(ParserData::Mesh* mesh);
 
-	void CreateMainRenderTarget(UINT width, UINT height);
+	void CreateMainRenderTarget(Hash_Code hash_Code, UINT width, UINT height);
 
 	void CreateDepthStencilStates();
 	void CreateRasterizerStates();
@@ -60,6 +64,22 @@ private:
 	IShaderManager* m_ShaderManager;
 	IGraphicResourceManager* m_ResourceManager;
 };
+
+
+template<typename ResourceClass, typename Resource>
+inline ResourceClass* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, Resource* resource) { return nullptr; }
+
+template<>
+inline DepthStencilView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11DepthStencilView* resource);
+
+template<>
+inline RenderTargetView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11RenderTargetView* resource);
+
+template<>
+inline ShaderResourceView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11ShaderResourceView* resource);
+
+template<>
+inline UnorderedAccessView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11UnorderedAccessView* resource);
 
 struct MeshVertex;
 struct SkinVertex;

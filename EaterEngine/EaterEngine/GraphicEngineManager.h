@@ -34,7 +34,7 @@ public:
 	//선택한 그래픽엔진 랜더링
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global);
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global);
-	void SSAORender(std::queue<MeshData*>* meshList, GlobalData* global);
+	void SSAORender(GlobalData* global);
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void LightRender(GlobalData* global);
 	void EndRender();

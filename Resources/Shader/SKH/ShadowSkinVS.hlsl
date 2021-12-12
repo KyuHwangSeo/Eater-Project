@@ -1,5 +1,3 @@
-#pragma pack_matrix(row_major)
-    
 cbuffer cbShadowSkinObject : register(b0)
 {
     float4x4 gWorldViewProj         : packoffset(c0);
@@ -22,14 +20,14 @@ float4 main(SkinVertexIn vin) : SV_POSITION
 
     for (int i = 0; i < 4; ++i)
     {
-        posL += vin.BoneWeights1[i] * mul(float4(vin.PosL, 1.0f), gBoneTransforms[vin.BoneIndices1[i]]).xyz;
+        posL += vin.BoneWeights1[i] * mul(gBoneTransforms[vin.BoneIndices1[i]], float4(vin.PosL, 1.0f)).xyz;
     }
 	
     for (int j = 0; j < 4; ++j)
     {
-        posL += vin.BoneWeights2[j] * mul(float4(vin.PosL, 1.0f), gBoneTransforms[vin.BoneIndices2[j]]).xyz;
+        posL += vin.BoneWeights2[j] * mul(gBoneTransforms[vin.BoneIndices2[j]], float4(vin.PosL, 1.0f)).xyz;
     }
 	
     
-    return mul(float4(posL, 1.0f), gWorldViewProj);
+    return mul(gWorldViewProj, float4(posL, 1.0f));
 };

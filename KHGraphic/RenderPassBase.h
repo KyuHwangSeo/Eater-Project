@@ -21,7 +21,7 @@ public:
 
 public:
 	virtual void Create(int width, int height) abstract;
-	virtual void Start() abstract;
+	virtual void Start(int width, int height) abstract;
 
 	virtual void OnResize(int width, int height) abstract;
 	virtual void Release() abstract;

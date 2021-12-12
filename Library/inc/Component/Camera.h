@@ -22,7 +22,7 @@ public:
 	void ChoiceMainCam();
 	// Camera Position
 	DirectX::XMFLOAT3* GetPos();
-	// Camera View TexSpace
+	// Camera View To TexSpace
 	DirectX::XMMATRIX* GetViewTex();
 	//현재 카메라의 뷰행렬
 	DirectX::XMMATRIX* GetView();
@@ -51,7 +51,7 @@ private:
 	DirectX::XMFLOAT4X4 mView;
 	DirectX::XMMATRIX mView_M;
 
-	//ViewTexSpace
+	//View To TexSpace
 	DirectX::XMMATRIX mViewTex_M;
 
 	//카메라 리스트에서 나의 인덱스

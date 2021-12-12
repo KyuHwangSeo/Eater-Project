@@ -44,9 +44,6 @@ void SSAOPass::Create(int width, int height)
 	// SSAO ViewPort 생성..
 	g_Factory->CreateViewPort<VP_SSAO>(0.0f, 0.0f, 0.5f, 0.5f, (float)width, (float)height);
 
-	// Constant Buffer Update..
-	m_BlurOption.gTexelSize = DirectX::SimpleMath::Vector2(1.0f / (float)width, 1.0f / (float)height);
-	
 	// Texture 2D
 	D3D11_TEXTURE2D_DESC texDesc;
 	texDesc.Width = width / 2;
@@ -65,17 +62,9 @@ void SSAOPass::Create(int width, int height)
 	g_Factory->CreateRenderTarget<RT_SSAO_Main>(&texDesc, nullptr, nullptr);
 	g_Factory->CreateRenderTarget<RT_SSAO_Blur>(&texDesc, nullptr, nullptr);
 
-	// OffsetVector 생성..
-	SetOffsetVectors();
-
-	// RandomVectorTexture 생성..
-	SetRandomVectorTexture();
-
-	// Frustum 생성..
-	SetFrustumFarCorners(width, height);
 }
 
-void SSAOPass::Start()
+void SSAOPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_SsaoVS = g_Shader->GetShader("SSAOVS");
@@ -88,22 +77,37 @@ void SSAOPass::Start()
 
 	// ViewPort 설정..
 	m_SsaoViewport = g_Resource->GetViewPort<VP_SSAO>()->Get();
+	
+	// Constant Buffer Update..
+	m_BlurOption.gTexelSize = DirectX::SimpleMath::Vector2(1.0f / m_SsaoViewport->Width, 1.0f / m_SsaoViewport->Height);
 
 	// RenderTarget 설정..
 	m_SsaoRT = g_Resource->GetRenderTarget<RT_SSAO_Main>();
+	m_SsaoRT->SetRatio(0.5f, 0.5f);
 	m_SsaoBlurRT = g_Resource->GetRenderTarget<RT_SSAO_Blur>();
-	m_SsaoRTV = m_SsaoRT->GetRTV();
-	m_SsaoBlurRTV = m_SsaoBlurRT->GetRTV();
+	m_SsaoBlurRT->SetRatio(0.5f, 0.5f);
 
-	// Resource RenderTarget 설정..
-	m_DepthRT = g_Resource->GetRenderTarget<RT_Deffered_Depth>();
+	m_SsaoRTV = m_SsaoRT->GetRTV()->Get();
+	m_SsaoSRV = m_SsaoRT->GetSRV()->Get();
+	m_SsaoBlurRTV = m_SsaoBlurRT->GetRTV()->Get();
+	m_SsaoBlurSRV = m_SsaoBlurRT->GetSRV()->Get();
+
+	// OffsetVector 설정..
+	SetOffsetVectors();
+
+	// RandomVectorTexture 설정..
+	SetRandomVectorTexture();
+
+	// Frustum 설정..
+	SetFrustumFarCorners(width, height);
 
 	// ShaderResource 설정..
-	ID3D11ShaderResourceView* randomVecMap = g_Resource->GetShaderResourceView<gRandomVecMap>()->Get();
+	ShaderResourceView* randomVecMap = g_Resource->GetShaderResourceView<gRandomVecMap>();
+	ShaderResourceView* depthMap = g_Resource->GetShaderResourceView<RT_Deffered_Depth>();
 	
-	m_SsaoPS->SetShaderResourceView<gDepthMap>(m_DepthRT->GetSRV());
-	m_SsaoPS->SetShaderResourceView<gRandomVecMap>(randomVecMap);
-	m_BlurPS->SetShaderResourceView<gDepthMap>(m_DepthRT->GetSRV());
+	m_SsaoPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
+	m_SsaoPS->SetShaderResourceView<gRandomVecMap>(randomVecMap->Get());
+	m_BlurPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
 }
 
 void SSAOPass::OnResize(int width, int height)
@@ -111,16 +115,22 @@ void SSAOPass::OnResize(int width, int height)
 	// Frustum 재설정..
 	SetFrustumFarCorners(width, height);
 
-	// RenderTarget 재설정..
-	m_SsaoRTV = m_SsaoRT->GetRTV();
-	m_SsaoBlurRTV = m_SsaoBlurRT->GetRTV();
+	// Constant Buffer Update..
+	m_BlurOption.gTexelSize = DirectX::SimpleMath::Vector2(1.0f / m_SsaoViewport->Width, 1.0f / m_SsaoViewport->Height);
 
-	// ShaderResource 재설정..
-	ID3D11ShaderResourceView* randomVecMap = g_Resource->GetShaderResourceView<gRandomVecMap>()->Get();
+	// RenderTarget Resource 재설정..
+	m_SsaoRTV = m_SsaoRT->GetRTV()->Get();
+	m_SsaoSRV = m_SsaoRT->GetSRV()->Get();
+	m_SsaoBlurRTV = m_SsaoBlurRT->GetRTV()->Get();
+	m_SsaoBlurSRV = m_SsaoBlurRT->GetSRV()->Get();
 
-	m_SsaoPS->SetShaderResourceView<gDepthMap>(m_DepthRT->GetSRV());
-	m_SsaoPS->SetShaderResourceView<gRandomVecMap>(randomVecMap);
-	m_BlurPS->SetShaderResourceView<gDepthMap>(m_DepthRT->GetSRV());
+	// ShaderResource 설정..
+	ShaderResourceView* randomVecMap = g_Resource->GetShaderResourceView<gRandomVecMap>();
+	ShaderResourceView* depthMap = g_Resource->GetShaderResourceView<RT_Deffered_Depth>();
+
+	m_SsaoPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
+	m_SsaoPS->SetShaderResourceView<gRandomVecMap>(randomVecMap->Get());
+	m_BlurPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
 }
 
 void SSAOPass::Release()
@@ -172,18 +182,20 @@ void SSAOPass::BlurRender(bool horizon)
 
 	if (horizon)
 	{
-		g_Context->OMSetRenderTargets(1, &m_SsaoRTV, 0);
-		g_Context->ClearRenderTargetView(m_SsaoRTV, reinterpret_cast<const float*>(&DXColors::Black));
+		g_Context->OMSetRenderTargets(1, &m_SsaoBlurRTV, 0);
+		g_Context->ClearRenderTargetView(m_SsaoBlurRTV, reinterpret_cast<const float*>(&DXColors::Red));
 
-		m_BlurPS->SetShaderResourceView<gInputMap>(m_SsaoRT->GetSRV());
+		m_BlurPS->SetShaderResourceView<gInputMap>(m_SsaoSRV);
 	}
 	else
 	{
-		g_Context->OMSetRenderTargets(1, &m_SsaoBlurRTV, 0);
-		g_Context->ClearRenderTargetView(m_SsaoBlurRTV, reinterpret_cast<const float*>(&DXColors::Black));
+		g_Context->OMSetRenderTargets(1, &m_SsaoRTV, 0);
+		g_Context->ClearRenderTargetView(m_SsaoRTV, reinterpret_cast<const float*>(&DXColors::Red));
 
-		m_BlurPS->SetShaderResourceView<gInputMap>(m_SsaoBlurRT->GetSRV());
+		m_BlurPS->SetShaderResourceView<gInputMap>(m_SsaoBlurSRV);
 	}
+
+	m_BlurPS->SetConstantBuffer(m_BlurOption);
 
 	// Vertex Shader Update..
 	m_BlurVS->Update();
@@ -233,7 +245,7 @@ void SSAOPass::SetOffsetVectors()
 	{
 		// Create random lengths in [0.25, 1.0].
 		float s = randF(randEngine);
-
+		
 		XMVECTOR v = s * XMVector4Normalize(XMLoadFloat4(&m_Offsets[i]));
 
 		// OffsetVector Constant Buffer Data 삽입..
@@ -259,9 +271,6 @@ void SSAOPass::SetRandomVectorTexture()
 	texDesc.CPUAccessFlags = 0;
 	texDesc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA initData = { 0 };
-	initData.SysMemPitch = 256 * sizeof(XMCOLOR);
-
 	std::mt19937 randEngine;
 	randEngine.seed(std::random_device()());
 	std::uniform_real_distribution<float> randF(0.0f, 1.0f);
@@ -272,11 +281,12 @@ void SSAOPass::SetRandomVectorTexture()
 		color[i] = XMCOLOR(randF(randEngine), randF(randEngine), randF(randEngine), 0.0f);
 	}
 
+	D3D11_SUBRESOURCE_DATA initData = { 0 };
 	initData.pSysMem = color;
 	initData.SysMemPitch = 256 * sizeof(XMCOLOR);
 
 	// RandomVectorMap 생성..
-	g_Factory->CreateShaderResourceView<gRandomVecMap>(&texDesc, nullptr);
+	g_Factory->CreateShaderResourceView<gRandomVecMap>(&texDesc, &initData, nullptr);
 }
 
 void SSAOPass::SetFrustumFarCorners(int width, int height)
@@ -285,7 +295,7 @@ void SSAOPass::SetFrustumFarCorners(int width, int height)
 	
 	float aspect = (float)width / (float)height;
 
-	float fovY = 0.25f * 3.141592f;
+	float fovY = 0.25f * 3.1415926535f;
 	float farZ = 4000.0f;
 	float halfHeight = farZ * tanf(0.5f * fovY);
 	float halfWidth = aspect * halfHeight;

@@ -7,7 +7,7 @@ public:
 
 public:
 	void Create(int width, int height) override;
-	void Start() override;
+	void Start(int width, int height) override;
 	void OnResize(int width, int height) override;
 	void Release() override;
 
@@ -18,8 +18,6 @@ public:
 private:
 	VertexShader* m_MeshShadowVS;
 	VertexShader* m_SkinShadowVS;
-
-	PixelShader* m_LightPS;
 
 	DepthStencil* m_ShadowDepthStencilView;
 	

@@ -8,7 +8,7 @@ public:
 
 public:
 	void Create(int width, int height) override;
-	void Start() override;
+	void Start(int width, int height) override;
 	void OnResize(int width, int height) override;
 	void Release() override;
 
@@ -33,10 +33,12 @@ private:
 
 	RenderTarget* m_SsaoRT;
 	RenderTarget* m_SsaoBlurRT;
-	RenderTarget* m_DepthRT;
 
 	ID3D11RenderTargetView* m_SsaoRTV;
 	ID3D11RenderTargetView* m_SsaoBlurRTV;
+
+	ID3D11ShaderResourceView* m_SsaoSRV;
+	ID3D11ShaderResourceView* m_SsaoBlurSRV;
 
 	CB_BlurOption m_BlurOption;
 

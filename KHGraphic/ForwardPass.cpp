@@ -4,6 +4,7 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "GraphicState.h"
+#include "GraphicView.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
@@ -41,7 +42,7 @@ void ForwardPass::Create(int width, int height)
 
 }
 
-void ForwardPass::Start()
+void ForwardPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_MeshVS = g_Shader->GetShader("MeshVS");
@@ -53,28 +54,36 @@ void ForwardPass::Start()
 
 	// BackBuffer 생성..
 	m_BackBuffer = g_Resource->GetMainRenderTarget();
-	m_BackBufferRTV = m_BackBuffer->GetRTV();
-	m_BackBufferSRV = m_BackBuffer->GetSRV();
+	m_BackBufferRTV = m_BackBuffer->GetRTV()->Get();
+	m_BackBufferSRV = m_BackBuffer->GetSRV()->Get();
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
 
 	// Graphic State 설정..
 	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
 	m_RasterizerState = g_Resource->GetRasterizerState<RS_Solid>()->Get();
 	m_BlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
+
+	// Shader Resource 설정..
+	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
+	m_ForwardPS->SetShaderResourceView<gShadowMap>(shadowSRV->Get());
 }
 
 void ForwardPass::OnResize(int width, int height)
 {
 	// BackBuffer RenderTargetView 재설정..
-	m_BackBufferRTV = m_BackBuffer->GetRTV();
+	m_BackBufferRTV = m_BackBuffer->GetRTV()->Get();
 
 	// BackBuffer ShaderResourceView 재설정..
-	m_BackBufferSRV = m_BackBuffer->GetSRV();
+	m_BackBufferSRV = m_BackBuffer->GetSRV()->Get();
 
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
+
+	// Shader Resource 재설정..
+	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
+	m_ForwardPS->SetShaderResourceView<gShadowMap>(shadowSRV->Get());
 }
 
 void ForwardPass::Release()
@@ -107,6 +116,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	{
 		CB_MeshObject objectBuf;
 		objectBuf.gWorld = world;
+		objectBuf.gWorldView = world * view;
 		objectBuf.gWorldViewProj = world * view * proj;
 		objectBuf.gShadowTransform = world * shadowTrans;
 
@@ -120,6 +130,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	{
 		CB_SkinObject objectBuf;
 		objectBuf.gWorld = world;
+		objectBuf.gWorldView = world * view;
 		objectBuf.gWorldViewProj = world * view * proj;
 		objectBuf.gShadowTransform = world * shadowTrans;
 

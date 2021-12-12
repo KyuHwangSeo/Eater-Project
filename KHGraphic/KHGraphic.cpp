@@ -58,9 +58,9 @@ void KHGraphic::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global
 	m_RenderManager->ShadowRender(meshList, global);
 }
 
-void KHGraphic::SSAORender()
+void KHGraphic::SSAORender(GlobalData* global)
 {
-	m_RenderManager->SSAORender();
+	m_RenderManager->SSAORender(global);
 }
 
 void KHGraphic::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)

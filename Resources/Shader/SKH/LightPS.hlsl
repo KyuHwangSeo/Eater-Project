@@ -1,11 +1,9 @@
-#pragma pack_matrix(row_major)
-
 #include "LightHelper.fx"
 
 cbuffer cbLightSub : register(b0)
 {
-    float3 gEyePosW;
     float4x4 gViewProjTex;
+    float3 gEyePosW;
 }
 
 cbuffer cbLight : register(b1)
@@ -23,9 +21,8 @@ Texture2D gAlbedoRT		: register(t0);
 Texture2D gNormalRT		: register(t1);
 Texture2D gPositionRT	: register(t2);
 Texture2D gShadowRT		: register(t3);
-//Texture2D gSSAORT		: register(t4);
 
-// 공용 TextureMap
+Texture2D gSsaoMap		: register(t4);
 Texture2D gShadowMap	: register(t5);
 
 SamplerComparisonState gSamBorderComparisonLinearPoint : register(s0);
@@ -43,7 +40,7 @@ float4 main(VertexIn pin) : SV_TARGET
     float4 normal = gNormalRT.Sample(gSamWrapLinear, pin.Tex);
     float4 position = gPositionRT.Sample(gSamWrapLinear, pin.Tex);
     float4 shadow = gShadowRT.Sample(gSamWrapLinear, pin.Tex);
-    //float4 ssao = mul(float4(position.xyz, 1.0f), gViewProjTex);
+    float4 ssao = mul(gViewProjTex, float4(position.xyz, 1.0f));
 	
     // Gamma Correction
 	// Gamma Space -> Linear Space
@@ -66,8 +63,8 @@ float4 main(VertexIn pin) : SV_TARGET
     float shadows = CalcShadowFactor(gSamBorderComparisonLinearPoint, gShadowMap, float3(shadow.xyz));
 	
 	// 현재 픽셀의 SSAO 값..
-    //ssao /= ssao.w;
-    //float ambientAccess = gSSAORT.SampleLevel(gSamWrapLinear, ssao.xy, 0.0f).r;
+    ssao /= ssao.w;
+    float ambientAccess = gSsaoMap.SampleLevel(gSamWrapLinear, ssao.xy, 0.0f).r;
 	
 	// 현재 픽셀의 Material ID..
     uint matID = round(position.w);
@@ -80,7 +77,7 @@ float4 main(VertexIn pin) : SV_TARGET
 		ComputeDirectionalLight(gMaterials[matID], gDirLights, float3(normal.xyz), ViewDirection,
 			A, D, S);
 
-        ambient += A;
+        ambient += ambientAccess * A;
         diffuse += shadows * D;
         spec += shadows * S;
 

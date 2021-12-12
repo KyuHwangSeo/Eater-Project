@@ -102,12 +102,12 @@ void D3D11Graphic::CreateBackBuffer(UINT width, UINT height, ID3D11Texture2D** t
 	HR(m_Device->CreateShaderResourceView(*tex2D, nullptr, srv));
 }
 
-void D3D11Graphic::CreateTexture2D(D3D11_TEXTURE2D_DESC* texDesc, ID3D11Texture2D** tex2D)
+void D3D11Graphic::CreateTexture2D(D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, ID3D11Texture2D** tex2D)
 {
 	if (texDesc == nullptr) return;
 
 	// Texture2D Resource »ý¼º..
-	HR(m_Device->CreateTexture2D(texDesc, 0, tex2D));
+	HR(m_Device->CreateTexture2D(texDesc, subData, tex2D));
 }
 
 void D3D11Graphic::CreateDepthStencilView(ID3D11Texture2D* tex2D, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, ID3D11DepthStencilView** dsv)

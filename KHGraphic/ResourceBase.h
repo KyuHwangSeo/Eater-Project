@@ -15,6 +15,7 @@ public:
 
 public:
 	virtual void Reset() abstract;
+	virtual void Release() abstract;
 
 public:
 	eResourceType GetType() { return m_ResourceType; }

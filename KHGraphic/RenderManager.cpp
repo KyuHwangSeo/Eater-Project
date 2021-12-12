@@ -1,6 +1,7 @@
 #include "DirectDefine.h"
 #include "D3D11GraphicBase.h"
 #include "GraphicState.h"
+#include "GraphicView.h"
 #include "BufferData.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
@@ -58,7 +59,7 @@ void RenderManager::Initialize(int width, int height)
 	// Render Pass Resource Set..
 	for (RenderPassBase* renderPass : m_RenderPassList)
 	{
-		renderPass->Start();
+		renderPass->Start(width, height);
 	}
 }
 
@@ -115,9 +116,12 @@ void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* gl
 	}
 }
 
-void RenderManager::SSAORender()
+void RenderManager::SSAORender(GlobalData* global)
 {
+	m_SSAO->BeginRender();
 
+	m_SSAO->Render(global);
+	m_SSAO->BlurRender(4);
 }
 
 void RenderManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)

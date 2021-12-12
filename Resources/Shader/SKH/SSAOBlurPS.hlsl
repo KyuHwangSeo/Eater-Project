@@ -10,7 +10,7 @@ static int gBlurRadius = 5;
 Texture2D gDepthMap	: register(t0);
 Texture2D gInputMap	: register(t1);
 
-SamplerState samClampMinLinearPoint : register(s0);
+SamplerState gSamClampLinearPoint : register(s0);
 
 struct VertexIn
 {
@@ -32,10 +32,10 @@ float4 main(VertexIn pin) : SV_Target
     }
 
 	// The center value always contributes to the sum.
-    float4 color = gWeights[gBlurRadius] * gInputMap.SampleLevel(samClampMinLinearPoint, pin.Tex, 0.0);
+    float4 color = gWeights[gBlurRadius] * gInputMap.SampleLevel(gSamClampLinearPoint, pin.Tex, 0.0);
     float totalWeight = gWeights[gBlurRadius];
 
-    float4 centerNormalDepth = gDepthMap.SampleLevel(samClampMinLinearPoint, pin.Tex, 0.0f);
+    float4 centerNormalDepth = gDepthMap.SampleLevel(gSamClampLinearPoint, pin.Tex, 0.0f);
 
 	for (float i = -gBlurRadius; i <= gBlurRadius; ++i)
 	{
@@ -45,7 +45,7 @@ float4 main(VertexIn pin) : SV_Target
 
 		float2 tex = pin.Tex + i * texOffset;
 
-        float4 neighborNormalDepth = gDepthMap.SampleLevel(samClampMinLinearPoint, tex, 0.0f);
+        float4 neighborNormalDepth = gDepthMap.SampleLevel(gSamClampLinearPoint, tex, 0.0f);
 
 		//
 		// If the center value and neighbor values differ too much (either in 
@@ -60,7 +60,7 @@ float4 main(VertexIn pin) : SV_Target
 
 			// Add neighbor pixel to blur.
 			color += weight * gInputMap.SampleLevel(
-				samClampMinLinearPoint, tex, 0.0);
+				gSamClampLinearPoint, tex, 0.0);
 
 			totalWeight += weight;
 		}

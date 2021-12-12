@@ -17,7 +17,7 @@ void intro::Awake()
 	LoadMeshPath("../Resources/Mesh/");
 	LoadTexturePath("../Resources/Texture/");
 
-	//LoadMesh("Table");
+	LoadMesh("Table");
 	LoadMesh("Field");
 	LoadMesh("Player_Run", false, false);
 	LoadMesh("Player_Roll", false, true);
@@ -50,9 +50,10 @@ void intro::Awake()
 	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
 	testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
 
-	//testobj = Instance("Table");
-	//testobj->AddComponent<MeshFilter>()->SetMeshName("Table");
-	//testobj->GetComponent<Transform>()->Scale = { 0.1f, 0.1f, 0.1f };
+	testobj = Instance("Table");
+	testobj->AddComponent<MeshFilter>()->SetMeshName("Table");
+	testobj->GetComponent<Transform>()->Scale = { 0.1f, 0.1f, 0.1f };
+	testobj->GetTransform()->Position = { -5.0f, 0.0f, -5.0f };
 }
 
 void intro::Start()

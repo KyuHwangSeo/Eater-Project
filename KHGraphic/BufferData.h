@@ -16,6 +16,7 @@ public:
 
 public:
 	void Reset() override;
+	void Release() override;
 
 public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> VB;		// Vertex Buffer

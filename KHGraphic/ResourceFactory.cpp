@@ -24,7 +24,7 @@
 #include "RasterizerStateDefine.h"
 #include "BufferDataDefine.h"
 #include "ViewPortDefine.h"
-
+#include "RenderTargetDefine.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -41,7 +41,7 @@ GraphicResourceFactory::~GraphicResourceFactory()
 void GraphicResourceFactory::Initialize(int width, int height)
 {
 	// Back Buffer 积己..
-	CreateMainRenderTarget(width, height);
+	CreateMainRenderTarget(RT_BackBuffer::GetHashCode(), width, height);
 
 	/// Global Resource 积己..
 	CreateDepthStencilStates();
@@ -146,7 +146,7 @@ void GraphicResourceFactory::CreateVP(Hash_Code hash_code, float ratio_offsetX, 
 	m_ResourceManager->AddResource(hash_code, newResource);
 }
 
-void GraphicResourceFactory::CreateDSV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
+void GraphicResourceFactory::CreateDS(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
@@ -154,7 +154,7 @@ void GraphicResourceFactory::CreateDSV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv = nullptr;
 
 	// Texture2D Resource 积己..
-	m_Graphic->CreateTexture2D(texDesc, tex2D.GetAddressOf());
+	m_Graphic->CreateTexture2D(texDesc, subData, tex2D.GetAddressOf());
 
 	// DepthStencilView Resource 积己..
 	m_Graphic->CreateDepthStencilView(tex2D.Get(), dsvDesc, dsv.GetAddressOf());
@@ -162,8 +162,12 @@ void GraphicResourceFactory::CreateDSV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC
 	// ShaderResourceView Resource 积己..
 	m_Graphic->CreateShaderResourceView(tex2D.Get(), srvDesc, srv.GetAddressOf());
 
+	// Resource 积己 棺 殿废..
+	DepthStencilView* newDSV = RegisterResource<DepthStencilView, ID3D11DepthStencilView>(hash_code, dsv.Get());
+	ShaderResourceView* newSRV = RegisterResource<ShaderResourceView, ID3D11ShaderResourceView>(hash_code, srv.Get());
+
 	// DepthStencil 积己..
-	DepthStencil* newResource = new DepthStencil(tex2D.Get(), dsv.Get(), srv.Get());
+	DepthStencil* newResource = new DepthStencil(tex2D.Get(), newDSV, newSRV);
 
 	// Resoure 殿废..
 	m_ResourceManager->AddResource(hash_code, newResource);
@@ -174,7 +178,7 @@ void GraphicResourceFactory::CreateDSV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC
 	RESET_COM(srv);
 }
 
-void GraphicResourceFactory::CreateRT(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
+void GraphicResourceFactory::CreateRT(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
@@ -183,7 +187,7 @@ void GraphicResourceFactory::CreateRT(Hash_Code hash_code, D3D11_TEXTURE2D_DESC*
 	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> uav = nullptr;
 
 	// Texture2D Resource 积己..
-	m_Graphic->CreateTexture2D(texDesc, tex2D.GetAddressOf());
+	m_Graphic->CreateTexture2D(texDesc, subData, tex2D.GetAddressOf());
 
 	// RenderTargetView Resource 积己..
 	m_Graphic->CreateRenderTargetView(tex2D.Get(), rtvDesc, rtv.GetAddressOf());
@@ -194,8 +198,13 @@ void GraphicResourceFactory::CreateRT(Hash_Code hash_code, D3D11_TEXTURE2D_DESC*
 	// UnorderedAccessView Resource 积己..
 	m_Graphic->CreateUnorderedAccessView(tex2D.Get(), uavDesc, uav.GetAddressOf());
 
+	// Resource 积己 棺 殿废..
+	RenderTargetView* newRTV = RegisterResource<RenderTargetView, ID3D11RenderTargetView>(hash_code, rtv.Get());
+	ShaderResourceView* newSRV = RegisterResource<ShaderResourceView, ID3D11ShaderResourceView>(hash_code, srv.Get());
+	UnorderedAccessView* newUAV = RegisterResource<UnorderedAccessView, ID3D11UnorderedAccessView>(hash_code, uav.Get());
+
 	// RenderTarget 积己..
-	RenderTarget* newResource = new RenderTarget(tex2D.Get(), rtv.Get(), srv.Get(), uav.Get());
+	RenderTarget* newResource = new RenderTarget(tex2D.Get(), newRTV, newSRV, newUAV);
 
 	// Resource 殿废..
 	m_ResourceManager->AddResource(hash_code, newResource);
@@ -207,14 +216,14 @@ void GraphicResourceFactory::CreateRT(Hash_Code hash_code, D3D11_TEXTURE2D_DESC*
 	RESET_COM(uav);
 }
 
-void GraphicResourceFactory::CreateSRV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
+void GraphicResourceFactory::CreateSRV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv = nullptr;
 
 	// Texture2D Resource 积己..
-	m_Graphic->CreateTexture2D(texDesc, tex2D.GetAddressOf());
+	m_Graphic->CreateTexture2D(texDesc, subData, tex2D.GetAddressOf());
 
 	// ShaderResourceView Resource 积己..
 	m_Graphic->CreateShaderResourceView(tex2D.Get(), srvDesc, srv.GetAddressOf());
@@ -230,14 +239,14 @@ void GraphicResourceFactory::CreateSRV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC
 	RESET_COM(srv);
 }
 
-void GraphicResourceFactory::CreateUAV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
+void GraphicResourceFactory::CreateUAV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> uav = nullptr;
 
 	// Texture2D Resource 积己..
-	m_Graphic->CreateTexture2D(texDesc, tex2D.GetAddressOf());
+	m_Graphic->CreateTexture2D(texDesc, subData, tex2D.GetAddressOf());
 
 	// UnorderedAccessView Resource 积己..
 	m_Graphic->CreateUnorderedAccessView(tex2D.Get(), uavDesc, uav.GetAddressOf());
@@ -253,8 +262,9 @@ void GraphicResourceFactory::CreateUAV(Hash_Code hash_code, D3D11_TEXTURE2D_DESC
 	RESET_COM(uav);
 }
 
-void GraphicResourceFactory::CreateMainRenderTarget(UINT width, UINT height)
+void GraphicResourceFactory::CreateMainRenderTarget(Hash_Code hash_Code, UINT width, UINT height)
 {
+	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv = nullptr;
@@ -263,8 +273,13 @@ void GraphicResourceFactory::CreateMainRenderTarget(UINT width, UINT height)
 	// Swap Chain, Render Target View Resize
 	m_Graphic->CreateBackBuffer(width, height, tex2D.GetAddressOf(), rtv.GetAddressOf(), srv.GetAddressOf());
 
+	// Resource 积己 棺 殿废..
+	RenderTargetView* newRTV = RegisterResource<RenderTargetView, ID3D11RenderTargetView>(hash_Code, rtv.Get());
+	ShaderResourceView* newSRV = RegisterResource<ShaderResourceView, ID3D11ShaderResourceView>(hash_Code, srv.Get());
+	UnorderedAccessView* newUAV = RegisterResource<UnorderedAccessView, ID3D11UnorderedAccessView>(hash_Code, uav.Get());
+
 	// Main RenderTarget 积己..
-	RenderTarget* mainRenderTarget = new RenderTarget(tex2D.Get(), rtv.Get(), srv.Get(), uav.Get());
+	RenderTarget* mainRenderTarget = new RenderTarget(tex2D.Get(), newRTV, newSRV, newUAV);
 
 	// Resource 殿废..
 	m_ResourceManager->AddMainRenderTarget(mainRenderTarget);
@@ -274,6 +289,7 @@ void GraphicResourceFactory::CreateMainRenderTarget(UINT width, UINT height)
 	RESET_COM(rtv);
 	RESET_COM(srv);
 }
+
 
 Vertexbuffer* GraphicResourceFactory::CreateVertexBuffer(ParserData::Mesh* mesh)
 {
@@ -358,6 +374,62 @@ IShaderManager* GraphicResourceFactory::GetShaderManager()
 IGraphicResourceManager* GraphicResourceFactory::GetResourceManager()
 {
 	return m_ResourceManager;
+}
+
+template<>
+DepthStencilView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11DepthStencilView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	DepthStencilView* newResource = new DepthStencilView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+
+	return newResource;
+}
+
+template<>
+RenderTargetView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11RenderTargetView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	RenderTargetView* newResource = new RenderTargetView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+	
+	return newResource;
+}
+
+template<>
+ShaderResourceView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11ShaderResourceView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	ShaderResourceView* newResource = new ShaderResourceView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+	
+	return newResource;
+}
+
+template<>
+UnorderedAccessView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11UnorderedAccessView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	UnorderedAccessView* newResource = new UnorderedAccessView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+	
+	return newResource;
 }
 
 template<>
@@ -770,7 +842,7 @@ void GraphicResourceFactory::CreateDepthStencilViews(int width, int height)
 	descDSV.Texture2D.MipSlice = 0;
 
 	// Defalt DepthStencilView 积己..
-	CreateDepthStencil<DS_Defalt>(&texDesc, &descDSV);
+	CreateDepthStencil<DS_Defalt>(&texDesc, nullptr, &descDSV);
 
 	RESET_COM(tex2D);
 }

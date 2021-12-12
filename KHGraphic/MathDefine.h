@@ -1,5 +1,6 @@
 #pragma once
 #include "SimpleMath.h"
+#include "MathHelper.h"
 
 namespace DXColors
 {

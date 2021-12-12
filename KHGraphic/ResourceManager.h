@@ -23,6 +23,8 @@ public:
 public:
 	RenderTarget* GetRenderTarget(Hash_Code hash_code) override;
 	DepthStencil* GetDepthStencil(Hash_Code hash_code) override;
+	RenderTargetView* GetRenderTargetView(Hash_Code hash_code) override;
+	DepthStencilView* GetDepthStencilView(Hash_Code hash_code) override;
 	ShaderResourceView* GetShaderResourceView(Hash_Code hash_code) override;
 	UnorderedAccessView* GetUnorderedAccessView(Hash_Code hash_code) override;
 
@@ -50,6 +52,8 @@ private:
 	RenderTarget* m_BackBuffer;
 	std::unordered_map<Hash_Code, RenderTarget*> m_RenderTargetList;
 	std::unordered_map<Hash_Code, DepthStencil*> m_DepthStencilList;
+	std::unordered_map<Hash_Code, RenderTargetView*> m_RenderTargetViewList;
+	std::unordered_map<Hash_Code, DepthStencilView*> m_DepthStencilViewList;
 	std::unordered_map<Hash_Code, ShaderResourceView*> m_ShaderResourceViewList;
 	std::unordered_map<Hash_Code, UnorderedAccessView*> m_UnorderedAccessViewList;
 

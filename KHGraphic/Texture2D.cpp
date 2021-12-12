@@ -4,7 +4,11 @@
 Texture2D::Texture2D(eResourceType resourceType, ID3D11Texture2D* tex2D)
 	:ResourceBase(resourceType), m_Width_Ratio(1.0f), m_Height_Ratio(1.0f)
 {
+	// Texture 2D Description 저장..
 	tex2D->GetDesc(&m_TexDesc);
+
+	// Texture 2D BindFlag 저장..
+	m_BindResource = m_TexDesc.BindFlags;
 }
 
 void Texture2D::OnResize(int width, int height)
@@ -17,11 +21,6 @@ void Texture2D::SetRatio(float width_ratio, float height_ratio)
 {
 	m_Width_Ratio = width_ratio;
 	m_Height_Ratio = height_ratio;
-}
-
-void Texture2D::SetResourceBind(Bind_Mask bind_type)
-{
-	m_BindResource |= bind_type;
 }
 
 Bind_Mask Texture2D::GetBindType()

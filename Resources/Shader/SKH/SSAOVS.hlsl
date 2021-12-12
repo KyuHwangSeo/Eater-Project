@@ -6,8 +6,8 @@ cbuffer cbSsaoFrustum : register(b0)
 struct VertexIn
 {
 	float3 PosL            : POSITION;
-	float3 ToFarPlaneIndex : NORMAL;
 	float2 Tex             : TEXCOORD;
+	float3 ToFarPlaneIndex : NORMAL;
 };
 
 struct VertexOut

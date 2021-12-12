@@ -34,7 +34,7 @@ DirectionLight::DirectionLight()
 	m_DirLight->Ambient = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	m_DirLight->Diffuse = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	m_DirLight->Specular = Vector4(0.8f, 0.8f, 0.8f, 1.0f);
-	m_DirLight->Direction = Vector3(-0.57735f, -0.57735f, 0.57735f);
+	m_DirLight->Direction = Vector3(0.3f, -0.707f, -0.3f);
 
 	m_CenterPos = Vector3(0, 0, 0);
 	m_ShadowRadius = sqrtf(10.0f * 10.0f + 15.0f * 15.0f);

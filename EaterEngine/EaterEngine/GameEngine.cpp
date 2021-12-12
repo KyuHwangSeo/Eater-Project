@@ -110,7 +110,7 @@ void GameEngine::Update()
 	//랜더큐 넘겨줌
 	mGraphicManager->ShadowRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->Render(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
-	mGraphicManager->SSAORender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
+	mGraphicManager->SSAORender(mObjectManager->GetGlobalData());
 	mGraphicManager->UIRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->LightRender(mObjectManager->GetGlobalData());
 	mGraphicManager->EndRender();

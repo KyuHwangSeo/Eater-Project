@@ -40,6 +40,7 @@ public:
 	DirectX::XMMATRIX* mCamView;	// Camera View Matrix
 	DirectX::XMMATRIX* mCamProj;	// Camera Proj Matrix
 	DirectX::XMMATRIX* mCamPT;		// Camera Proj * TexSpace Matrix
+	DirectX::XMFLOAT3* mCamPos;		// Camera Pos
 
 	DirectX::XMMATRIX* mLightView;	// Light View Matrix
 	DirectX::XMMATRIX* mLightProj;	// Light Proj Matrix

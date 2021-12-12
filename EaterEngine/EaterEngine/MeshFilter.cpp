@@ -91,7 +91,7 @@ void MeshFilter::PushModelData(LoadMeshData* mModel)
 	// Diffuse Map이 없는경우 Dump Map으로 기본 출력..
 	if (data->Albedo == nullptr)
 	{
-		data->Albedo = LoadManager::GetTexture("Dump");
+		//data->Albedo = LoadManager::GetTexture("Dump");
 	}
 }
 

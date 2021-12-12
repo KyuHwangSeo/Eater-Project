@@ -36,13 +36,20 @@ void GraphicResourceManager::OnResize(int width, int height)
 {
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D = nullptr;
 
+	RenderTargetView* rtv = nullptr;
+	DepthStencilView* dsv = nullptr;
+	ShaderResourceView* srv = nullptr;
+	UnorderedAccessView* uav = nullptr;
+
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 
 	// BackBuffer Resize..
-	m_Graphic->CreateBackBuffer((UINT)width, (UINT)height, tex2D.GetAddressOf(), m_BackBuffer->GetAddressRTV(true), m_BackBuffer->GetAddressSRV(true));
+	rtv = m_BackBuffer->GetRTV();
+	srv = m_BackBuffer->GetSRV();
+	m_Graphic->CreateBackBuffer((UINT)width, (UINT)height, tex2D.GetAddressOf(), rtv->ReleaseGetAddress(), srv->ReleaseGetAddress());
 
 	// Texture2D Reset..
 	RESET_COM(tex2D);
@@ -56,35 +63,44 @@ void GraphicResourceManager::OnResize(int width, int height)
 		renderTarget->OnResize(width, height);
 
 		// Texture2D Resize..
-		m_Graphic->CreateTexture2D(renderTarget->GetTextureDesc(), tex2D.GetAddressOf());
+		m_Graphic->CreateTexture2D(renderTarget->GetTextureDesc(), nullptr, tex2D.GetAddressOf());
 
 		// Resource Bind Type..
 		Bind_Mask bindType = renderTarget->GetBindType();
 
-		if (bindType & BIND_RTV)
+		if (bindType & D3D11_BIND_RENDER_TARGET)
 		{
+			// RenderTargetView 추출..
+			rtv = renderTarget->GetRTV();
+
 			// RenderTargetView Description 추출..
-			renderTarget->GetRTVDesc(&rtvDesc);
+			rtv->GetDesc(&rtvDesc);
 
 			// RenderTargetView Resize..
-			m_Graphic->CreateRenderTargetView(tex2D.Get(), &rtvDesc, renderTarget->GetAddressRTV(true));
+			m_Graphic->CreateRenderTargetView(tex2D.Get(), &rtvDesc, rtv->ReleaseGetAddress());
 
 		}
-		if (bindType & BIND_SRV)
+		if (bindType & D3D11_BIND_SHADER_RESOURCE)
 		{
+			// ShaderResourceView 추출..
+			srv = renderTarget->GetSRV();
+
 			// ShaderResourceView Description 추출..
-			renderTarget->GetSRVDesc(&srvDesc);
+			srv->GetDesc(&srvDesc);
 
 			// ShaderResourceView Resize..
-			m_Graphic->CreateShaderResourceView(tex2D.Get(), &srvDesc, renderTarget->GetAddressSRV(true));
+			m_Graphic->CreateShaderResourceView(tex2D.Get(), &srvDesc, srv->ReleaseGetAddress());
 		}
-		if (bindType & BIND_UAV)
+		if (bindType & D3D11_BIND_UNORDERED_ACCESS)
 		{
+			// UnorderedAccessView 추출..
+			uav = renderTarget->GetUAV();
+
 			// UnorderedAccessView Description 추출..
-			renderTarget->GetUAVDesc(&uavDesc);
+			uav->GetDesc(&uavDesc);
 
 			// UnorderedAccessView Resize..
-			m_Graphic->CreateUnorderedAccessView(tex2D.Get(), &uavDesc, renderTarget->GetAddressUAV(true));
+			m_Graphic->CreateUnorderedAccessView(tex2D.Get(), &uavDesc, uav->ReleaseGetAddress());
 		}
 
 		// Texture2D Reset..
@@ -92,34 +108,40 @@ void GraphicResourceManager::OnResize(int width, int height)
 	}
 
 	// DepthStecilView Resize..
-	for (std::pair<Hash_Code, DepthStencil*> dsv : m_DepthStencilList)
+	for (std::pair<Hash_Code, DepthStencil*> ds : m_DepthStencilList)
 	{
-		DepthStencil* depthStencilView = dsv.second;
+		DepthStencil* depthStencil = ds.second;
 
 		// RenderTarget Resize..
-		depthStencilView->OnResize(width, height);
+		depthStencil->OnResize(width, height);
 
 		// Texture2D Resize..
-		m_Graphic->CreateTexture2D(depthStencilView->GetTextureDesc(), tex2D.GetAddressOf());
+		m_Graphic->CreateTexture2D(depthStencil->GetTextureDesc(), nullptr, tex2D.GetAddressOf());
 
 		// Resource Bind Type..
-		Bind_Mask bindType = depthStencilView->GetBindType();
+		Bind_Mask bindType = depthStencil->GetBindType();
 
-		if (bindType & BIND_DSV)
+		if (bindType & D3D11_BIND_DEPTH_STENCIL)
 		{
+			// DepthStencilView 추출..
+			dsv = depthStencil->GetDSV();
+
 			// DepthStencilView Description 추출..
-			depthStencilView->GetDSVDesc(&dsvDesc);
+			dsv->GetDesc(&dsvDesc);
 
 			// DepthStencilView Resize..
-			m_Graphic->CreateDepthStencilView(tex2D.Get(), &dsvDesc, depthStencilView->GetAddressDSV(true));
+			m_Graphic->CreateDepthStencilView(tex2D.Get(), &dsvDesc, dsv->ReleaseGetAddress());
 		}
-		if (bindType & BIND_SRV)
+		if (bindType & D3D11_BIND_SHADER_RESOURCE)
 		{
+			// ShaderResourceView 추출..
+			srv = depthStencil->GetSRV();
+
 			// ShaderResourceView Description 추출..
-			depthStencilView->GetSRVDesc(&srvDesc);
+			srv->GetDesc(&srvDesc);
 
 			// ShaderResourceView Resize..
-			m_Graphic->CreateShaderResourceView(tex2D.Get(), &srvDesc, depthStencilView->GetAddressSRV(true));
+			m_Graphic->CreateShaderResourceView(tex2D.Get(), &srvDesc, srv->ReleaseGetAddress());
 		}
 
 		// Texture2D Reset..
@@ -225,6 +247,24 @@ DepthStencil* GraphicResourceManager::GetDepthStencil(Hash_Code hash_code)
 	return itor->second;
 }
 
+RenderTargetView* GraphicResourceManager::GetRenderTargetView(Hash_Code hash_code)
+{
+	std::unordered_map<Hash_Code, RenderTargetView*>::iterator itor = m_RenderTargetViewList.find(hash_code);
+
+	if (itor == m_RenderTargetViewList.end()) return nullptr;
+
+	return itor->second;
+}
+
+DepthStencilView* GraphicResourceManager::GetDepthStencilView(Hash_Code hash_code)
+{
+	std::unordered_map<Hash_Code, DepthStencilView*>::iterator itor = m_DepthStencilViewList.find(hash_code);
+
+	if (itor == m_DepthStencilViewList.end()) return nullptr;
+
+	return itor->second;
+}
+
 ShaderResourceView* GraphicResourceManager::GetShaderResourceView(Hash_Code hash_code)
 {
 	std::unordered_map<Hash_Code, ShaderResourceView*>::iterator itor = m_ShaderResourceViewList.find(hash_code);
@@ -297,6 +337,12 @@ void GraphicResourceManager::AddResource(Hash_Code hash_code, ResourceBase* reso
 		break;
 	case eResourceType::UAV:
 		m_UnorderedAccessViewList.insert(std::make_pair(hash_code, (UnorderedAccessView*)resource));
+		break;
+	case eResourceType::RTV:
+		m_RenderTargetViewList.insert(std::make_pair(hash_code, (RenderTargetView*)resource));
+		break;
+	case eResourceType::DSV:
+		m_DepthStencilViewList.insert(std::make_pair(hash_code, (DepthStencilView*)resource));
 		break;
 	case eResourceType::DSS:
 		m_DepthStencilStateList.insert(std::make_pair(hash_code, (DepthStencilState*)resource));

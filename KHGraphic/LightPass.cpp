@@ -4,6 +4,7 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "GraphicState.h"
+#include "GraphicView.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
@@ -38,7 +39,7 @@ void LightPass::Create(int width, int height)
 {
 }
 
-void LightPass::Start()
+void LightPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_LightVS = g_Shader->GetShader("LightVS");
@@ -49,13 +50,13 @@ void LightPass::Start()
 
 	// BackBuffer 설정..
 	m_BackBuffer = g_Resource->GetMainRenderTarget();
-	m_BackBufferRTV = m_BackBuffer->GetRTV();
+	m_BackBufferRTV = m_BackBuffer->GetRTV()->Get();
 
 	// ViewPort 설정..
 	m_ScreenViewport = g_Resource->GetViewPort<VP_FullScreen>()->Get();
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
 
 	// Multi RenderTarget 설정..
 	m_AlbedoRT = g_Resource->GetRenderTarget<RT_Deffered_Albedo>();
@@ -63,31 +64,40 @@ void LightPass::Start()
 	m_PositionRT = g_Resource->GetRenderTarget<RT_Deffered_Position>();
 	m_ShadowRT = g_Resource->GetRenderTarget<RT_Deffered_Shadow>();
 
-	// Resource RenderTarget 설정..
-	m_SSAORT = g_Resource->GetRenderTarget<RT_SSAO_Main>();
+	// ShaderResource 설정..
+	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gPositionRT>(m_PositionRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gShadowRT>(m_ShadowRT->GetSRV()->Get());
+
+	// Sub Resource 설정..
+	ShaderResourceView* ssaoSRV = g_Resource->GetShaderResourceView<RT_SSAO_Main>();
+	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
 
 	// ShaderResource 설정..
-	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV());
-	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV());
-	m_LightPS->SetShaderResourceView<gPositionRT>(m_PositionRT->GetSRV());
-	m_LightPS->SetShaderResourceView<gShadowRT>(m_ShadowRT->GetSRV());
-	//m_LightPS->SetShaderResourceView<gSSAOMap>(m_SSAORT->GetSRV());
+	m_LightPS->SetShaderResourceView<gShadowMap>(shadowSRV->Get());
+	m_LightPS->SetShaderResourceView<gSsaoMap>(ssaoSRV->Get());
 }
 
 void LightPass::OnResize(int width, int height)
 {
 	// BackBuffer RenderTargetView 재설정..
-	m_BackBufferRTV = m_BackBuffer->GetRTV();
+	m_BackBufferRTV = m_BackBuffer->GetRTV()->Get();
 	
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
 	
 	// ShaderResource 재설정..
-	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV());
-	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV());
-	m_LightPS->SetShaderResourceView<gPositionRT>(m_PositionRT->GetSRV());
-	m_LightPS->SetShaderResourceView<gShadowRT>(m_ShadowRT->GetSRV());
-	m_LightPS->SetShaderResourceView<gSSAOMap>(m_SSAORT->GetSRV());
+	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gPositionRT>(m_PositionRT->GetSRV()->Get());
+
+	// Sub Resource 재설정..
+	ShaderResourceView* ssaoSRV = g_Resource->GetShaderResourceView<RT_SSAO_Main>();
+	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
+
+	m_LightPS->SetShaderResourceView<gShadowRT>(m_ShadowRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gSsaoMap>(ssaoSRV->Get());
 }
 
 void LightPass::Release()
@@ -106,7 +116,6 @@ void LightPass::Render(GlobalData* global)
 {
 	Matrix view = *global->mCamView;
 	Matrix proj = *global->mCamProj;
-	Vector3 eye(view._41, view._42, view._43);
 	LightData* lightData = global->mLightData;
 	
 	CB_Light lightBuf;
@@ -130,8 +139,12 @@ void LightPass::Render(GlobalData* global)
 	}
 
 	CB_LightSub lightsubBuf;
-	lightsubBuf.gEyePosW = -eye;
-	//lightsubBuf.gViewProjTex = view * proj * Tex;
+	lightsubBuf.gEyePosW = *global->mCamPos;
+	lightsubBuf.gViewProjTex = view * proj * Matrix(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
 
 	m_LightPS->SetConstantBuffer(lightBuf);
 	m_LightPS->SetConstantBuffer(lightsubBuf);

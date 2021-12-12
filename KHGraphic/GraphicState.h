@@ -10,6 +10,7 @@ public:
 
 public:
 	void Reset() override;
+	void Release() override;
 
 public:
 	ID3D11DepthStencilState* Get();
@@ -28,6 +29,7 @@ public:
 
 public:
 	void Reset() override;
+	void Release() override;
 
 public:
 	ID3D11RasterizerState* Get();
@@ -46,6 +48,7 @@ public:
 
 public:
 	void Reset() override;
+	void Release() override;
 
 public:
 	ID3D11BlendState* Get();
@@ -64,6 +67,7 @@ public:
 
 public:
 	void Reset() override;
+	void Release() override;
 
 public:
 	ID3D11SamplerState* Get();
@@ -82,6 +86,9 @@ public:
 
 public:
 	void Reset() override;
+	void Release() override;
+
+public:
 	void OnResize(int width, int height);
 
 public:

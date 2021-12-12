@@ -18,7 +18,7 @@ public:
 
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) override; 
-	void SSAORender() override;
+	void SSAORender(GlobalData* global) override;
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void LightRender(GlobalData* global) override;
 	void EndRender() override;

@@ -9,12 +9,18 @@ BufferData::BufferData()
 
 BufferData::~BufferData()
 {
-	Reset();
+	Release();
 }
 
 void BufferData::Reset()
 {
 	RESET_COM(VB);
 	RESET_COM(IB);
+}
+
+void BufferData::Release()
+{
+	RELEASE_COM(VB);
+	RELEASE_COM(IB);
 }
 

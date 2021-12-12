@@ -10,7 +10,6 @@ cbuffer cbMaterial : register(b0)
 
 Texture2D gDiffuseMap : register(t0);
 Texture2D gNormalMap : register(t1);
-Texture2D gShadowMap : register(t2);
 
 SamplerState gSamWrapLinear : register(s0);
 
@@ -23,7 +22,9 @@ struct VertexIn
     float3 NormalV : NORMALV;
     float2 Tex : TEXCOORD;
     float3 ShadowPosH : POS_SHADOW;
-    float3x3 TBN : TANGENT;
+    
+    float3x3 TBNW : TANGENTW;
+    float3x3 TBNV : TANGENTV;
 };
 
 struct PixelOut
@@ -40,24 +41,28 @@ PixelOut main(VertexIn pin)
 	PixelOut vout;
 
     float4 albedo = gColor;
-    float3 normal = pin.NormalW;
+    float3 normalW = pin.NormalW;
+    float3 normalV = pin.NormalV;
+    float gamma = 0.0f;
     
     if (gTexID & ALBEDO_MAP)
     {
         albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
+        gamma = 0.0f;
     }
     
     if (gTexID & NORMAL_MAP)
     {
-        float3 normalMapSample = 2.0f * gNormalMap.Sample(gSamWrapLinear, pin.Tex).rgb - 1.0f;
-        normal = mul(normalMapSample, pin.TBN);
+        normalW = mul(2.0f * gNormalMap.Sample(gSamWrapLinear, pin.Tex).rgb - 1.0f, pin.TBNW);
+        normalV = mul(2.0f * gNormalMap.Sample(gSamWrapLinear, pin.Tex).rgb - 1.0f, pin.TBNV);
+        gamma = 1.0f;
     }
 	
     vout.Albedo = albedo;
-    vout.Normal = float4(normal, 1.0f);
+    vout.Normal = float4(normalW, gamma);
     vout.Position = float4(pin.PosW, gMatID);
     vout.Shadow = float4(pin.ShadowPosH.xyz, 0.0f);
-    vout.Depth = float4(pin.NormalV.xyz, pin.PosV.z);
+    vout.Depth = float4(normalV, pin.PosV.z);
     
 	return vout;
 }

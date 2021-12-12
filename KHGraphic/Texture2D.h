@@ -1,11 +1,6 @@
 #pragma once
 #include "ResourceBase.h"
 
-#define BIND_DSV 0x00000001
-#define BIND_RTV 0x00000010
-#define BIND_SRV 0x00000100
-#define BIND_UAV 0x00001000
-
 typedef unsigned int Bind_Mask;
 
 class Texture2D : public ResourceBase
@@ -17,14 +12,13 @@ public:
 public:
 	void OnResize(int width, int height);
 	void SetRatio(float width_ratio, float height_ratio);
-	void SetResourceBind(Bind_Mask bind_type);
 
 public:
 	Bind_Mask GetBindType();
 	D3D11_TEXTURE2D_DESC* GetTextureDesc();
 
 protected:
-	Bind_Mask m_BindResource = 0x00000001;
+	Bind_Mask m_BindResource = 0x00000000;
 
 	D3D11_TEXTURE2D_DESC m_TexDesc;
 

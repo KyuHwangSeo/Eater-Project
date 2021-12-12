@@ -4,6 +4,7 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "GraphicState.h"
+#include "GraphicView.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
@@ -68,15 +69,14 @@ void ShadowPass::Create(int width, int height)
 	srvDesc.Texture2D.MostDetailedMip = 0;
 
 	// Shadow DepthStencilView 생성..
-	g_Factory->CreateDepthStencil<DS_Shadow>(&texDesc, &dsvDesc, &srvDesc);
+	g_Factory->CreateDepthStencil<DS_Shadow>(&texDesc, nullptr, &dsvDesc, &srvDesc);
 }
 
-void ShadowPass::Start()
+void ShadowPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_MeshShadowVS = g_Shader->GetShader("ShadowMeshVS");
 	m_SkinShadowVS = g_Shader->GetShader("ShadowSkinVS");
-	m_LightPS = g_Shader->GetShader("LightPS");
 	
 	m_ShadowDepthStencilView = g_Resource->GetDepthStencil<DS_Shadow>();
 	m_ShadowDepthStencilView->SetRatio(4.0f, 4.0f);
@@ -85,19 +85,13 @@ void ShadowPass::Start()
 	m_RasterizerState = g_Resource->GetRasterizerState<RS_Depth>()->Get();
 
 	// Shadow DepthStencilView 설정..
-	m_ShadowDSV = m_ShadowDepthStencilView->GetDSV();
-
-	// Shadow Map 등록..
-	m_LightPS->SetShaderResourceView<gShadowMap>(m_ShadowDepthStencilView->GetSRV());
+	m_ShadowDSV = m_ShadowDepthStencilView->GetDSV()->Get();
 }
 
 void ShadowPass::OnResize(int width, int height)
 {
 	// Shadow DepthStencilView 재설정..
-	m_ShadowDSV = m_ShadowDepthStencilView->GetDSV();
-
-	// Shadow Map 재등록..
-	m_LightPS->SetShaderResourceView<gShadowMap>(m_ShadowDepthStencilView->GetSRV());
+	m_ShadowDSV = m_ShadowDepthStencilView->GetDSV()->Get();
 }
 
 void ShadowPass::Release()
@@ -120,7 +114,7 @@ void ShadowPass::BeginRender()
 void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 {
 	Matrix world = mesh->mWorld;
-	Matrix view = *global->mLightVPT;
+	Matrix view = *global->mLightView;
 	Matrix proj = *global->mLightProj;
 
 	switch (mesh->ObjType)

@@ -48,12 +48,10 @@ void GraphicEngineManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalD
 	GEngine->ShadowRender(ObjManager->GetRenderQueue(), global);
 }
 
-void GraphicEngineManager::SSAORender(std::queue<MeshData*>* meshList, GlobalData* global)
+void GraphicEngineManager::SSAORender(GlobalData* global)
 {
-	//if (NowEngine != nullptr)
-	//{
-	//	NowEngine->SSAORender();
-	//}
+	//해당 엔진을 랜더링
+	GEngine->SSAORender(global);
 }
 
 void GraphicEngineManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)

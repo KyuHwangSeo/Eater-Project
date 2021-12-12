@@ -9,7 +9,7 @@ public:
 
 public:
 	void Create(int width, int height) override;
-	void Start() override;
+	void Start(int width, int height) override;
 
 	void OnResize(int width, int height) override;
 	void Release() override;
@@ -38,7 +38,6 @@ private:
 	RenderTarget* m_NormalRT;
 	RenderTarget* m_PositionRT;
 	RenderTarget* m_ShadowRT;
-	RenderTarget* m_SSAORT;
 
 	D3D11_VIEWPORT* m_ScreenViewport;
 };

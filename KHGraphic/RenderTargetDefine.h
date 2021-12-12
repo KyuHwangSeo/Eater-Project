@@ -7,6 +7,8 @@
 // Global RenderTarget
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+RANDER_TARGET(RT_BackBuffer)
+
 RANDER_TARGET(RT_Deffered_Albedo)
 RANDER_TARGET(RT_Deffered_Normal)
 RANDER_TARGET(RT_Deffered_Position)

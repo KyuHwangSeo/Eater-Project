@@ -7,6 +7,9 @@ typedef size_t Hash_Code;
 
 class RenderTarget;
 class DepthStencil;
+
+class RenderTargetView;
+class DepthStencilView;
 class ShaderResourceView;
 class UnorderedAccessView;
 
@@ -44,11 +47,17 @@ public:
 public:
 	// RenderTarget Get Function
 	template<typename T, Enable_Check<T> = NULL> RenderTarget* GetRenderTarget();
-	// DepthStencilView Get Function
+	// DepthStencil Get Function
 	template<typename T, Enable_Check<T> = NULL> DepthStencil* GetDepthStencil();
+
+public:
+	// RenderTargetView Get Function
+	template<typename T, Enable_Check<T> = NULL> RenderTargetView* GetRenderTargetView();
 	// DepthStencilView Get Function
+	template<typename T, Enable_Check<T> = NULL> DepthStencilView* GetDepthStencilView();
+	// ShaderResourceView Get Function
 	template<typename T, Enable_Check<T> = NULL> ShaderResourceView* GetShaderResourceView();
-	// DepthStencilView Get Function
+	// UnorderedAccessView Get Function
 	template<typename T, Enable_Check<T> = NULL> UnorderedAccessView* GetUnorderedAccessView();
 
 public:
@@ -71,6 +80,8 @@ private:
 	// Graphic View Resource Getter..
 	virtual RenderTarget* GetRenderTarget(Hash_Code hash_code) abstract;
 	virtual DepthStencil* GetDepthStencil(Hash_Code hash_code) abstract;
+	virtual RenderTargetView* GetRenderTargetView(Hash_Code hash_code) abstract;
+	virtual DepthStencilView* GetDepthStencilView(Hash_Code hash_code) abstract;
 	virtual ShaderResourceView* GetShaderResourceView(Hash_Code hash_code) abstract;
 	virtual UnorderedAccessView* GetUnorderedAccessView(Hash_Code hash_code) abstract;
 
@@ -106,10 +117,28 @@ inline DepthStencil* IGraphicResourceManager::GetDepthStencil()
 }
 
 template<typename T, Enable_Check<T>>
+inline DepthStencilView* IGraphicResourceManager::GetDepthStencilView()
+{
+	// Template Struct Resource Type Check..
+	assert(T::GetType() == eResourceType::DSV || T::GetType() == eResourceType::DS);
+
+	return GetDepthStencilView(T::GetHashCode());
+}
+
+template<typename T, Enable_Check<T>>
+inline RenderTargetView* IGraphicResourceManager::GetRenderTargetView()
+{
+	// Template Struct Resource Type Check..
+	assert(T::GetType() == eResourceType::RTV || T::GetType() == eResourceType::RT);
+	
+	return GetRenderTargetView(T::GetHashCode());
+}
+
+template<typename T, Enable_Check<T>>
 inline ShaderResourceView* IGraphicResourceManager::GetShaderResourceView()
 {
 	// Template Struct Resource Type Check..
-	assert(T::GetType() == eResourceType::SRV);
+	assert(T::GetType() == eResourceType::SRV || T::GetType() == eResourceType::RT || T::GetType() == eResourceType::DS);
 
 	return GetShaderResourceView(T::GetHashCode());
 }
@@ -118,7 +147,7 @@ template<typename T, Enable_Check<T>>
 inline UnorderedAccessView* IGraphicResourceManager::GetUnorderedAccessView()
 {
 	// Template Struct Resource Type Check..
-	assert(T::GetType() == eResourceType::UAV);
+	assert(T::GetType() == eResourceType::UAV || T::GetType() == eResourceType::RT);
 
 	return GetUnorderedAccessView(T::GetHashCode());
 }

@@ -93,14 +93,13 @@ void Camera::CreateProj(int winsizeX, int WinSizeY, bool ViewPoint)
 		0.5f, 0.5f, 0.0f, 1.0f);
 
 	//시야각
-	float mFovY	= 0.25f * 3.141592f;
+	float mFovY	= 0.25f * 3.1415926535f;
 	//뷰 공간 X:Y 가로세로비율
 	float mAspect = (float)winsizeX / (float)WinSizeY;
 	//근접평면 까지의 거리 0보다 커야됨
 	float mNearZ	= 0.1f;
 	//먼 평면 까지의 거리 0보다 커야됨
 	float mFarZ	= 4000.0f;
-
 
 	float mNearWindowHeight = 2.0f * mNearZ * tanf(0.5f * mFovY);
 	float mFarWindowHeight = 2.0f * mFarZ * tanf(0.5f * mFovY);
@@ -111,7 +110,7 @@ void Camera::CreateProj(int winsizeX, int WinSizeY, bool ViewPoint)
 		mProj_M = DirectX::XMMatrixPerspectiveFovLH(mFovY, mAspect, mNearZ, mFarZ);
 
 		//View TexSpace
-		mView_M = mProj_M * gTexSpace;
+		mViewTex_M = mProj_M * gTexSpace;
 	}
 	else
 	{
@@ -119,7 +118,7 @@ void Camera::CreateProj(int winsizeX, int WinSizeY, bool ViewPoint)
 		mProj_M = DirectX::XMMatrixOrthographicLH(mFovY, mAspect, mNearZ, mFarZ);
 
 		//View TexSpace
-		mView_M = mProj_M * gTexSpace;
+		mViewTex_M = mProj_M * gTexSpace;
 	}
 }
 
@@ -135,6 +134,9 @@ void Camera::CreateView()
 	DirectX::XMVECTOR L = XMLoadFloat3(&l_);
 	DirectX::XMVECTOR P = XMLoadFloat3(&tranform->Position);
 
+	L = XMVector3Normalize(L);
+	U = XMVector3Normalize(XMVector3Cross(L, R));
+	R = XMVector3Cross(U, L);
 
 	float x = DirectX::XMVectorGetX(DirectX::XMVector3Dot(P, R));
 	float y = DirectX::XMVectorGetX(DirectX::XMVector3Dot(P, U));
