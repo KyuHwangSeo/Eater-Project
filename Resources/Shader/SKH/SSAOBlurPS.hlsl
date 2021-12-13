@@ -53,8 +53,8 @@ float4 main(VertexIn pin) : SV_Target
 		// We discard such samples from the blur.
 		//
 
-		if (dot(neighborNormalDepth.xyz, centerNormalDepth.xyz) >= 0.8f &&
-			abs(neighborNormalDepth.a - centerNormalDepth.a) <= 0.2f)
+		if (dot(neighborNormalDepth.xyz, centerNormalDepth.xyz) >= 0.5f &&
+			abs(neighborNormalDepth.a - centerNormalDepth.a) <= 0.01f)
 		{
 			float weight = gWeights[i + gBlurRadius];
 

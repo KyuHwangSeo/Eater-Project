@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "EngineData.h"
 #include "DebugManager.h"
+#include "Rigidbody.h"
 
 Transform::Transform()
 {
@@ -19,10 +20,22 @@ Transform::Transform()
 
 	Load_World = DirectX::XMMatrixIdentity();
 	Load_Local = DirectX::XMMatrixIdentity();
+
+	isRigid = false;
 }
 
 Transform::~Transform()
 {
+
+}
+
+void Transform::Start()
+{
+	//물리충돌된 좌표를 받는다
+	if (gameobject->GetComponent<Rigidbody>() != nullptr ) 
+	{
+		isRigid = true;
+	}
 
 }
 
@@ -193,9 +206,14 @@ DirectX::XMMATRIX Transform::CreateXMRot4x4()
 	DirectX::XMMATRIX _Y = DirectX::XMMatrixRotationY(radY);
 	DirectX::XMMATRIX _R = DirectX::XMMatrixRotationZ(radZ);
 
-	//DirectX::XMMatrixRotationRollPitchYaw(radX, radY, radZ);
+	DirectX::XMMatrixRotationRollPitchYaw(radX, radY, radZ);
 
 	return _R * _Y * _P;
+}
+
+DirectX::XMMATRIX Transform::CreateXMRot4x4_Q()
+{
+	return XMMatrixRotationQuaternion(Q_Rotation);
 }
 
 DirectX::XMMATRIX Transform::CreateXMScl4x4()
@@ -212,8 +230,18 @@ DirectX::XMMATRIX Transform::CreateXMScl4x4()
 void Transform::UpdateWorldXM()
 {
 	PositionXM	= CreateXMPos4x4();
-	RotationXM	= CreateXMRot4x4();
 	ScaleXM		= CreateXMScl4x4();
+
+	if (isRigid == false)
+	{
+		RotationXM	= CreateXMRot4x4();
+	}
+	else
+	{
+		RotationXM = CreateXMRot4x4_Q();
+	}
+
+
 
 	DirectX::XMMATRIX Master = (ScaleXM * RotationXM * PositionXM);
 	if (Parent != nullptr)

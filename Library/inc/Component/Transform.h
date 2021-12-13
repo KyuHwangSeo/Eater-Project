@@ -14,6 +14,7 @@ public:
 	
 	
 	//가장먼저 실행되는 업데이트
+	void Start();
 	void TransformUpdate();
 
 public:
@@ -24,6 +25,7 @@ public:
 	//크기
 	DirectX::XMFLOAT3 Scale;
 
+	DirectX::SimpleMath::Quaternion Q_Rotation;
 	
 
 	///로컬 함수를 가져오기전에 SetLocalUpdate
@@ -35,7 +37,6 @@ public:
 	//로컬 앞방향 벡터를 가져온다
 	DirectX::XMFLOAT3 GetLocalPosition_Look();
 
-	
 	
 
 	//현재위치값에 값을 더해줌
@@ -76,6 +77,7 @@ private:
 	//현재 위치 회전 크기값을 가져와 행렬을 구한다
 	DirectX::XMMATRIX CreateXMPos4x4();
 	DirectX::XMMATRIX CreateXMRot4x4();
+	DirectX::XMMATRIX CreateXMRot4x4_Q();
 	DirectX::XMMATRIX CreateXMScl4x4();
 
 	///로컬 좌표들 현재위치에서 로컬방향으로 1만큼 움직인 좌표들
@@ -105,7 +107,8 @@ private:
 	//게임 오브젝트의 위치 회전 크기값을 모두곱한 월드 행렬
 	DirectX::XMMATRIX World_M;
 
-
+	//물리충돌된 좌표로 움직일것인지
+	bool isRigid;
 
 	///계층 구조에서 부모 객체 자식객체
 	Transform* Parent;

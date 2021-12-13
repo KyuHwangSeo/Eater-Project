@@ -187,7 +187,7 @@ void HsGraphic::CreateDevice()
 
 void HsGraphic::BeginRender()
 {
-	XMVECTORF32 DeepDarkGray = { 0, 0, 0, 1.0f };
+	XMVECTORF32 DeepDarkGray = { 0.15f, 0.15f, 0.15f, 1.0f };
 	DeviceContext->ClearRenderTargetView(mRenderTargetView, DeepDarkGray);
 	DeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

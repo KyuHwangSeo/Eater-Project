@@ -6,7 +6,6 @@ x64/
 *.csproj
 *.DotSettings
 *.recipe
-*.dll
 *.cso
 
 # Prerequisites

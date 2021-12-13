@@ -236,6 +236,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClInclude Include="..\..\Library\inc\EngineData.h" />
     <ClInclude Include="..\..\Library\inc\GraphicsEngine.h" />
     <ClInclude Include="BaseManager.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="ComponentHeader.h" />
     <ClInclude Include="DebugManager.h" />
     <ClInclude Include="Delegate.h" />
@@ -250,6 +251,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClInclude Include="Export\MainHeader.h" />
     <ClInclude Include="Export\MeshFilter.h" />
     <ClInclude Include="Export\ResourcesData.h" />
+    <ClInclude Include="Export\Rigidbody.h" />
     <ClInclude Include="Export\Scene.h" />
     <ClInclude Include="Export\SkinningFilter.h" />
     <ClInclude Include="Export\Transform.h" />
@@ -270,6 +272,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClCompile Include="AnimationController.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BaseManager.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DebugManager.cpp" />
@@ -288,6 +291,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="LoadManager.cpp" />
     <ClCompile Include="PhysManager.cpp" />
+    <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkinningFilter.cpp" />

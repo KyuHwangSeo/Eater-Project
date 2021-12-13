@@ -1,5 +1,7 @@
 #include "PhysManager.h"
-#include "PhysEngine.h"
+#include "PhysX_API.h"
+#include "PhysData.h"
+
 PhysManager::PhysManager()
 {
 	Phys = nullptr;
@@ -12,12 +14,16 @@ PhysManager::~PhysManager()
 
 void PhysManager::Initialize()
 {
-	Phys = new PhysEngine();
-	Phys->Initialize();
+	PhysX_Initialize(4,true);
 }
 
 void PhysManager::Release()
 {
-	Phys->Release();
+	PhysX_Release();
+}
+
+void PhysManager::Update(float m_Time)
+{
+	PhysX_Update(m_Time);
 }
 

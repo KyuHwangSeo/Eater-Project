@@ -148,7 +148,9 @@ copy/Y "$(SolutionDir)Library\lib\PhysX\*dll" "$(TargetDir)"
 copy/Y "$(SolutionDir)Library\lib\PhysX\*dll" "$(TargetDir)"
 
 copy /Y "$(ProjectDir)PhysEngineDLL.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)PhysEngine.h" "$(SolutionDir)Library\inc"</Command>
+copy /Y "$(ProjectDir)PhysX_API.h" "$(SolutionDir)Library\inc"
+copy /Y "$(ProjectDir)PhysData.h" "$(SolutionDir)Library\inc"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -181,17 +183,32 @@ copy/Y "$(SolutionDir)Library\lib\PhysX\*dll" "$(TargetDir)"
 copy/Y "$(SolutionDir)Library\lib\PhysX\*dll" "$(TargetDir)"
 
 copy /Y "$(ProjectDir)PhysEngineDLL.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)PhysEngine.h" "$(SolutionDir)Library\inc"</Command>
+copy /Y "$(ProjectDir)PhysX_API.h" "$(SolutionDir)Library\inc"
+copy /Y "$(ProjectDir)PhysData.h" "$(SolutionDir)Library\inc"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="PhysData.h" />
+    <ClInclude Include="Factory.h" />
+    <ClInclude Include="PhysX_BoxCollider.h" />
+    <ClInclude Include="Broad.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="PhysEngine.h" />
     <ClInclude Include="PhysEngineDLL.h" />
+    <ClInclude Include="PhysX_API.h" />
+    <ClInclude Include="PhysX_Collider.h" />
+    <ClInclude Include="PhysX_Rigidbody.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Factory.cpp" />
+    <ClCompile Include="PhysX_BoxCollider.cpp" />
+    <ClCompile Include="Broad.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="PhysEngine.cpp" />
+    <ClCompile Include="PhysX_API.cpp" />
+    <ClCompile Include="PhysX_Collider.cpp" />
+    <ClCompile Include="PhysX_Rigidbody.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

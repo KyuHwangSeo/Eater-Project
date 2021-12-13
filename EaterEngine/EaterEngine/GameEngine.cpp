@@ -101,6 +101,7 @@ void GameEngine::Update()
 	mSceneManager->Update();
 	mObjectManager->PlayUpdate();
 	mDebugManager->Update();
+	mPhysManager->Update(mTimeManager->DeltaTime());
 	
 
 	//컨퍼넌트 업데이트 끝

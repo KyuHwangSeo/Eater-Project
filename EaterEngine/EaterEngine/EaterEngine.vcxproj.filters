@@ -106,6 +106,12 @@
     <Filter Include="소스 파일\Manager\PhysManager">
       <UniqueIdentifier>{1045462d-8dcb-4189-9e4f-6ffb8c70e6dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Component\Collider\BoxCollider">
+      <UniqueIdentifier>{883ecd3a-b423-477b-bcf1-7bffdfa5278b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\Rigidbody">
+      <UniqueIdentifier>{d2678508-d693-4487-b08e-f8610a35fc5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -204,6 +210,12 @@
     <ClInclude Include="PhysManager.h">
       <Filter>소스 파일\Manager\PhysManager</Filter>
     </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>소스 파일\Component\Collider\BoxCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\Rigidbody.h">
+      <Filter>소스 파일\Component\Rigidbody</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -283,6 +295,12 @@
     </ClCompile>
     <ClCompile Include="PhysManager.cpp">
       <Filter>소스 파일\Manager\PhysManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>소스 파일\Component\Collider\BoxCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="Rigidbody.cpp">
+      <Filter>소스 파일\Component\Rigidbody</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -111,10 +111,10 @@ struct CB_SsaoOption : public cbSsaoOption
 {
 	DirectX::SimpleMath::Vector4 gOffsetVectors[14];
 
-	float    gOcclusionRadius = 0.5f;
-	float    gOcclusionFadeStart = 0.2f;
-	float    gOcclusionFadeEnd = 2.0f;
-	float    gSurfaceEpsilon = 0.05f;
+	float    gOcclusionRadius = 0.1f;
+	float    gOcclusionFadeStart = 0.01f;
+	float    gOcclusionFadeEnd = 1.0f;
+	float    gSurfaceEpsilon = 0.1f;
 };
 
 /// Resource Hash 재등록 방지 Define

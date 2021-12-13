@@ -19,6 +19,7 @@ void intro::Awake()
 
 	LoadMesh("Table");
 	LoadMesh("Field");
+	LoadMesh("CHARACTER_idle", true, false);
 	LoadMesh("Player_Run", false, false);
 	LoadMesh("Player_Roll", false, true);
 	LoadMesh("Player_Idle", false, true);
@@ -40,6 +41,16 @@ void intro::Awake()
 	testobj->AddComponent<DirectionLight>();
 
 	///캐릭터
+	testobj = Instance("CHARACTER");
+	testobj->AddComponent<AnimationController>();
+	testobj->AddComponent<MeshFilter>();
+	testobj->GetComponent<MeshFilter>()->SetMeshName("CHARACTER");
+	testobj->GetComponent<MeshFilter>()->SetAnimationName("CHARACTER");
+	testobj->GetComponent<AnimationController>()->Choice("idle");
+	testobj->GetTransform()->Scale = { 0.2f, 0.2f, 0.2f };
+	testobj->GetTransform()->Position = { 100.0f, 0.0f, 0.0f };
+
+	///캐릭터
 	testobj = Instance("Player");
 	testobj->AddComponent<AnimationController>();
 	testobj->AddComponent<MeshFilter>();
@@ -49,6 +60,12 @@ void intro::Awake()
 	testobj = Instance("Field");
 	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
 	testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
+
+	testobj = Instance("Field1");
+	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
+	testobj->GetComponent<Transform>()->Rotation = { 90.0f, 0.0f, 0.0f };
+	testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
+	testobj->GetComponent<Transform>()->Position = { 0.0f, 2.5f, 2.5f };
 
 	testobj = Instance("Table");
 	testobj->AddComponent<MeshFilter>()->SetMeshName("Table");
