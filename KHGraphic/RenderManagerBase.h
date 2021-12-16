@@ -19,6 +19,8 @@ public:
 	virtual void Initialize(int width, int height) abstract;
 	virtual void Release() abstract;
 
+	// Render Option Pass..
+	virtual void BeginRender(UINT& renderOption) abstract;
 	// Main Render Pass..
 	virtual void Render(std::queue<MeshData*>* meshList, GlobalData* global) abstract;
 	// Shader Render Pass..

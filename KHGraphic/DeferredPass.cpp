@@ -108,9 +108,11 @@ void DeferredPass::Create(int width, int height)
 void DeferredPass::Start(int width, int height)
 {
 	// Shader 설정..
-	m_MeshVS = g_Shader->GetShader("MeshVS");
-	m_SkinVS = g_Shader->GetShader("SkinVS");
-	m_DeferredPS = g_Shader->GetShader("DeferredPS");
+	m_MeshVS = g_Shader->GetShader("Mesh_VS");
+	m_SkinVS = g_Shader->GetShader("Skin_VS");
+	m_TerrainVS = g_Shader->GetShader("Terrain_VS");
+	m_DeferredPS = g_Shader->GetShader("Deferred_PS");
+	m_TerrainPS = g_Shader->GetShader("Terrain_PS");
 
 	// DepthStencilView 설정..
 	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
@@ -196,6 +198,7 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 	Matrix view = *global->mCamView;
 	Matrix proj = *global->mCamProj;
 	Matrix shadowTrans = *global->mLightVPT;
+	MaterialBuffer* mat = *mesh->Material_List.begin();
 
 	switch (mesh->ObjType)
 	{
@@ -211,6 +214,36 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 
 		// Vertex Shader Update..
 		m_MeshVS->Update();
+	}
+	break;
+	case OBJECT_TYPE::TERRAIN:
+	{
+		CB_MeshObject objectBuf;
+		objectBuf.gWorld = world;
+		objectBuf.gWorldView = world * view;
+		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gShadowTransform = world * shadowTrans;
+		objectBuf.gTexTransform = mesh->mTexTM;
+		m_TerrainVS->SetConstantBuffer(objectBuf);
+
+		// Vertex Shader Update..
+		m_TerrainVS->Update();
+
+		MaterialBuffer* layer1 = mesh->Material_List[1];
+		MaterialBuffer* layer2 = mesh->Material_List[2];
+		m_TerrainPS->SetShaderResourceView<gDiffuseLayer1>((ID3D11ShaderResourceView*)layer1->Albedo->TextureBufferPointer);
+		m_TerrainPS->SetShaderResourceView<gNormalLayer1>((ID3D11ShaderResourceView*)layer1->Normal->TextureBufferPointer);
+		m_TerrainPS->SetShaderResourceView<gDiffuseLayer2>((ID3D11ShaderResourceView*)layer2->Albedo->TextureBufferPointer);
+		m_TerrainPS->SetShaderResourceView<gNormalLayer2>((ID3D11ShaderResourceView*)layer2->Normal->TextureBufferPointer);
+
+		CB_Material materialBuf;
+		materialBuf.gMatID = mat->Material_Index;
+		m_TerrainPS->SetConstantBuffer(materialBuf);
+
+		// Pixel Shader Update..
+		m_TerrainPS->Update();
+
+		return;
 	}
 	break;
 	case OBJECT_TYPE::SKINNING:
@@ -237,17 +270,17 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 	}
 
 	CB_Material materialBuf;
-	materialBuf.gMatID = mesh->Material_Index;
+	materialBuf.gMatID = mat->Material_Index;
 	
-	if (mesh->Albedo)
+	if (mat->Albedo)
 	{
  		materialBuf.gTexID |= ALBEDO_MAP;
-		m_DeferredPS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mesh->Albedo->TextureBufferPointer);
+		m_DeferredPS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mat->Albedo->TextureBufferPointer);
 	}
-	if (mesh->Normal)
+	if (mat->Normal)
 	{
 		materialBuf.gTexID |= NORMAL_MAP;
-		m_DeferredPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mesh->Normal->TextureBufferPointer);
+		m_DeferredPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mat->Normal->TextureBufferPointer);
 	}
 
 	m_DeferredPS->SetConstantBuffer(materialBuf);

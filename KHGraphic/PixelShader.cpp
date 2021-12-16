@@ -7,10 +7,10 @@
 #include <sstream>
 #include <fstream>
 
-PixelShader::PixelShader(const char* fileName)
+PixelShader::PixelShader(const char* fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines)
 	:ShaderBase(eShaderType::PIXEL)
 {
-	LoadShader(g_ShaderRoute + fileName);
+	LoadShader(g_ShaderRoute + fileName, entry_point, shader_model, pDefines);
 }
 
 PixelShader::~PixelShader()
@@ -18,8 +18,9 @@ PixelShader::~PixelShader()
 
 }
 
-void PixelShader::LoadShader(std::string fileName)
+void PixelShader::LoadShader(std::string fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines)
 {
+	ID3DBlob* shaderBlob = nullptr;
 	ID3D11ShaderReflection* pReflector = nullptr;
 	ShaderResourceHashTable* resource_table = ShaderResourceHashTable::Get();
 	
@@ -28,19 +29,16 @@ void PixelShader::LoadShader(std::string fileName)
 	size_t srv_register_slot = 0;		// ShaderResourceView Max Register Slot
 	size_t hash_key = 0;				// Resource Hash Code
 
+	std::wstring wPath(fileName.begin(), fileName.end());
+
 	// Pixel HLSL Load..
-	std::ifstream fin(fileName, std::ios::binary);
+	CreateShader(wPath.c_str(), pDefines, entry_point, shader_model, &shaderBlob);
 
-	fin.seekg(0, std::ios_base::end);
-	int size = (int)fin.tellg();
-	fin.seekg(0, std::ios_base::beg);
-	std::vector<char> pS(size);
-	fin.read(&pS[0], size);
-	fin.close();
+	// Create Pixel Shader..
+	HR(g_Device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &m_PS));
 
-	HR(g_Device->CreatePixelShader(&pS[0], size, nullptr, &m_PS));
-
-	D3DReflect(&pS[0], size, IID_ID3D11ShaderReflection, (void**)&pReflector);
+	// Create Reflector..
+	D3DReflect(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&pReflector);
 
 	D3D11_SHADER_DESC shaderDesc;
 	pReflector->GetDesc(&shaderDesc);

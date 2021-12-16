@@ -13,6 +13,7 @@ public:
 public:
 	void Initialize(HWND hwnd, int screenWidth, int screenHeight) override;
 
+	void BeginRender(UINT& renderOption) override;
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void SSAORender(GlobalData* global) override;
@@ -25,6 +26,7 @@ public:
 
 	Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mesh) override;
 	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
+	Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) override;
 	TextureBuffer* CreateTextureBuffer(std::string path) override;
 
 private:

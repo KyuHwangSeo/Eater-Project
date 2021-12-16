@@ -9,9 +9,9 @@ public:
 public:
 	void Initialize() override;
 	void Release() override;
-	ParserData::Model* LoadModel(std::string fileName, bool scaling, bool onlyAni = false) override;
+	ParserData::Model* LoadModel(std::string fileName, UINT state) override;
 
-	void SceneSetting(std::string fileName, bool scaling, bool onlyAni);
+	void SceneSetting(std::string fileName);
 	void CreateModel();
 	void ResetData();
 
@@ -28,6 +28,7 @@ public:
 
 	void OptimizeData();
 	void OptimizeVertex(ParserData::Mesh* pMesh);
+	void CopyOriginalVertex(ParserData::Mesh* pMesh);
 	void RecombinationTM(ParserData::Mesh* pMesh);
 
 	DirectX::SimpleMath::Vector2 ConvertVector2(fbxsdk::FbxVector2 v2);
@@ -81,7 +82,7 @@ private:
 	int m_StartTime;		// Animation Start Frame
 	float m_TickFrame;		// One Frame Time
 
-	bool m_OnlyAni = false;
+	UINT m_ParsingMode = 0;
 };
 
 inline DirectX::SimpleMath::Vector2 FBXParser::ConvertVector2(fbxsdk::FbxVector2 v2)

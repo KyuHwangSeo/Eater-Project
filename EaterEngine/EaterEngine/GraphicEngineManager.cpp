@@ -12,7 +12,7 @@ GraphicEngineManager::GraphicEngineManager()
 
 GraphicEngineManager::~GraphicEngineManager()
 {
-	
+
 
 }
 
@@ -28,6 +28,14 @@ void GraphicEngineManager::Initialize(HWND Hwnd, int WinSizeWidth, int WinSizeHe
 
 	// Graphic Engine Initialize..
 	GEngine->Initialize(Hwnd, WinSizeWidth, WinSizeHeight);
+}
+
+void GraphicEngineManager::BeginRender(UINT& renderOption)
+{
+	if (renderOption)
+	{
+		GEngine->BeginRender(renderOption);
+	}
 }
 
 void GraphicEngineManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -83,6 +91,12 @@ Vertexbuffer* GraphicEngineManager::CreateVertexBuffer(ParserData::Mesh* mModel)
 {
 	//버텍스 버퍼 생성
 	return GEngine->CreateVertexBuffer(mModel);
+}
+
+Vertexbuffer* GraphicEngineManager::CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName)
+{
+	//버텍스 버퍼 생성
+	return GEngine->CreateTerrainVertexBuffer(mModel, maskName);
 }
 
 TextureBuffer* GraphicEngineManager::CreateTextureBuffer(std::string Name)

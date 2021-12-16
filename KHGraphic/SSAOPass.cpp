@@ -67,10 +67,10 @@ void SSAOPass::Create(int width, int height)
 void SSAOPass::Start(int width, int height)
 {
 	// Shader 설정..
-	m_SsaoVS = g_Shader->GetShader("SSAOVS");
-	m_SsaoPS = g_Shader->GetShader("SSAOPS");
-	m_BlurVS = g_Shader->GetShader("SSAOBlurVS");
-	m_BlurPS = g_Shader->GetShader("SSAOBlurPS");
+	m_SsaoVS = g_Shader->GetShader("SSAO_VS");
+	m_SsaoPS = g_Shader->GetShader("SSAO_PS");
+	m_BlurVS = g_Shader->GetShader("SSAOBlur_VS");
+	m_BlurPS = g_Shader->GetShader("SSAOBlur_PS");
 
 	// Buffer 설정..
 	m_SsaoBuffer = g_Resource->GetBuffer<BD_SSAOScreen>();
@@ -136,6 +136,12 @@ void SSAOPass::OnResize(int width, int height)
 void SSAOPass::Release()
 {
 
+}
+
+void SSAOPass::Reset()
+{
+	g_Context->ClearRenderTargetView(m_SsaoRTV, reinterpret_cast<const float*>(&DXColors::White));
+	g_Context->ClearRenderTargetView(m_SsaoBlurRTV, reinterpret_cast<const float*>(&DXColors::White));
 }
 
 void SSAOPass::BeginRender()
@@ -252,6 +258,11 @@ void SSAOPass::SetOffsetVectors()
 		XMStoreFloat4(&option.gOffsetVectors[i], v);
 	}
 	
+	option.gOcclusionRadius = 0.1f;
+	option.gOcclusionFadeStart = 0.01f;
+	option.gOcclusionFadeEnd = 1.0f;
+	option.gSurfaceEpsilon = 0.1f;
+
 	// SSAO Option Constant Buffer Update..
 	m_SsaoPS->SetConstantBuffer(option);
 }

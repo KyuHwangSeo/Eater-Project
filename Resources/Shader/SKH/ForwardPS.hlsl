@@ -47,7 +47,7 @@ struct PixelIn
     float3x3 TBN : TANGENT;
 };
 
-float4 main(PixelIn pin) : SV_Target0
+float4 Forward_PS(PixelIn pin) : SV_Target0
 {
     float4 albedo = gColor;
     float3 normal = pin.NormalW;

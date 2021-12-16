@@ -65,21 +65,18 @@ namespace ParserData
 
 	inline CMaterial::CMaterial()
 	{
+		m_TextureBind			= 0;
+
 		m_MaterialNumber		= 0;
 		m_Material_Shininess	= 0.0f;
 		m_Material_Transparency = 0.0f;
 		m_Material_Reflectivity = 0.0f;
-
-		m_IsDiffuseMap	= false;
-		m_IsBumpMap		= false;
-		m_IsSpecularMap = false;
-		m_IsShineMap	= false;
 	}
 
 	inline CMaterial::~CMaterial()
 	{
 		m_DiffuseMap	= nullptr;
-		m_BumpMap		= nullptr;
+		m_NormalMap		= nullptr;
 		m_SpecularMap	= nullptr;
 		m_ShineMap		= nullptr;
 
@@ -93,12 +90,11 @@ namespace ParserData
 
 	inline Mesh::Mesh()
 	{
+		m_MeshType			= STATIC_MESH;
 		m_MaterialData		= nullptr;
 		m_Animation			= nullptr;
 
 		m_TopNode			= false;
-		m_IsSkinningObject	= false;
-		m_IsBone			= false;
 	}
 
 	inline Mesh::~Mesh()

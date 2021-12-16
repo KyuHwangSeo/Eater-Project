@@ -1,8 +1,10 @@
 #pragma once
 #include "Scene.h"
 
-
 class GameObject;
+class Transform;
+class MeshFilter;
+class Rigidbody;
 class  intro :public Scene
 {
 public:
@@ -12,11 +14,10 @@ public:
 	virtual void Start();
 	virtual void Update();
 	virtual void End();
-
-	void CreatePlayer();
-	void CreateLignt();
-	void CreateCam();
 private:
 	GameObject* testobj;
+	Transform* Tr;
+	Rigidbody* Rig;
+	MeshFilter* Mf;
 };
 

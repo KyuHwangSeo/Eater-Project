@@ -51,10 +51,15 @@ void EndEngine()
 	gGameEngine->PushScene(mSceneTemp, SceneName);
 }
 
- void LoadMesh(std::string mMeshName, bool Scale,bool LoadAnime)
+ void LoadMesh(std::string mMeshName, UINT parsingMode)
 {
-	gGameEngine->LoadMesh(mMeshName,Scale,LoadAnime);
+	gGameEngine->LoadMesh(mMeshName, parsingMode);
 }
+
+ void LoadTerrainMesh(std::string mMeshName, std::string maskName, UINT parsingMode)
+ {
+	 gGameEngine->LoadTerrain(mMeshName, maskName, parsingMode);
+ }
 
 ///로드 관련
  void LoadMeshPath(std::string mPath)

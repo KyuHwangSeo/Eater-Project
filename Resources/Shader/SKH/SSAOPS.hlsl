@@ -63,7 +63,7 @@ float OcclusionFunction(float distZ)
     return occlusion;
 }
 
-float4 main(VertexIn pin) : SV_Target
+float4 SSAO_PS(VertexIn pin) : SV_Target
 {
 	// p -- the point we are computing the ambient occlusion for.
 	// n -- normal vector at p.

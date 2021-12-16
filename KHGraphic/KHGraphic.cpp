@@ -48,6 +48,11 @@ void KHGraphic::Initialize(HWND hwnd, int screenWidth, int screenHeight)
 	m_RenderManager = renderer;
 }
 
+void KHGraphic::BeginRender(UINT& renderOption)
+{
+	m_RenderManager->BeginRender(renderOption);
+}
+
 void KHGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 	m_RenderManager->Render(meshList, global);
@@ -96,6 +101,11 @@ Indexbuffer* KHGraphic::CreateIndexBuffer(ParserData::Mesh* mesh)
 Vertexbuffer* KHGraphic::CreateVertexBuffer(ParserData::Mesh* mesh)
 {
 	return m_ResourceFactory->CreateVertexBuffer(mesh);
+}
+
+Vertexbuffer* KHGraphic::CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName)
+{
+	return m_ResourceFactory->CreateTerrainVertexBuffer(mesh, maskName);
 }
 
 TextureBuffer* KHGraphic::CreateTextureBuffer(std::string path)

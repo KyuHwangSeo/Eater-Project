@@ -1,24 +1,50 @@
 #pragma once
+#include <string>
 #include "Component.h"
 #include "EaterEngineDLL.h"
-#include "LightHelper.h"
 
-class Material : public Component
+class MeshData;
+class MaterialBuffer;
+class LoadMeshData;
+class TextureBuffer;
+class MaterialManager;
+
+class Material
 {
 public:
 	Material();
 	~Material();
 
 public:
-	void SetMaterialIndex(UINT index);
-	UINT GetMaterialIndex();
+	friend class MaterialManager;
 
-	void SetMaterialData(MaterialData matData);
-	MaterialData GetMaterialData();
+public:
+	static void SetManager(MaterialManager* mat);
+
+public:
+	void SetMeshData(MeshData* meshData);
+	void SetMaterialIndex(UINT index);
+
+	void PushMaterialData(LoadMeshData* mesh);
+
+	void SetTexTransform(DirectX::SimpleMath::Vector3 scale);
+	void SetTexTransform(float x, float y, float z);
+
+	void SetDiffuseMap(std::string diffuseName);
+	void SetNormalMap(std::string noramlName);
+
+	void SetBaseColor(DirectX::SimpleMath::Vector4 color);
+	void SetAddColor(DirectX::SimpleMath::Vector4 color);
+
+public:
+	UINT GetMaterialIndex();
+	MaterialBuffer* GetMaterialData();
 
 private:
-	UINT m_Material_Index;
+	static MaterialManager* MAT_Manager;
 
-	MaterialData m_MaterialData;
+	MeshData* m_MeshData;
+
+	MaterialBuffer* MaterialBuffers;
 };
 

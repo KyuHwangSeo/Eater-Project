@@ -31,7 +31,6 @@ public:
 public:
 	std::string Name;						//이름
 
-
 	MeshData* OneMeshData;					//그래픽 엔진으로 넘겨줄 데이터
 	Transform* transform;					//기본적으로 생성해주는 Transform 커너넌트
 public:
@@ -85,58 +84,64 @@ inline T* GameObject::AddComponent(typename std::enable_if<std::is_base_of<Compo
 	//이함수는 무조건 Component를 상속받은 클래스만 들어올수있다
 	//그래서 Component 안에 함수만 사용함
 
-	T* ConponentBox = new T();
+	T* ComponentBox = new T();
+
 	//생성한 컨퍼넌트를 리스트에 넣는다
-	ComponentList.push_back(ConponentBox);
-	ConponentBox->gameobject = this;
+	ComponentList.push_back(ComponentBox);
+
+	//게임오브젝트 설정
+	ComponentBox->gameobject = this;
+
+	//게임오브젝트 추가 데이터 설정
+	ComponentBox->SetObjectData();
 
 	//나중에 이타입으로 찾아서 가져올수있도록 타입 설정
-	ConponentBox->ComponentType = typeid(T).hash_code();
+	ComponentBox->ComponentType = typeid(T).hash_code();
 
 	///오버라이딩 확인 각각에맞는 함수포인터 리스트에 넣는다 
 	//Awake
 	if (typeid(&Component::Awake).hash_code() != typeid(&T::Awake).hash_code())
 	{
-		PushComponentFunction(ConponentBox, AWAKE);
+		PushComponentFunction(ComponentBox, AWAKE);
 	}
 
 	//Start
 	if (typeid(&Component::Start).hash_code() != typeid(&T::Start).hash_code())
 	{
-		PushComponentFunction(ConponentBox, START);
+		PushComponentFunction(ComponentBox, START);
 	}
 
 	//StartUpdate
 	if (typeid(&Component::StartUpdate).hash_code() != typeid(&T::StartUpdate).hash_code())
 	{
-		PushComponentFunction(ConponentBox, START_UPDATE);
+		PushComponentFunction(ComponentBox, START_UPDATE);
 	}
 
 	//이동 행렬
 	if (typeid(&Component::TransformUpdate).hash_code() != typeid(&T::TransformUpdate).hash_code())
 	{
-		PushComponentFunction(ConponentBox, Transform_UPDATE);
+		PushComponentFunction(ComponentBox, Transform_UPDATE);
 	}
 
 	//물리 
 	if (typeid(&Component::PhysicsUpdate).hash_code() != typeid(&T::PhysicsUpdate).hash_code())
 	{
-		PushComponentFunction(ConponentBox, Physics_UPDATE);
+		PushComponentFunction(ComponentBox, Physics_UPDATE);
 	}
 
 	//DefaultUpdate
 	if (typeid(&Component::Update).hash_code() != typeid(&T::Update).hash_code())
 	{
-		PushComponentFunction(ConponentBox, UPDATE);
+		PushComponentFunction(ComponentBox, UPDATE);
 	}
 
 	//EndUpdate
 	if (typeid(&Component::EndUpdate).hash_code() != typeid(&T::EndUpdate).hash_code())
 	{
-		PushComponentFunction(ConponentBox, END_UPDATE);
+		PushComponentFunction(ComponentBox, END_UPDATE);
 	}
 
-	return ConponentBox;
+	return ComponentBox;
 }
 
 template<typename T>

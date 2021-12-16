@@ -75,8 +75,8 @@ void ShadowPass::Create(int width, int height)
 void ShadowPass::Start(int width, int height)
 {
 	// Shader ¼³Á¤..
-	m_MeshShadowVS = g_Shader->GetShader("ShadowMeshVS");
-	m_SkinShadowVS = g_Shader->GetShader("ShadowSkinVS");
+	m_MeshShadowVS = g_Shader->GetShader("MeshShadow_VS");
+	m_SkinShadowVS = g_Shader->GetShader("SkinShadow_VS");
 	
 	m_ShadowDepthStencilView = g_Resource->GetDepthStencil<DS_Shadow>();
 	m_ShadowDepthStencilView->SetRatio(4.0f, 4.0f);
@@ -97,6 +97,11 @@ void ShadowPass::OnResize(int width, int height)
 void ShadowPass::Release()
 {
 
+}
+
+void ShadowPass::Reset()
+{
+	g_Context->ClearDepthStencilView(m_ShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void ShadowPass::BeginRender()
@@ -120,6 +125,7 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 	switch (mesh->ObjType)
 	{
 	case OBJECT_TYPE::BASE:
+	case OBJECT_TYPE::TERRAIN:
 	{
 		CB_ShadowMeshObject shadowBuf;
 		shadowBuf.gWorldViewProj = world * view * proj;

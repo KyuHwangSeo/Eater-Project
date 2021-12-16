@@ -9,10 +9,9 @@
 
 #include <Windows.h>
 
-// LEHIDE
 //#include <xnamath.h>
-#include <DirectXMath.h>
-#include "SimpleMath.h"
+//#include <DirectXMath.h>
+//#include "SimpleMath.h"
 
 // Note: Make sure structure alignment agrees with HLSL structure padding rules. 
 //   Elements are packed into 4D vectors with the restriction that an element
@@ -67,24 +66,6 @@ struct SpotLightData
 	float Pad; // Pad the last float so we can set an array of lights if we wanted.
 };
 
-struct MaterialData
-{
-	MaterialData() = default;
-
-	DirectX::SimpleMath::Vector4 Ambient;
-	DirectX::SimpleMath::Vector4 Diffuse;
-	DirectX::SimpleMath::Vector4 Specular; // w = SpecPower
-	DirectX::SimpleMath::Vector4 Reflect;
-
-	bool operator==(MaterialData mat)
-	{
-		if (Ambient == mat.Ambient && Diffuse == mat.Diffuse && Specular == mat.Specular && Reflect == mat.Reflect)
-			return true;
-		else
-			return false;
-	}
-};
-
 struct LightData
 {
 	DirectionalLightData* DirLights[3];
@@ -96,4 +77,18 @@ struct LightData
 	UINT gSpotLightCount;
 };
 
+struct MaterialData
+{
+	MaterialData() = default;
+
+	DirectX::SimpleMath::Vector4 Ambient	= DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	DirectX::SimpleMath::Vector4 Diffuse	= DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
+	DirectX::SimpleMath::Vector4 Specular	= DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f); // w = SpecPower
+	DirectX::SimpleMath::Vector4 Reflect	= DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
+
+	bool operator==(const MaterialData& mat)
+	{
+		return (Ambient == mat.Ambient && Diffuse == mat.Diffuse && Specular == mat.Specular && Reflect == mat.Reflect);
+	}
+};
 #endif // LIGHTHELPER_H

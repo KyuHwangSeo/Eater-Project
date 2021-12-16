@@ -1,5 +1,6 @@
 #include "DirectDefine.h"
 #include "ShaderBase.h"
+#include "CompilerDefine.h"
 
 Microsoft::WRL::ComPtr<ID3D11Device> IShader::g_Device = nullptr;
 Microsoft::WRL::ComPtr<ID3D11DeviceContext> IShader::g_DeviceContext = nullptr;
@@ -60,6 +61,19 @@ void ShaderBase::Release()
 	m_SamplerList.clear();
 	m_ConstantBufferList.clear();
 	m_SRVList.clear();
+}
+
+void ShaderBase::CreateShader(const wchar_t* wPath, const D3D_SHADER_MACRO* pDefines, LPCSTR entry_point, LPCSTR shader_model, ID3DBlob** ppShader)
+{
+	//플래그 설정
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if defined(DEBUG) || defined(_DEBUG)
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+	dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif 
+	//dwShaderFlags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
+
+	HR(D3DCompileFromFile(wPath, pDefines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry_point, shader_model, dwShaderFlags, NULL, ppShader, NULL));
 }
 
 void ShaderBase::SetSamplerState(Hash_Code hash_code, ID3D11SamplerState* sampler)

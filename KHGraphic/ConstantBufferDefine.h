@@ -1,7 +1,8 @@
 #pragma once
 #include "SimpleMath.h"
-#include "LightHelper.h"
 #include "HashBase.h"
+#include "LightHelper.h"
+#include "EngineData.h"
 
 #define CONSTANT_BUFFER(ClassName) CREATE_HASH_CLASS(ClassName, eResourceType::CB) RESOURCE_PUSH(ClassName, eResourceType::CB)
 

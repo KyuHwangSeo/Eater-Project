@@ -5,6 +5,7 @@
 interface ID3D11Graphic;
 class BasicRenderTarget;
 class ComputeRenderTarget;
+class ImageParser;
 
 class GraphicResourceFactory : public IGraphicResourceFactory
 {
@@ -35,6 +36,7 @@ private:
 
 public:
 	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
+	Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) override;
 	Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mesh) override;
 	TextureBuffer* CreateTextureBuffer(std::string path) override;
 
@@ -44,7 +46,8 @@ public:
 
 private:
 	template<typename T>
-	Vertexbuffer* CreateMeshVertexBuffer(ParserData::Mesh* mesh);
+	Vertexbuffer* CreateMeshVB(ParserData::Mesh* mesh);
+	Vertexbuffer* CreateTerrainVB(ParserData::Mesh* mesh, std::string maskName);
 
 	void CreateMainRenderTarget(Hash_Code hash_Code, UINT width, UINT height);
 
@@ -61,6 +64,7 @@ private:
 
 private:
 	ID3D11Graphic* m_Graphic;
+	ImageParser* m_Parser;
 	IShaderManager* m_ShaderManager;
 	IGraphicResourceManager* m_ResourceManager;
 };
@@ -86,13 +90,10 @@ struct SkinVertex;
 struct TerrainVertex;
 
 template<typename T>
-inline Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer(ParserData::Mesh* mesh) { return nullptr; }
+inline Vertexbuffer* GraphicResourceFactory::CreateMeshVB(ParserData::Mesh* mesh) { return nullptr; }
 
 template<>
-inline Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<MeshVertex>(ParserData::Mesh* mesh);
+inline Vertexbuffer* GraphicResourceFactory::CreateMeshVB<MeshVertex>(ParserData::Mesh* mesh);
 
 template<>
-inline Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<SkinVertex>(ParserData::Mesh* mesh);
-
-template<>
-inline Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<TerrainVertex>(ParserData::Mesh* mesh);
+inline Vertexbuffer* GraphicResourceFactory::CreateMeshVB<SkinVertex>(ParserData::Mesh* mesh);

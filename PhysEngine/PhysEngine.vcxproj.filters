@@ -19,23 +19,8 @@
     <Filter Include="소스 파일\PhysEngine">
       <UniqueIdentifier>{e91549e7-96f0-4c22-9c19-5bded107d307}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\RIgidbody">
-      <UniqueIdentifier>{1ad5ca0a-d990-4f08-988d-41cfe7c62cc6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\PhysAPI">
       <UniqueIdentifier>{2ebc0d29-1c01-4d20-8437-85155d19bc87}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Broad">
-      <UniqueIdentifier>{8c3e8635-ea44-4157-b2cc-ab6a71ee1077}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Collider">
-      <UniqueIdentifier>{23b92663-e22b-4774-b452-f4d7956d8baa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Collider\BoxCollider">
-      <UniqueIdentifier>{6077a555-c430-4590-9684-b69146a47a78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Collider\ColliderBase">
-      <UniqueIdentifier>{2647c198-9f3c-4b23-ac90-839238bc8ee1}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\Factory">
       <UniqueIdentifier>{0e0d0ab0-8736-466d-ad9c-7a8ac1fd3f45}</UniqueIdentifier>
@@ -57,18 +42,6 @@
     <ClInclude Include="PhysX_API.h">
       <Filter>소스 파일\PhysAPI</Filter>
     </ClInclude>
-    <ClInclude Include="Broad.h">
-      <Filter>소스 파일\Broad</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysX_Rigidbody.h">
-      <Filter>소스 파일\RIgidbody</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysX_BoxCollider.h">
-      <Filter>소스 파일\Collider\BoxCollider</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysX_Collider.h">
-      <Filter>소스 파일\Collider\ColliderBase</Filter>
-    </ClInclude>
     <ClInclude Include="Factory.h">
       <Filter>소스 파일\Factory</Filter>
     </ClInclude>
@@ -86,20 +59,11 @@
     <ClCompile Include="PhysX_API.cpp">
       <Filter>소스 파일\PhysAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Broad.cpp">
-      <Filter>소스 파일\Broad</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysX_Rigidbody.cpp">
-      <Filter>소스 파일\RIgidbody</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysX_BoxCollider.cpp">
-      <Filter>소스 파일\Collider\BoxCollider</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysX_Collider.cpp">
-      <Filter>소스 파일\Collider\ColliderBase</Filter>
-    </ClCompile>
     <ClCompile Include="Factory.cpp">
       <Filter>소스 파일\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysData.cpp">
+      <Filter>소스 파일\DataStruct</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

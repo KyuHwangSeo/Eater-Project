@@ -49,17 +49,16 @@ void Player::Start()
 	RightHand	= gameobject->GetChildBone("mixamorig:RightHand");
 	LeftHand	= gameobject->GetChildBone("mixamorig:LeftHand");
 
-
 	//무기를 해당 본의 자식으로 넣는다
 	RightHand->ChoiceChild(Gun);
 	LeftHand->ChoiceChild(Weapon);
 
 	//각각의 무기들의 위치값을 조정
 	Gun->transform->Scale = { 1,1 ,1 };
-	Gun->transform->Rotation = { -90,-90,0 };
-	
+	Gun->transform->Rotation = { -90, -90,0 };
+
 	Weapon->transform->Scale = { 1,1 ,1 };
-	Weapon->transform->Rotation = { -90,90,0 };
+	Weapon->transform->Rotation = { -90, 90,0 };
 }
 
 void Player::Update()

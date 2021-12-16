@@ -60,10 +60,12 @@ void RenderingManager::CameraUpdate(GlobalData* data)
 
 void RenderingManager::SkinningUpdate(MeshData* data)
 {
+	MaterialBuffer* mat = *data->Material_List.begin();
+
 	///오브젝트 버퍼 업데이트
-	if (data->Albedo != nullptr)
+	if (mat->Albedo != nullptr)
 	{
-		ID3D11ShaderResourceView* SRV = reinterpret_cast<ID3D11ShaderResourceView*>(data->Albedo->TextureBufferPointer);
+		ID3D11ShaderResourceView* SRV = reinterpret_cast<ID3D11ShaderResourceView*>(mat->Albedo->TextureBufferPointer);
 		DeviceContext->PSSetShaderResources(0, 1, &SRV);
 		//DeviceContext->VSSetShaderResources(0, 1, &SRV);
 	}
@@ -101,10 +103,12 @@ void RenderingManager::SkinningUpdate(MeshData* data)
 
 void RenderingManager::MeshUpdate(MeshData* data)
 {
+	MaterialBuffer* mat = *data->Material_List.begin();
+	
 	///오브젝트 버퍼 업데이트
-	if (data->Albedo != nullptr)
+	if (mat->Albedo != nullptr)
 	{
-		ID3D11ShaderResourceView* SRV = reinterpret_cast<ID3D11ShaderResourceView*>(data->Albedo->TextureBufferPointer);
+		ID3D11ShaderResourceView* SRV = reinterpret_cast<ID3D11ShaderResourceView*>(mat->Albedo->TextureBufferPointer);
 		DeviceContext->PSSetShaderResources(0, 1, &SRV);
 		DeviceContext->VSSetShaderResources(0, 1, &SRV);
 	}

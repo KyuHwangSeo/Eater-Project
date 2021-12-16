@@ -2,10 +2,10 @@
 #include "PhysEngine.h"
 
 PhysEngine* Engine = nullptr;
-void PhysX_Initialize(int ThreadCount, bool OnDebug)
+void PhysX_Initialize(int ThreadCount, PhysSceneData* SceneData, bool OnDebug)
 {
 	Engine = new PhysEngine();
-	Engine->Initialize(ThreadCount, OnDebug);
+	Engine->Initialize(ThreadCount,SceneData,OnDebug);
 }
 
 void PhysX_Release()
@@ -24,39 +24,28 @@ void PhysX_Update(float m_time)
 	}
 }
 
-int PhysX_Create_DinamicActor(PhysData data)
+void PhysX_Create_Actor(PhysData* data)
 {
 	if (Engine != nullptr)
 	{
-		return Engine->Create_DinamicActor(data);
+		Engine->Create_Actor(data);
 	}
 }
 
-PHYS_ENGINEDLL int PhysX_Create_StaticActor(PhysData data)
+void PhysX_Update_Actor(PhysData* data)
 {
 	if (Engine != nullptr)
 	{
-		return Engine->Create_StaticActor(data);
+		Engine->Update_Actor(data);
 	}
 }
 
-PhysData Get_DinamicActors(int index)
+void PhysX_Delete_Actor(PhysData* data)
 {
 	if (Engine != nullptr)
 	{
-		return Engine->GetActors(index,ACTOR_TYPE::DINAMIC);
+		Engine->Delete_Actor(data);
 	}
 }
 
- PhysData Get_StaticActors(int index)
-{
-	if (Engine != nullptr)
-	{
-		return Engine->GetActors(index, ACTOR_TYPE::STATIC);
-	}
-}
 
- void PhysX_CreateScene()
-{
-	 
-}

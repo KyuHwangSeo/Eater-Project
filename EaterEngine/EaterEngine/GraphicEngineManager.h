@@ -32,6 +32,7 @@ public:
 	void Initialize(HWND Hwnd, int WinSizeWidth, int WinSizeHeight,ObjectManager* GM);
 
 	//선택한 그래픽엔진 랜더링
+	void BeginRender(UINT& renderOption);
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global);
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void SSAORender(GlobalData* global);
@@ -44,6 +45,8 @@ public:
 
 	//선택한 그래픽 엔진으로 버텍스 버퍼를 생성함
 	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mModel);
+	//Terrain 전용 버텍스 버퍼 생성함수
+	Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName);
 
 	//선택한 그래픽엔진으로 텍스쳐 생성
 	TextureBuffer* CreateTextureBuffer(std::string Name);

@@ -21,6 +21,8 @@ ParserData::ImageData FloatImage::LoadImagePixel(const char* fileName, unsigned 
 
 	ParserData::ImageData imgData;
 	imgData.imgColor = stbi_loadf(filePath.c_str(), &imgData.width, &imgData.height, nullptr, channels);
+	imgData.type = FLOAT_IMAGE;
+	imgData.channels = channels;
 
 	return imgData;
 }

@@ -62,9 +62,10 @@ public:
 	ShaderBase(eShaderType shaderType) : m_ShaderType(shaderType) {}
 
 public:
-	virtual void LoadShader(std::string fileName) abstract;
+	virtual void LoadShader(std::string fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines) abstract;
 	virtual void Update() abstract;
 	virtual void Release();
+
 
 	// Shader SamplerState 설정..
 	void SetSamplerState(Hash_Code hash_code, ID3D11SamplerState* sampler);
@@ -80,6 +81,9 @@ public:
 public:
 	// 현재 Shader Type 반환 함수..
 	eShaderType GetType();
+
+protected:
+	void CreateShader(const wchar_t* wPath, const D3D_SHADER_MACRO* pDefines, LPCSTR entry_point, LPCSTR shader_model, ID3DBlob** ppShader);
 
 protected:
 	// 연속된 메모리 공간에 있는 ConstantBuffer List..

@@ -135,6 +135,10 @@
     <PreBuildEvent>
       <Command>copy/Y "$(SolutionDir)Library\lib\libfbxsdk.dll"   "$(OutDir)"</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

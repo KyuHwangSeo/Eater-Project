@@ -14,6 +14,10 @@ public:
 	void OnResize(int width, int height) override;
 	void Release() override;
 
+	void SetOption(const char* shaderName) override;
+
+	void Reset();
+
 	void BeginRender();
 	void Render(GlobalData* global);
 

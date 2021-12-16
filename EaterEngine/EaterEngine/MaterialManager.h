@@ -17,7 +17,7 @@ public:
 	void AddMaterial(Material* mat);
 
 private:
-	std::unordered_map<int, Material*> m_MaterialList;
+	std::unordered_map<UINT, MaterialData*> m_MaterialList;
 	
 	UINT m_MaterialCount;
 };

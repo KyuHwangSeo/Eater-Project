@@ -26,6 +26,8 @@ public:
 	virtual void OnResize(int width, int height) abstract;
 	virtual void Release() abstract;
 
+	virtual void SetOption(const char* shaderName) {}
+
 public:
 	static void Initialize(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context, IGraphicResourceFactory* factory, IGraphicResourceManager* resourceManager, IShaderManager* shaderManager);
 	static void Reset();

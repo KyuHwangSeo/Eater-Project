@@ -2,7 +2,6 @@
 #include "PxPhysicsAPI.h"
 #include <vector>
 #include <ctype.h>
-#include "Broad.h"
 #include "Factory.h"
 
 #pragma comment(lib,"PhysX_64.lib")
@@ -12,6 +11,7 @@
 #pragma comment(lib,"PhysXCommon_64.lib")
 #pragma comment(lib,"PhysXPvdSDK_static_64.lib")
 
+#include "Ps.h"
 //#pragma comment(lib,"PhysXVehicle_static_64.lib")				//차량
 //#pragma comment(lib,"PhysXCharacterKinematic_static_64.lib")	//캐릭터
 
@@ -20,11 +20,18 @@
 using namespace physx;
 PhysEngine::PhysEngine()
 {
+	m_Allocator			= nullptr;
+	m_ErrorCallback		= nullptr;
+	m_TolerancesScale	= nullptr;
+
 	m_Foundation	= nullptr;
 	m_Physics		= nullptr;
 	m_Dispatcher	= nullptr;
 	m_Scene			= nullptr;
 	m_Material		= nullptr;
+	m_Pvd			= nullptr;
+
+	m_Factory		= nullptr;
 }
 
 PhysEngine::~PhysEngine()
@@ -32,11 +39,13 @@ PhysEngine::~PhysEngine()
 
 }
 
-bool PhysEngine::Initialize(int ThreadCount , bool Debug)
+bool PhysEngine::Initialize(int ThreadCount, PhysSceneData* SceneData, bool Debug)
 {
 	/// <summary>
 	/// https://gameworksdocs.nvidia.com/PhysX/4.0/documentation/PhysXGuide/Manual/Startup.html
 	/// </summary>
+	
+	OnDebug = Debug;
 	if (Debug == true)
 	{
 		Initialize_Debug(ThreadCount);
@@ -46,17 +55,11 @@ bool PhysEngine::Initialize(int ThreadCount , bool Debug)
 		Initialize_Release(ThreadCount);
 	}
 
-	//스크린 생성
-	CreateScene(Debug);
-
-
+	CreateScene(SceneData);
+	
 	//펙토리 생성
 	m_Factory = new Factory();
-	m_Factory->Initialize(m_Physics);
-
-
-
-	
+	m_Factory->Initialize(m_Physics,m_Scene, m_Cooking);
 
 	return true;
 }
@@ -96,103 +99,79 @@ void PhysEngine::Update(float m_time)
 	}
 }
 
-void PhysEngine::CreateRigidbody()
+void PhysEngine::Create_Actor(PhysData* data)
 {
+	float Pi = 3.141592f;
+
+	///위치,회전을 지정해준다
+	PxTransform P = PxTransform(data->WorldPosition.x, data->WorldPosition.y, data->WorldPosition.z);
+	//
+	//PxTransform Rx = PxTransform(PxQuat((data->Rotation.x)* Pi / 180, PxVec3(1, 0, 0)));
+	//PxTransform Ry = PxTransform(PxQuat(data->Rotation.y * Pi / 180, PxVec3(0, 1, 0)));
+	//PxTransform Rz = PxTransform(PxQuat(data->Rotation.z * Pi / 180, PxVec3(0, 0, 1)));
+	//
+	//PxTransform*  TR = new PxTransform(P * (Rz * Ry* Rx));
+
+	///재질을 지정해준다
+	PxMaterial* pMaterial	= m_Factory->CreateMaterial(data->MT_StaticFriction, data->MT_DynamicFriction, data->MT_Restitution);
 	
-}
-
-int PhysEngine::Create_DinamicActor(PhysData data)
-{
-	static int DinamicActorIndex = 0;
-
-	PxTransform TR			= physx::PxTransform(data.WorldPosition.x, data.WorldPosition.y, data.WorldPosition.z);
-	PxMaterial* pMaterial	= m_Factory->CreateMaterial(data.MT_StaticFriction, data.MT_DynamicFriction, data.MT_Restitution);
-	PxShape*	shape		= m_Factory->CreateBoxCollider(pMaterial, data.Col.x, data.Col.y, data.Col.z);
-
-	PxRigidDynamic* body = m_Physics->createRigidDynamic(TR);
-	body->attachShape(*shape);
-
-	PxRigidBodyExt::updateMassAndInertia(*body, data.MT_Mass);
-	m_Scene->addActor(*body);
-
-	shape->release();
-
-	int index = DinamicActorIndex;
-	DinamicActorIndex++;
-
-	return index;
-}
-
-int PhysEngine::Create_StaticActor(PhysData data)
-{
-	static int StaticActorIndex = 0;
-
-	PxTransform	TR			= physx::PxTransform(data.WorldPosition.x, data.WorldPosition.y, data.WorldPosition.z);
-	PxMaterial* pMaterial	= m_Factory->CreateMaterial(data.MT_StaticFriction, data.MT_DynamicFriction, data.MT_Restitution);
-	PxShape* shape			= m_Factory->CreateBoxCollider(pMaterial, data.Col.x, data.Col.y, data.Col.z);
-
-	PxRigidStatic* body = m_Physics->createRigidStatic(TR);
-	body->attachShape(*shape);
-
-	//PxRigidBodyExt::updateMassAndInertia(*body, data.MT_Mass);
-	m_Scene->addActor(*body);
-
-	shape->release();
-
-	int index = StaticActorIndex;
-	StaticActorIndex++;
-
-	return index;
-}
-
-int PhysEngine::Create_KnematicActor(PhysData data)
-{
-	return 0;
-}
-
-PhysData  PhysEngine::GetActors(int Index, ACTOR_TYPE type)
-{
-	std::vector<PxRigidActor*> actors;
-	switch (type)
+	///모양을 지정해준다
+	PxShape* shape = nullptr;
+	switch (data->Shape_type)
 	{
-		case ACTOR_TYPE::DINAMIC:
-		{
-			PxU32 nbActors = m_Scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
-			actors.resize(nbActors);
-			m_Scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
-			break;
-		}
-		case ACTOR_TYPE::STATIC:
-		{
-			PxU32 nbActors = m_Scene->getNbActors(PxActorTypeFlag::eRIGID_STATIC);
-			actors.resize(nbActors);
-			m_Scene->getActors(PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
-			break;
-		}
-		case ACTOR_TYPE::KNEMATIC:
-		{
-
-			break;
-		}
+	case SHAPE_TYPE::BOX:
+		shape = m_Factory->CreateBoxCollider(pMaterial, data->Shape_Size.x, data->Shape_Size.y, data->Shape_Size.z);
+		break;
+	case SHAPE_TYPE::SPHERE:
+		shape = m_Factory->CreateSphereCollider(pMaterial, data->Shape_Size.x);
+		break;
+	case SHAPE_TYPE::CAPSULE:
+		shape = m_Factory->CreateCapsuleCollider(pMaterial, data->Shape_Size.x, data->Shape_Size.y);
+		break;
+	case SHAPE_TYPE::TRIANGLE:
+		shape = m_Factory->CreateTriangleCollider(pMaterial,data->Triangle);
+		break;
 	}
-	
-	PxTransform temp = actors[Index]->getGlobalPose();
 
-	PhysData test;
-	test.WorldPosition.x = temp.p.x;
-	test.WorldPosition.y = temp.p.y;
-	test.WorldPosition.z = temp.p.z;
+	///물리 객체 생성
+	if (data->isDinamic == true)
+	{
+		m_Factory->CreateDinamicActor(data, shape, &P);
+	}
+	else
+	{
+		m_Factory->CreateStaticActor(data, shape, &P);
+	}
 
-
-	test.Rotation.x = temp.q.x;
-	test.Rotation.y = temp.q.y;
-	test.Rotation.z = temp.q.z;
-	test.Rotation.w = temp.q.w;
-
-	return test;
+	if (shape != nullptr)
+	{
+		shape->release();
+	}
 }
 
-bool PhysEngine::CreateScene(bool Debug)
+void  PhysEngine::Update_Actor(PhysData* data)
+{
+	PxRigidActor* rig = reinterpret_cast<PxRigidActor*>(data->ActorObj);
+	PxTransform Tr = rig->getGlobalPose();
+
+	data->WorldPosition.x = Tr.p.x;
+	data->WorldPosition.y = Tr.p.y;
+	data->WorldPosition.z = Tr.p.z;
+
+	data->Rotation.x = Tr.q.x;
+	data->Rotation.y = Tr.q.y;
+	data->Rotation.z = Tr.q.z;
+	data->Rotation.w = Tr.q.w;
+}
+
+void PhysEngine::Delete_Actor(PhysData* data)
+{
+	//한개의 엑터 삭제
+	PxRigidActor* rig = reinterpret_cast<PxRigidActor*>(data->ActorObj);
+	rig->release();
+}
+
+bool PhysEngine::CreateScene(PhysSceneData* SceneData)
 {
 	PxSceneDesc sceneDesc = PxSceneDesc(m_Physics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
@@ -202,7 +181,7 @@ bool PhysEngine::CreateScene(bool Debug)
 	m_Scene = m_Physics->createScene(sceneDesc);
 
 
-	if (Debug == true) 
+	if (OnDebug == true)
 	{
 		PxPvdSceneClient* pvdClient = m_Scene->getScenePvdClient();
 		if (pvdClient)
@@ -235,7 +214,6 @@ bool PhysEngine::CreateScene(bool Debug)
 	return false;
 }
 
-
 bool PhysEngine::Initialize_Release(int ThreadCount)
 {
 	CreateStart();
@@ -265,6 +243,9 @@ bool PhysEngine::Initialize_Debug(int ThreadCount)
 	//physX 생성
 	m_Physics	= PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_Pvd);
 	PxInitExtensions(*m_Physics, m_Pvd);
+
+	m_Cooking = PxCreateCooking(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale());
+
 
 
 	//쓰레드 개수만큼 Phys 를 돌림

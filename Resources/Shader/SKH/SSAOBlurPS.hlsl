@@ -18,7 +18,7 @@ struct VertexIn
 	float2 Tex   : TEXCOORD;
 };
 
-float4 main(VertexIn pin) : SV_Target
+float4 SSAOBlur_PS(VertexIn pin) : SV_Target
 {
     float2 texOffset = float2(0.0f, 0.0f);
 	

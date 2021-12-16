@@ -9,15 +9,17 @@
 #include "Animator.h"
 #include "ObjectManager.h"
 #include "Material.h"
-#include "MaterialManager.h"
+#include "Terrain.h"
 
 
 ObjectManager* MeshFilter::OBJ_Manager = nullptr;
-MaterialManager* MeshFilter::MAT_Manager = nullptr;
 
 MeshFilter::MeshFilter()
 {
 	MeshName = "";
+
+	// 기본으로 MeshFilter 생성시 Material을 보유..
+	Materials = new Material();
 
 	//모든 컨퍼넌트들 Start함수보다 나중에 실행될것이다
 	Start_Order = FUNCTION_ORDER_LAST;
@@ -43,10 +45,9 @@ void MeshFilter::Start()
 	}
 }
 
-void MeshFilter::SetManager(ObjectManager* obj, MaterialManager* mat)
+void MeshFilter::SetManager(ObjectManager* obj)
 {
 	OBJ_Manager = obj;
-	MAT_Manager = mat;
 }
 
 void MeshFilter::SetMeshName(std::string mMeshName)
@@ -75,24 +76,34 @@ void MeshFilter::SetAnimationName(std::string mAnimeName)
 	CheckAnimation();
 }
 
+void MeshFilter::SetObjectData()
+{
+	// 오브젝트 설정 후 추가 작업
+	Materials->SetMeshData(gameobject->OneMeshData);
+}
+
 void MeshFilter::PushModelData(LoadMeshData* mModel)
 {
 	MeshData* data = gameobject->OneMeshData;
+	MaterialBuffer* mat = Materials->GetMaterialData();
 
+	// Mesh Model Data 삽입..
 	data->IB = mModel->IB;
 	data->VB = mModel->VB;
 
 	data->mLocal = *(mModel->LocalTM);
 	data->mWorld = *(mModel->WorldTM);
 
-	data->Albedo = mModel->Albedo;
-	data->Normal = mModel->Normal;
+	mat->Albedo = mModel->Albedo;
+	mat->Normal = mModel->Normal;
 
-	// Diffuse Map이 없는경우 Dump Map으로 기본 출력..
-	if (data->Albedo == nullptr)
+	// 로드된 Diffuse Map이 없을경우 Dump Map으로 대체..
+	if (mat->Albedo == nullptr)
 	{
-		data->Albedo = LoadManager::GetTexture("Dump");
+		mat->Albedo = LoadManager::GetTexture("Dump");
 	}
+
+	data->Material_List.push_back(Materials->GetMaterialData());
 }
 
 void MeshFilter::CheckTexture()
@@ -104,20 +115,23 @@ void MeshFilter::CheckTexture()
 
 		for (int i = 0; i <(int)MeshList.size(); i++)
 		{
+			// 현재 Mesh Data..
 			MeshData* data = MeshList[i]->OneMeshData;
+
+			// 현재 Mesh의 Material..
+			MaterialBuffer* material = *data->Material_List.begin();
 
 			// 설정 Texture Buffer..
 			TextureBuffer* texBuffer = LoadManager::GetTexture(TextureName);
-		
 
 			// 해당 Texture가 Load되지 않은 경우 기존 Texture 사용..
 			if (texBuffer == nullptr)
 			{
-				return;
+				texBuffer = LoadManager::GetTexture("Dump");
 			}
 
 			// Texture 설정..
-			data->Albedo = texBuffer;
+			material->Albedo = texBuffer;
 		}
 	}
 }
@@ -142,47 +156,59 @@ void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelDa
 	DebugManager::Line("(Mesh)");
 
 	///게임 오브젝트 생성
-	GameObject* OBJ = new GameObject();
+	GameObject* OBJ = gameobject;
+
+	/// Model이 한개 이상일경우 빈 오브젝트로 그룹화
+	if (data->Child.size() > 0 || data->MeshType == SKIN_MESH)
+	{
+		OBJ = new GameObject();
+		OBJ_Manager->PushCreateObject(OBJ);
+		MeshList.push_back(OBJ);
+	}
 
 	///컨퍼넌트 생성후 초기화
 	Transform* Tr		= OBJ->AddComponent<Transform>();
 	MeshFilter* Filter	= OBJ->AddComponent<MeshFilter>();
+	Material* Mat		= Filter->Materials;
 
 	///스키닝 오브젝트 여부
-	if (data->Skinning_Object == true)
+	switch (data->MeshType)
+	{
+	case MESH_TYPE::SKIN_MESH:
 	{
 		SkinningFilter* SF = OBJ->AddComponent<SkinningFilter>();
 		SF->PushBoneList(&BoneList);
 		SF->PushBone_OffsetList(&BoneOffsetList);
 		OBJ->OneMeshData->ObjType = OBJECT_TYPE::SKINNING;
-		Tr->Rotation = { 180,0,0 };
+		Tr->Rotation = { 90,0,0 };
 	}
-	else
+	break;
+	case MESH_TYPE::TERRAIN_MESH:
+	{
+		// Terrain Component 추가..
+		OBJ->AddComponent<Terrain>();
+		OBJ->OneMeshData->ObjType = OBJECT_TYPE::TERRAIN;
+	}
+	break;
+	default:
 	{
 		LinkHierarchy(Tr, parent);
 		OBJ->OneMeshData->ObjType = OBJECT_TYPE::BASE;
 	}
-
-	///메테리얼 정보 여부
-	if (data->Material)
-	{
-		Material* mat = OBJ->AddComponent<Material>();
-		MaterialData matData;
-		matData.Ambient		= data->Material->m_Material_Ambient;
-		matData.Diffuse		= data->Material->m_Material_Diffuse;
-		matData.Specular	= data->Material->m_Material_Specular;
-		mat->SetMaterialData(matData);	// 해당 Material 삽입..
-		MAT_Manager->AddMaterial(mat);	// Material 등록..
+	break;
 	}
 
-	///기본 데이터 초기화
+	///기본 데이터 설정
 	OBJ->Name = data->Name;
 	OBJ->transform = Tr;
-	Filter->PushModelData(data);
+
 	Tr->Load_Local = *data->LocalTM;
 	Tr->Load_World = *data->WorldTM;
-	OBJ_Manager->PushCreateObject(OBJ);
-	MeshList.push_back(OBJ);
+
+	///모델 데이터 설정
+	Mat->PushMaterialData(data);
+	Filter->PushModelData(data);
+
 
 	///재귀 함수
 	int ChildCount = (int)data->Child.size();
@@ -238,11 +264,11 @@ void MeshFilter::CreateMesh()
 	///이름으로 로드할 데이터를 찾아서 가져옴
 	ModelData* data = LoadManager::GetMesh(MeshName);
 	Transform* Tr = gameobject->GetTransform();
-	if (data == nullptr) { return; }
 
+	if (data == nullptr) { return; }
+	
 	///본 오브젝트 생성
-	int index = 0;
-	index = (int)data->TopBoneList.size();
+	int index = (int)data->TopBoneList.size();
 	if (data->BoneList != nullptr)
 	{
 		BoneList.resize((int)data->BoneList->size());
@@ -264,7 +290,3 @@ void MeshFilter::CreateMesh()
 	///오브젝트 생성완료
 	isLoad_Mesh = true;
 }
-
-
-
-

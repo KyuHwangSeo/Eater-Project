@@ -42,8 +42,8 @@ void LightPass::Create(int width, int height)
 void LightPass::Start(int width, int height)
 {
 	// Shader 설정..
-	m_LightVS = g_Shader->GetShader("LightVS");
-	m_LightPS = g_Shader->GetShader("LightPS");
+	m_LightVS = g_Shader->GetShader("Light_VS");
+	m_LightPS = g_Shader->GetShader("Light_PS_Option0");
 
 	// Buffer 설정..
 	m_ScreenBuffer = g_Resource->GetBuffer<BD_FullScreen>();
@@ -91,18 +91,42 @@ void LightPass::OnResize(int width, int height)
 	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
 	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV()->Get());
 	m_LightPS->SetShaderResourceView<gPositionRT>(m_PositionRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gShadowRT>(m_ShadowRT->GetSRV()->Get());
 
 	// Sub Resource 재설정..
 	ShaderResourceView* ssaoSRV = g_Resource->GetShaderResourceView<RT_SSAO_Main>();
 	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
 
-	m_LightPS->SetShaderResourceView<gShadowRT>(m_ShadowRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gShadowMap>(m_ShadowRT->GetSRV()->Get());
 	m_LightPS->SetShaderResourceView<gSsaoMap>(ssaoSRV->Get());
 }
 
 void LightPass::Release()
 {
 
+}
+
+void LightPass::SetOption(const char* shaderName)
+{
+	m_LightPS = g_Shader->GetShader(shaderName);
+}
+
+void LightPass::Reset()
+{
+	g_Context->ClearRenderTargetView(m_BackBufferRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+
+	// ShaderResource 재설정..
+	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gPositionRT>(m_PositionRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gShadowRT>(m_ShadowRT->GetSRV()->Get());
+
+	// Sub Resource 재설정..
+	ShaderResourceView* ssaoSRV = g_Resource->GetShaderResourceView<RT_SSAO_Main>();
+	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
+
+	m_LightPS->SetShaderResourceView<gShadowMap>(m_ShadowRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gSsaoMap>(ssaoSRV->Get());
 }
 
 void LightPass::BeginRender()
@@ -133,9 +157,9 @@ void LightPass::Render(GlobalData* global)
 		lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
 	}
 
-	for (UINT m = 0; m < 5; m++)
+	for (UINT m = 0; m < global->mMatData.size(); m++)
 	{
-		lightBuf.gMaterials[m] = global->mMatData[m];
+		lightBuf.gMaterials[m] = *global->mMatData[m];
 	}
 
 	CB_LightSub lightsubBuf;

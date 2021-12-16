@@ -45,9 +45,9 @@ void ForwardPass::Create(int width, int height)
 void ForwardPass::Start(int width, int height)
 {
 	// Shader 설정..
-	m_MeshVS = g_Shader->GetShader("MeshVS");
-	m_SkinVS = g_Shader->GetShader("SkinVS");
-	m_ForwardPS = g_Shader->GetShader("ForwardPS");
+	m_MeshVS = g_Shader->GetShader("Mesh_VS");
+	m_SkinVS = g_Shader->GetShader("Skin_VS");
+	m_ForwardPS = g_Shader->GetShader("Forward_PS");
 
 	// ViewPort 설정..
 	m_ScreenViewport = g_Resource->GetViewPort<VP_FullScreen>()->Get();
@@ -108,7 +108,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	Matrix view = *global->mCamView;
 	Matrix proj = *global->mCamProj;
 	Matrix shadowTrans = *global->mLightVPT;
-	Vector3 eye(view._41, view._42, view._43);
+	MaterialBuffer* mat = *mesh->Material_List.begin();
 
 	switch (mesh->ObjType)
 	{
@@ -168,27 +168,27 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 
 	for (UINT m = 0; m < 5; m++)
 	{
-		lightBuf.gMaterials[m] = global->mMatData[m];
+		lightBuf.gMaterials[m] = *global->mMatData[m];
 	}
 	m_ForwardPS->SetConstantBuffer(lightBuf);
 
 	CB_LightSub lightsubBuf;
-	lightsubBuf.gEyePosW = -eye;
+	lightsubBuf.gEyePosW = *global->mCamPos;
 
 	m_ForwardPS->SetConstantBuffer(lightsubBuf);
 
 	CB_Material materialBuf;
-	materialBuf.gMatID = mesh->Material_Index;
+	materialBuf.gMatID = mat->Material_Index;
 
-	if (mesh->Albedo)
+	if (mat->Albedo)
 	{
 		materialBuf.gTexID |= ALBEDO_MAP;
-		m_ForwardPS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mesh->Albedo->TextureBufferPointer);
+		m_ForwardPS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mat->Albedo->TextureBufferPointer);
 	}
-	if (mesh->Normal)
+	if (mat->Normal)
 	{
 		materialBuf.gTexID |= NORMAL_MAP;
-		m_ForwardPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mesh->Normal->TextureBufferPointer);
+		m_ForwardPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mat->Normal->TextureBufferPointer);
 	}
 
 	m_ForwardPS->SetConstantBuffer(materialBuf);
@@ -211,30 +211,4 @@ void ForwardPass::Render(MeshData* mesh)
 	g_Context->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	g_Context->DrawIndexed(indexCount, 0, 0);
-}
-
-void ForwardPass::StaticUpdate(StaticData* data)
-{
-	LightData* lightData = data->mLightData;
-
-	CB_Light lightBuf;
-	lightBuf.gPointLightCount = lightData->gPointLightCount;
-	lightBuf.gSpotLightCount = lightData->gSpotLightCount;
-
-	lightBuf.gDirLights = *lightData->DirLights[0];
-
-	for (UINT p = 0; p < lightBuf.gPointLightCount; p++)
-	{
-		lightBuf.gPointLights[p] = *lightData->PointLights[p];
-	}
-	for (UINT s = 0; s < lightBuf.gSpotLightCount; s++)
-	{
-		lightBuf.gSpotLights[s] = *lightData->SpotLights[s];
-	}
-
-	for (UINT m = 0; m < 5; m++)
-	{
-		lightBuf.gMaterials[m] = data->mMatData[m];
-	}
-	m_ForwardPS->SetConstantBuffer(lightBuf);
 }

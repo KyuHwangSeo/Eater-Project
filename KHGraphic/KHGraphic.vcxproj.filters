@@ -172,6 +172,9 @@
     <Filter Include="소스 파일\Resource\Graphic\Texture2D">
       <UniqueIdentifier>{6b01d7c4-0f13-44d1-b572-0315e335ef46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Terrain">
+      <UniqueIdentifier>{619ed61e-c4dc-440a-a143-26a3d267f75c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -418,23 +421,14 @@
     <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Forward</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ShadowSkinVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\ShadowVS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ShadowMeshVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\SkinVS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\MeshVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\ObjectVS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightHelper.fx">
       <Filter>소스 파일\Shader\FX</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DeferredPS.hlsl">
-      <Filter>소스 파일\Shader\HLSL\Render\Deffered</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightPS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
@@ -453,6 +447,15 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\SSAOBlurVS.hlsl">
       <Filter>소스 파일\Shader\HLSL\SSAO\Blur</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\DeferredPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\TerrainPS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\TerrainVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Render\Deffered\Terrain</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

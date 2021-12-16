@@ -11,18 +11,18 @@
 
 std::string ModelParser::g_TextureRoute;
 
-PARSER_DLL ModelParser* ModelParser::Create(Type type)
+PARSER_DLL ModelParser* ModelParser::Create(MODEL_TYPE type)
 {
 	ModelParser* newParser = nullptr;
 
 	switch (type)
 	{
-	case ModelParser::Type::ASE:
-		newParser = new ASEParser;
+	case MODEL_TYPE::FBX_MODEL:
+		newParser = new FBXParser;
 		newParser->Initialize();
 		break;
-	case ModelParser::Type::FBX:
-		newParser = new FBXParser;
+	case MODEL_TYPE::ASE_MODEL:
+		newParser = new ASEParser;
 		newParser->Initialize();
 		break;
 	default:

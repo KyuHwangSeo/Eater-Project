@@ -7,11 +7,6 @@
 #ifndef MATHHELPER_H
 #define MATHHELPER_H
 
-#include <Windows.h>
-
-// LEHIDE
-//#include <xnamath.h>
-#include <DirectXMath.h>
 using namespace DirectX;
 
 class MathHelper
@@ -73,8 +68,6 @@ public:
 
 	static const float Infinity;
 	static const float Pi;
-
-
 };
 
 #endif // MATHHELPER_H

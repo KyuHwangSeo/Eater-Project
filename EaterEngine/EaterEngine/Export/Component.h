@@ -7,10 +7,10 @@
 /// </summary>
 
 #include "EaterEngineDLL.h"
+
 class TimeManager;
 class KeyinputManager;
 class GameObject;
-
 
 class Component
 {
@@ -21,8 +21,12 @@ public:
 	//활성화 여부
 	bool Enabled	= true;
 public:
+	//게임 오브젝트 설정
+	virtual void SetObjectData() {}
+
 	//매니저 넣어주기
 	static void SetManager(TimeManager* time, KeyinputManager* key);
+
 protected:
 	int OrderCount  = FUNCTION_ORDER_CENTER;
 
@@ -32,6 +36,7 @@ protected:
 	//Dll안에서만 사용될 매니저들
 	static TimeManager*		mTimeManager;
 	static KeyinputManager*	mKeyInputManger;
+
 protected:
 	//시작 단계에 가장먼저 실행되는 함수
 	virtual void Awake() {};
@@ -47,6 +52,7 @@ protected:
 	virtual void Update() {};
 	//마지막 업데이트
 	virtual void EndUpdate() {};
+
 protected:
 	///어떤컨퍼넌트의 함수가 함수리스트에 몇번째로 실행될것인지 여부
 	//ex)MeshFilter의 StartUpdate가 Transform의 StartUpdate 보다 먼저 실행되어야 한다면
@@ -70,6 +76,7 @@ private:
 
 	//이컨퍼넌트의 어떤함수가 오버라이딩되어있는지 확인하기위해
 	unsigned int FUNCTION_MASK = 0x00000000;
+
 	
 	//접근 여부를 아래 클래스들에게는 열어둠
 	friend class GameObject;

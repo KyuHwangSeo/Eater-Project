@@ -9,11 +9,11 @@
 class PixelShader : public ShaderBase
 {
 public:
-	PixelShader(const char* fileName);
+	PixelShader(const char* fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines);
 	~PixelShader();
 
 public:
-	void LoadShader(std::string fileName) override;
+	void LoadShader(std::string fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines) override;
 	void Update() override;
 	void Release() override;
 

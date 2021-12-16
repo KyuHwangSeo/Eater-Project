@@ -1,6 +1,6 @@
 #pragma once
 #include "PhysEngineDLL.h"
-
+#include <vector>
 
 namespace physx
 {
@@ -17,9 +17,11 @@ namespace physx
 	class PxPvd;
 	class PxTolerancesScale;
 	class PxTransform;
+	class PxRigidActor;
 }
 
 class Factory;
+struct PhysSceneData;
 
 class PhysEngine
 {
@@ -28,22 +30,22 @@ public:
 	~PhysEngine();
 
 	//초기화
-	bool Initialize(int ThreadCount,  bool Debug);
-	bool CreateScene(bool Debug);
-	
-
-	void Release();					
+	bool Initialize(int ThreadCount, PhysSceneData* SceneData, bool Debug);
+	//씬 생성
+	bool CreateScene(PhysSceneData* SceneData);
+	//전체 삭제
+	void Release();
+	//씬 업데이트
 	void Update(float m_time);
 
-	int Create_DinamicActor	(PhysData data);
-	int	Create_StaticActor	(PhysData data);
-	int	Create_KnematicActor(PhysData data);
+	//엑터 생성
+	void Create_Actor(PhysData* data);
+	//엑터 업데이트
+	void Update_Actor(PhysData* data);
+	//엑터 삭제
+	void Delete_Actor(PhysData* data);
 
-
-	PhysData GetActors(int Index, ACTOR_TYPE type);
 private:
-	void CreateRigidbody();//물리 충돌하는 객체를 생성
-
 	bool Initialize_Release(int ThreadCount);
 	bool Initialize_Debug(int ThreadCount);
 	void CreateStart();
@@ -55,13 +57,15 @@ private:
 	physx::PxDefaultErrorCallback*	m_ErrorCallback;
 	physx::PxTolerancesScale*		m_TolerancesScale;
 
-
+	physx::PxCooking*				m_Cooking;
 	physx::PxFoundation*			m_Foundation;
 	physx::PxPhysics*				m_Physics;
 	physx::PxDefaultCpuDispatcher*	m_Dispatcher;
 	physx::PxScene*					m_Scene;
 	physx::PxMaterial*				m_Material;
 	physx::PxPvd*					m_Pvd;				//디버깅을 사용하기위해
+
+	bool OnDebug = false;	//디버깅 사용여부
 
 	Factory* m_Factory;
 };

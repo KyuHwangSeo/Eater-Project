@@ -38,6 +38,8 @@ public:
 	virtual HS_GRAPHICDLL Indexbuffer*	CreateIndexBuffer(ParserData::Mesh* mModel) override;
 	//버텍스 버퍼를 생성
 	virtual HS_GRAPHICDLL Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mModel) override;
+	
+	virtual HS_GRAPHICDLL Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName) override;
 
 	ID3D11RenderTargetView* GetEngineRTV();
 	ID3D11DepthStencilView* GetEngineDSV();

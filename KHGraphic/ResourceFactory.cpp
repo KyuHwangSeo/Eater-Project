@@ -25,12 +25,16 @@
 #include "BufferDataDefine.h"
 #include "ViewPortDefine.h"
 #include "RenderTargetDefine.h"
+#include "ImageParser.h"
 
 using namespace DirectX::SimpleMath;
 
 GraphicResourceFactory::GraphicResourceFactory(ID3D11Graphic* graphic, IGraphicResourceManager* resource)
 	:m_Graphic(graphic), m_ResourceManager(resource)
 {
+	// Parser 积己 棺 檬扁拳..
+	m_Parser = ImageParser::Create(IMAGE_TYPE::FLOAT_IMAGE);
+	m_Parser->Initialize();
 }
 
 GraphicResourceFactory::~GraphicResourceFactory()
@@ -293,18 +297,78 @@ void GraphicResourceFactory::CreateMainRenderTarget(Hash_Code hash_Code, UINT wi
 
 Vertexbuffer* GraphicResourceFactory::CreateVertexBuffer(ParserData::Mesh* mesh)
 {
-	if (mesh->m_IsSkinningObject)
+	switch (mesh->m_MeshType)
 	{
-		return CreateMeshVertexBuffer<SkinVertex>(mesh);
-	}
-	else
-	{
-		return CreateMeshVertexBuffer<MeshVertex>(mesh);
-
-		// Terrain Type
-		//return CreateMeshVertexBuffer<TerrainVertex>(mesh);
+	case MESH_TYPE::STATIC_MESH:
+		return CreateMeshVB<MeshVertex>(mesh);
+	case MESH_TYPE::SKIN_MESH:
+		return CreateMeshVB<SkinVertex>(mesh);
+	default:
+		return nullptr;
 	}
 }
+
+Vertexbuffer* GraphicResourceFactory::CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName)
+{
+	return CreateTerrainVB(mesh, maskName);
+}
+
+template<>
+DepthStencilView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11DepthStencilView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	DepthStencilView* newResource = new DepthStencilView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+
+	return newResource;
+}
+
+template<>
+RenderTargetView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11RenderTargetView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	RenderTargetView* newResource = new RenderTargetView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+	
+	return newResource;
+}
+
+template<>
+ShaderResourceView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11ShaderResourceView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	ShaderResourceView* newResource = new ShaderResourceView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+	
+	return newResource;
+}
+
+template<>
+UnorderedAccessView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11UnorderedAccessView* resource)
+{
+	if (resource == nullptr) return nullptr;
+
+	// Resource 积己..
+	UnorderedAccessView* newResource = new UnorderedAccessView(resource);
+
+	// Resource 殿废..
+	m_ResourceManager->AddResource(hash_code, newResource);
+	
+	return newResource;
+}
+
 
 Indexbuffer* GraphicResourceFactory::CreateIndexBuffer(ParserData::Mesh* mesh)
 {
@@ -366,74 +430,8 @@ TextureBuffer* GraphicResourceFactory::CreateTextureBuffer(std::string path)
 	return tBuffer;
 }
 
-IShaderManager* GraphicResourceFactory::GetShaderManager()
-{
-	return m_ShaderManager;
-}
-
-IGraphicResourceManager* GraphicResourceFactory::GetResourceManager()
-{
-	return m_ResourceManager;
-}
-
 template<>
-DepthStencilView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11DepthStencilView* resource)
-{
-	if (resource == nullptr) return nullptr;
-
-	// Resource 积己..
-	DepthStencilView* newResource = new DepthStencilView(resource);
-
-	// Resource 殿废..
-	m_ResourceManager->AddResource(hash_code, newResource);
-
-	return newResource;
-}
-
-template<>
-RenderTargetView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11RenderTargetView* resource)
-{
-	if (resource == nullptr) return nullptr;
-
-	// Resource 积己..
-	RenderTargetView* newResource = new RenderTargetView(resource);
-
-	// Resource 殿废..
-	m_ResourceManager->AddResource(hash_code, newResource);
-	
-	return newResource;
-}
-
-template<>
-ShaderResourceView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11ShaderResourceView* resource)
-{
-	if (resource == nullptr) return nullptr;
-
-	// Resource 积己..
-	ShaderResourceView* newResource = new ShaderResourceView(resource);
-
-	// Resource 殿废..
-	m_ResourceManager->AddResource(hash_code, newResource);
-	
-	return newResource;
-}
-
-template<>
-UnorderedAccessView* GraphicResourceFactory::RegisterResource(Hash_Code hash_code, ID3D11UnorderedAccessView* resource)
-{
-	if (resource == nullptr) return nullptr;
-
-	// Resource 积己..
-	UnorderedAccessView* newResource = new UnorderedAccessView(resource);
-
-	// Resource 殿废..
-	m_ResourceManager->AddResource(hash_code, newResource);
-	
-	return newResource;
-}
-
-template<>
-Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<MeshVertex>(ParserData::Mesh* mesh)
+Vertexbuffer* GraphicResourceFactory::CreateMeshVB<MeshVertex>(ParserData::Mesh* mesh)
 {
 	// 货肺款 VertexBufferData 积己..
 	Vertexbuffer* vBuffer = new Vertexbuffer();
@@ -446,12 +444,9 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<MeshVertex>(ParserD
 	std::vector<MeshVertex> vertices(vCount);
 	for (UINT i = 0; i < vCount; i++)
 	{
-		vertices[i].Pos = mesh->m_VertexList[i]->m_Pos;
-
-		vertices[i].Normal = mesh->m_VertexList[i]->m_Normal;
-
-		vertices[i].Tex = mesh->m_VertexList[i]->m_UV;
-
+		vertices[i].Pos		= mesh->m_VertexList[i]->m_Pos;
+		vertices[i].Tex		= mesh->m_VertexList[i]->m_UV;
+		vertices[i].Normal	= mesh->m_VertexList[i]->m_Normal;
 		vertices[i].Tangent = mesh->m_VertexList[i]->m_Tanget;
 	}
 
@@ -472,12 +467,12 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<MeshVertex>(ParserD
 	vBuffer->Count = vCount;
 	vBuffer->VertexbufferPointer = VB;
 	vBuffer->VertexDataSize = sizeof(MeshVertex);
-
+	
 	return vBuffer;
 }
 
 template<>
-Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<SkinVertex>(ParserData::Mesh* mesh)
+Vertexbuffer* GraphicResourceFactory::CreateMeshVB<SkinVertex>(ParserData::Mesh* mesh)
 {
 	// 货肺款 VertexBufferData 积己..
 	Vertexbuffer* vBuffer = new Vertexbuffer();
@@ -490,12 +485,9 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<SkinVertex>(ParserD
 	std::vector<SkinVertex> vertices(vCount);
 	for (UINT i = 0; i < vCount; i++)
 	{
-		vertices[i].Pos = mesh->m_VertexList[i]->m_Pos;
-
-		vertices[i].Normal = mesh->m_VertexList[i]->m_Normal;
-
-		vertices[i].Tex = mesh->m_VertexList[i]->m_UV;
-
+		vertices[i].Pos		= mesh->m_VertexList[i]->m_Pos;
+		vertices[i].Tex		= mesh->m_VertexList[i]->m_UV;
+		vertices[i].Normal	= mesh->m_VertexList[i]->m_Normal;
 		vertices[i].Tangent = mesh->m_VertexList[i]->m_Tanget;
 
 		// Bone Weights, Bone Index..
@@ -536,8 +528,7 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<SkinVertex>(ParserD
 	return vBuffer;
 }
 
-template<>
-Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<TerrainVertex>(ParserData::Mesh* mesh)
+Vertexbuffer* GraphicResourceFactory::CreateTerrainVB(ParserData::Mesh* mesh, std::string maskName)
 {
 	// 货肺款 VertexBufferData 积己..
 	Vertexbuffer* vBuffer = new Vertexbuffer();
@@ -547,20 +538,25 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<TerrainVertex>(Pars
 	// Vertex Count..
 	UINT vCount = (UINT)mesh->m_VertexList.size();
 
+	// Mask Pixel Data Parsing..
+	ParserData::ImageData maskImage = m_Parser->LoadImagePixel(maskName.c_str(), 4);
+
 	std::vector<TerrainVertex> vertices(vCount);
 	for (UINT i = 0; i < vCount; i++)
 	{
 		vertices[i].Pos = mesh->m_VertexList[i]->m_Pos;
 
-		vertices[i].Normal = mesh->m_VertexList[i]->m_Normal;
+		if (i != 0)
+		{
+			vertices[i].Tex.x = vertices[i].Pos.x;
+			vertices[i].Tex.y = vertices[i].Pos.z;
+		}
 
-		vertices[i].Tex = mesh->m_VertexList[i]->m_UV;
-
+		vertices[i].Normal	= mesh->m_VertexList[i]->m_Normal;
 		vertices[i].Tangent = mesh->m_VertexList[i]->m_Tanget;
 
 		// 秦寸 Pixel Mask Color..
-		vertices[i].Mask1;
-		vertices[i].Mask2;
+		vertices[i].Mask = m_Parser->GetPixelColor(maskImage, abs(vertices[i].Pos.x), abs(vertices[i].Pos.z));
 	}
 
 	// 货肺款 VertexBuffer 积己..
@@ -582,6 +578,16 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVertexBuffer<TerrainVertex>(Pars
 	vBuffer->VertexDataSize = sizeof(TerrainVertex);
 
 	return vBuffer;
+}
+
+IShaderManager* GraphicResourceFactory::GetShaderManager()
+{
+	return m_ShaderManager;
+}
+
+IGraphicResourceManager* GraphicResourceFactory::GetResourceManager()
+{
+	return m_ResourceManager;
 }
 
 void GraphicResourceFactory::CreateDepthStencilStates()

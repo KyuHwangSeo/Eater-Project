@@ -5,7 +5,6 @@
 #include <vector>
 
 class Transform;
-class ObjectManager;
 class GameObject;
 
 namespace ParserData 

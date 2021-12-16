@@ -23,6 +23,8 @@
 #include "MeshFilter.h"
 #include "SkinningFilter.h"
 #include "Light.h"
+#include "Rigidbody.h"
+#include "Material.h"
 
 GameEngine::GameEngine()
 {
@@ -71,8 +73,10 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mPhysManager		= new PhysManager();
 
 	//매니저들 인풋
-	MeshFilter::SetManager(mObjectManager, mMaterialManager);
+	MeshFilter::SetManager(mObjectManager);
+	Material::SetManager(mMaterialManager);
 	Light::SetManager(mLightManager);
+	Component::SetManager(mTimeManager, mKeyManager);
 
 	//매니저들 초기화
 	BaseManager::Initialize();
@@ -86,29 +90,29 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mMaterialManager->Initialize();
 	mPhysManager->Initialize();
 
-	Component::SetManager(mTimeManager, mKeyManager);
 
 	mGraphicManager->Initialize(Hwnd, WinSizeWidth, WinSizeHeight, mObjectManager);
 }
 
 void GameEngine::Update()
 {
-	
 	//매니저들 업데이트 (컨퍼넌트 업데이트후 변경된 사항을 각각의 게임오브젝트 OneMeshData에 전달)
 	//타임매니저는 먼저실행되어야함
 	mTimeManager->Update();
 	mKeyManager->Update();
 	mSceneManager->Update();
-	mObjectManager->PlayUpdate();
 	mDebugManager->Update();
+	mObjectManager->PlayUpdate();
 	mPhysManager->Update(mTimeManager->DeltaTime());
 	
-
 	//컨퍼넌트 업데이트 끝
 	//그래픽엔진으로 넘겨줄 랜더큐도 생성완료
 
-	
+	// 현재 랜더링 옵션 설정..
+	RenderOptionCheck();
+
 	//랜더큐 넘겨줌
+	mGraphicManager->BeginRender(m_RenderOption);
 	mGraphicManager->ShadowRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->Render(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->SSAORender(mObjectManager->GetGlobalData());
@@ -200,10 +204,16 @@ void GameEngine::ChoiceScene(std::string name)
 }
 
 ///로드 관련 함수들
-void GameEngine::LoadMesh(std::string mMeshName, bool Scale, bool LoadAnime)
+void GameEngine::LoadMesh(std::string mMeshName, UINT parsingMode)
 {
 	std::string temp = "매쉬를 로드합니다 : " + mMeshName;
-	mLoadManager->LoadMesh(mMeshName, Scale, LoadAnime);
+	mLoadManager->LoadMesh(mMeshName, parsingMode);
+}
+
+void GameEngine::LoadTerrain(std::string mMeshName, std::string mMaskName, UINT parsingMode)
+{
+	std::string temp = "터레인을 로드합니다 : " + mMeshName;
+	mLoadManager->LoadTerrain(mMeshName, mMaskName, parsingMode);
 }
 
 void GameEngine::LoadTexture(std::string mTextureName)
@@ -267,4 +277,23 @@ void GameEngine::CreateObject()
 {
 	GameObject* light = Instance();
 	light->AddComponent<DirectionLight>();
+}
+
+void GameEngine::RenderOptionCheck()
+{
+	if (mKeyManager->GetKeyUp(VK_F1))
+	{
+		// Gamma Correction On/Off
+		m_RenderOption |= RENDER_GAMMA_CORRECTION;
+	}
+	if (mKeyManager->GetKeyUp(VK_F2))
+	{
+		// Shadow On/Off
+		m_RenderOption |= RENDER_SHADOW;
+	}
+	if (mKeyManager->GetKeyUp(VK_F3))
+	{
+		// SSAO On/Off
+		m_RenderOption |= RENDER_SSAO;
+	}
 }

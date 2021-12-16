@@ -19,12 +19,14 @@ void intro::Awake()
 
 	LoadMesh("Table");
 	LoadMesh("Field");
-	LoadMesh("CHARACTER_idle", true, false);
-	LoadMesh("Player_Run", false, false);
-	LoadMesh("Player_Roll", false, true);
-	LoadMesh("Player_Idle", false, true);
-	LoadMesh("Pistol", true, false);
-	LoadMesh("Weapon", true, false);
+	LoadMesh("CHARACTER_idle", SCALING);
+	LoadMesh("Player_Run");
+	LoadMesh("Player_Roll", ANIMATION_ONLY);
+	LoadMesh("Player_Idle", ANIMATION_ONLY);
+	LoadMesh("Pistol", SCALING);
+	LoadMesh("Weapon", SCALING);
+
+	LoadTerrainMesh("Terrain", "Terrain_RGB.png", SCALING);
 
 	LoadTexture("Player.dds");
 	LoadTexture("Dump.png");
@@ -61,26 +63,26 @@ void intro::Awake()
 	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
 	testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
 
-	testobj = Instance("Field1");
-	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
-	testobj->GetComponent<Transform>()->Rotation = { 90.0f, 0.0f, 0.0f };
-	testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
-	testobj->GetComponent<Transform>()->Position = { 0.0f, 2.5f, 2.5f };
-
-	testobj = Instance("Table");
-	testobj->AddComponent<MeshFilter>()->SetMeshName("Table");
-	testobj->GetComponent<Transform>()->Scale = { 0.1f, 0.1f, 0.1f };
-	testobj->GetTransform()->Position = { -5.0f, 0.0f, -5.0f };
+	//testobj = Instance("Field1");
+	//testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
+	//testobj->GetComponent<Transform>()->Rotation = { 90.0f, 0.0f, 0.0f };
+	//testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
+	//testobj->GetComponent<Transform>()->Position = { 0.0f, 2.5f, 2.5f };
+	
+	//testobj = Instance("Table");
+	//testobj->AddComponent<MeshFilter>()->SetMeshName("Table");
+	//testobj->GetComponent<Transform>()->Scale = { 0.1f, 0.1f, 0.1f };
+	//testobj->GetTransform()->Position = { -5.0f, 0.0f, -5.0f };
 }
 
 void intro::Start()
 {
-	
+
 }
 
 void intro::Update()
 {
-	
+
 }
 
 void intro::End()

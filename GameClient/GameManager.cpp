@@ -23,8 +23,8 @@ void GameManager::Start(HWND _g_hWnd)
 	
 	CreateScene<intro>("intro");
 	CreateScene<InGame>("inGame");
-	ChoiceScene("intro");
-
+	//ChoiceScene("intro");
+	ChoiceScene("inGame");
 }
 
 void GameManager::Update()

@@ -73,10 +73,13 @@ void FBXParser::Release()
 	}
 }
 
-ParserData::Model* FBXParser::LoadModel(std::string fileName, bool scaling, bool onlyAni)
+ParserData::Model* FBXParser::LoadModel(std::string fileName, UINT state)
 {
+	// Parsing 옵션 설정..
+	m_ParsingMode = state;
+
 	// Scene 설정..
-	SceneSetting(fileName, scaling, onlyAni);
+	SceneSetting(fileName);
 
 	// Scene에서 RootNode 가져오기..
 	fbxsdk::FbxNode* pRootNode = pScene->GetRootNode();
@@ -102,14 +105,13 @@ ParserData::Model* FBXParser::LoadModel(std::string fileName, bool scaling, bool
 	return m_Model;
 }
 
-void FBXParser::SceneSetting(std::string fileName, bool scaling, bool onlyAni)
+void FBXParser::SceneSetting(std::string fileName)
 {
 	// Model 생성..
 	CreateModel();
 
 	// 파일 이름과 옵션 설정..
 	fbxFileName = fileName;
-	m_OnlyAni = onlyAni;
 
 	if (!pImporter->Initialize(fbxFileName.c_str(), -1, pManager->GetIOSettings()))
 		throw std::exception("error: initialize importer\n");
@@ -118,7 +120,7 @@ void FBXParser::SceneSetting(std::string fileName, bool scaling, bool onlyAni)
 	pImporter->Import(pScene);
 
 	// Scene 내에 있는 데이터들의 단위를 변경해준다..
-	if (scaling)
+	if (m_ParsingMode & SCALING)
 	{
 		FbxSystemUnit lFbxFileSystemUnit = pScene->GetGlobalSettings().GetSystemUnit();
 		FbxSystemUnit lFbxOriginSystemUnit = pScene->GetGlobalSettings().GetOriginalSystemUnit();
@@ -161,7 +163,7 @@ void FBXParser::ResetData()
 void FBXParser::LoadMaterial()
 {
 	// 애니메이션만 뽑을경우..
-	if (m_OnlyAni) return;
+	if (m_ParsingMode & ANIMATION_ONLY) return;
 
 	// Scene에 존재하는 Material 개수만큼 생성..
 	int mcount = pScene->GetMaterialCount();
@@ -256,7 +258,7 @@ void FBXParser::LoadAnimation(fbxsdk::FbxNode* node)
 void FBXParser::ProcessSkeleton(fbxsdk::FbxNode* node)
 {
 	// 애니메이션만 뽑을 경우..
-	if (m_OnlyAni) return;
+	if (m_ParsingMode & ANIMATION_ONLY) return;
 
 	pMesh = node->GetMesh();
 
@@ -264,7 +266,7 @@ void FBXParser::ProcessSkeleton(fbxsdk::FbxNode* node)
 	CreateMesh();
 
 	m_OneMesh->m_NodeName = node->GetName();
-	m_OneMesh->m_IsBone = true;
+	m_OneMesh->m_MeshType = BONE_MESH;
 
 	// 현 Node Parent 찾기..
 	const char* parentName = node->GetParent()->GetName();
@@ -312,7 +314,7 @@ void FBXParser::ProcessSkeleton(fbxsdk::FbxNode* node)
 void FBXParser::ProcessMesh(fbxsdk::FbxNode* node)
 {
 	// 애니메이션만 뽑을 경우..
-	if (m_OnlyAni) return;
+	if (m_ParsingMode & ANIMATION_ONLY) return;
 
 	pMesh = node->GetMesh();
 
@@ -356,7 +358,11 @@ void FBXParser::ProcessMesh(fbxsdk::FbxNode* node)
 	bool isSkin = ProcessBoneWeights(node, boneWeights);
 
 	// Bone Data 설정 결과에 따른 Skinning Object 판별..
-	m_OneMesh->m_IsSkinningObject = isSkin;
+	if (isSkin)
+	{
+		m_OneMesh->m_MeshType = SKIN_MESH;
+	}
+
 
 	// 새로운 버텍스 생성..
 	CreateVertex(pMesh, boneWeights, vertexTotalCount);
@@ -510,7 +516,7 @@ bool FBXParser::ProcessBoneWeights(fbxsdk::FbxNode* node, std::vector<BoneWeight
 void FBXParser::ProcessAnimation(fbxsdk::FbxNode* node)
 {
 	// 애니메이션만 뽑을경우..
-	if (m_OnlyAni)
+	if (m_ParsingMode & ANIMATION_ONLY)
 	{
 		FbxMesh* mesh = node->GetMesh();
 
@@ -525,7 +531,7 @@ void FBXParser::ProcessAnimation(fbxsdk::FbxNode* node)
 	else
 	{
 		// 만약 스키닝 오브젝트라면 애니메이션 데이터는 Bone에 저장되어 있으므로..
-		if (m_OneMesh->m_IsSkinningObject) return;
+		if (m_OneMesh->m_MeshType == SKIN_MESH) return;
 	}
 
 	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
@@ -579,17 +585,18 @@ void FBXParser::ProcessAnimation(fbxsdk::FbxNode* node)
 		}
 
 		// 해당 Mesh에 애니메이션 삽입..
-		if (m_OnlyAni == false)
+		if ((m_ParsingMode & ANIMATION_ONLY) != ANIMATION_ONLY)
 		{
 			m_OneMesh->m_Animation = m_OneAnimation;
 		}
+
 	}
 }
 
 void FBXParser::OptimizeData()
 {
 	// 애니메이션만 뽑을경우..
-	if (m_OnlyAni) return;
+	if (m_ParsingMode & ANIMATION_ONLY) return;
 
 	// Optimize Data
 	for (unsigned int i = 0; i < m_Model->m_MeshList.size(); i++)
@@ -601,6 +608,9 @@ void FBXParser::OptimizeData()
 void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 {
 	if (pMesh->m_VertexList.empty()) return;
+
+	// 충돌 체크용 원본 버텍스 리스트
+	CopyOriginalVertex(pMesh);
 
 	bool new_VertexSet = false;
 	size_t resize_VertexIndex = pMesh->m_VertexList.size();
@@ -754,6 +764,38 @@ void FBXParser::OptimizeVertex(ParserData::Mesh* pMesh)
 	}
 
 	pMesh->m_MeshFace.clear();
+}
+
+void FBXParser::CopyOriginalVertex(ParserData::Mesh* pMesh)
+{
+	int vCount = (int)pMesh->m_VertexList.size();
+	int fCount = (int)pMesh->m_MeshFace.size();
+
+	for (int i = 0; i < vCount; i++)
+	{
+		pMesh->m_OriginVertexList.push_back(pMesh->m_VertexList[i]->m_Pos);
+	}
+
+	for (int i = 0; i < fCount; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			switch (j)
+			{
+			case 0:
+				pMesh->m_OriginIndexList.push_back(pMesh->m_MeshFace[i]->m_VertexIndex[0]);
+				break;
+			case 1:
+				pMesh->m_OriginIndexList.push_back(pMesh->m_MeshFace[i]->m_VertexIndex[2]);
+				break;
+			case 2:
+				pMesh->m_OriginIndexList.push_back(pMesh->m_MeshFace[i]->m_VertexIndex[1]);
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
 void FBXParser::RecombinationTM(ParserData::Mesh* pMesh)
@@ -970,15 +1012,15 @@ void FBXParser::SetTransform(fbxsdk::FbxNode* node)
 	DirectX::SimpleMath::Matrix world = ConvertMatrix(worldpos);
 	DirectX::SimpleMath::Matrix local = ConvertMatrix(localpos);
 
-	if (m_OneMesh->m_TopNode)
-	{
-		const auto yaw = -90.0f * DirectX::XM_PI / 180.0f;
-		
-		DirectX::SimpleMath::Quaternion q = XMQuaternionRotationRollPitchYaw(yaw, 0.0f, 0.0f);
-		
-		world *= XMMatrixRotationQuaternion(q);
-		local *= XMMatrixRotationQuaternion(q);
-	}
+	//if (m_OneMesh->m_TopNode)
+	//{
+	//	const auto yaw = -90.0f * DirectX::XM_PI / 180.0f;
+	//	
+	//	DirectX::SimpleMath::Quaternion q = XMQuaternionRotationRollPitchYaw(yaw, 0.0f, 0.0f);
+	//	
+	//	world *= XMMatrixRotationQuaternion(q);
+	//	local *= XMMatrixRotationQuaternion(q);
+	//}
 
 	m_OneMesh->m_WorldTM = world;
 	m_OneMesh->m_LocalTM = local;
@@ -1002,9 +1044,9 @@ void FBXParser::SetMaterial(fbxsdk::FbxSurfaceMaterial* material)
 	if (material->GetClassId().Is(FbxSurfacePhong::ClassId))
 	{
 		// Ambient Data
-		m_MaterialData->m_Material_Ambient.x = static_cast<float>(((FbxSurfacePhong*)material)->Ambient.Get()[0]);
-		m_MaterialData->m_Material_Ambient.y = static_cast<float>(((FbxSurfacePhong*)material)->Ambient.Get()[1]);
-		m_MaterialData->m_Material_Ambient.z = static_cast<float>(((FbxSurfacePhong*)material)->Ambient.Get()[2]);
+		m_MaterialData->m_Material_Ambient.x = static_cast<float>(((FbxSurfacePhong*)material)->Ambient.Get()[0]) * 10.0f;
+		m_MaterialData->m_Material_Ambient.y = static_cast<float>(((FbxSurfacePhong*)material)->Ambient.Get()[1]) * 10.0f;
+		m_MaterialData->m_Material_Ambient.z = static_cast<float>(((FbxSurfacePhong*)material)->Ambient.Get()[2]) * 10.0f;
 		m_MaterialData->m_Material_Ambient.w = 1.0f;
 
 		// Diffuse Data
@@ -1094,7 +1136,7 @@ void FBXParser::SetTexture(fbxsdk::FbxSurfaceMaterial* material, const char* mat
 						{
 							std::string mapName("Diffuse Map" + count);
 							m_MaterialData->m_DiffuseMap = new MaterialMap();
-							m_MaterialData->m_IsDiffuseMap = true;
+							m_MaterialData->m_TextureBind |= DIFFUSE_TEXTURE;
 							m_MaterialData->m_DiffuseMap->m_MapName = mapName;
 							m_MaterialData->m_DiffuseMap->m_BitMap = fileRoute;
 							m_MaterialData->m_MapList.push_back(m_MaterialData->m_DiffuseMap);
@@ -1103,7 +1145,7 @@ void FBXParser::SetTexture(fbxsdk::FbxSurfaceMaterial* material, const char* mat
 						{
 							std::string mapName("Specular Map" + count);
 							m_MaterialData->m_SpecularMap = new MaterialMap();
-							m_MaterialData->m_IsSpecularMap = true;
+							m_MaterialData->m_TextureBind |= SPECULAR_TEXTURE;
 							m_MaterialData->m_SpecularMap->m_MapName = mapName;
 							m_MaterialData->m_SpecularMap->m_BitMap = fileRoute;
 							m_MaterialData->m_MapList.push_back(m_MaterialData->m_SpecularMap);
@@ -1111,11 +1153,11 @@ void FBXParser::SetTexture(fbxsdk::FbxSurfaceMaterial* material, const char* mat
 						else if (textureType == "NormalMap")
 						{
 							std::string mapName("Normal Map" + count);
-							m_MaterialData->m_BumpMap = new MaterialMap();
-							m_MaterialData->m_IsBumpMap = true;
-							m_MaterialData->m_BumpMap->m_MapName = mapName;
-							m_MaterialData->m_BumpMap->m_BitMap = fileRoute;
-							m_MaterialData->m_MapList.push_back(m_MaterialData->m_BumpMap);
+							m_MaterialData->m_NormalMap = new MaterialMap();
+							m_MaterialData->m_TextureBind |= NORMAL_TEXTURE;
+							m_MaterialData->m_NormalMap->m_MapName = mapName;
+							m_MaterialData->m_NormalMap->m_BitMap = fileRoute;
+							m_MaterialData->m_MapList.push_back(m_MaterialData->m_NormalMap);
 						}
 						else if (textureType == "TransparentColor")	// MaskMap
 						{

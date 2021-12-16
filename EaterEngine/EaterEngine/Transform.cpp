@@ -262,7 +262,7 @@ void Transform::UpdateLocalPosition()
 	DirectX::XMMATRIX LocalPos = DirectX::XMMatrixInverse(&det, World_M);
 	DirectX::XMFLOAT4X4 A_Master4x4;
 	XMStoreFloat4x4(&A_Master4x4, LocalPos);
-
+	
 	//각각의 값을 넣어준다
 	Local_Right.x = A_Master4x4._11;
 	Local_Right.y = A_Master4x4._12;

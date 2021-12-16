@@ -49,7 +49,8 @@ public:
 	
 	///Load
 	//모델 로드(스크린 이름,모델의 이름,스케일 여부,애니메이션 여부)
-	void LoadMesh(std::string Name, bool Scale = true,bool LoadAnime = false);
+	void LoadTerrain(std::string Name, std::string MaskName, UINT parsingMode);
+	void LoadMesh(std::string Name, UINT parsingMode);
 	void LoadTexture(std::string Name);
 	//프리펩 로드
 	void LoadPrefap(std::string Name);
@@ -67,8 +68,9 @@ public:
 	void DeleteMeshAll();
 private:
 	//계층 구조를 타지않고 탑오브젝트들만 읽어온다
-	LoadMeshData* CreateMeshObjeect(ParserData::Mesh* mesh);
-	LoadMeshData* CreateBoneObjeect(ModelData* SaveData);
+	LoadMeshData* CreateTerrainObject(ParserData::Mesh* mesh, std::string maskName);
+	LoadMeshData* CreateMeshObject(ParserData::Mesh* mesh);
+	LoadMeshData* CreateBoneObject(ModelData* SaveData);
 
 	//애니메이션을 로드함
 	void LoadAnimation(ModelData* SaveMesh,ParserData::Model* MeshData,std::string Name);

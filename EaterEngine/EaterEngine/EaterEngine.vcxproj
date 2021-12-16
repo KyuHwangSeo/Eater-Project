@@ -167,7 +167,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\Graphic</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\Graphic;$(SolutionDir)Library\inc\Parser;$(SolutionDir)Library\inc\PhysX</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -179,19 +179,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(ProjectDir)Export\*.h" "$(SolutionDir)Library\inc\Component"
-
-copy /Y "$(ProjectDir)GraphicsEngine.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)ResourcesData.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)EngineData.h" "$(SolutionDir)Library\inc"
-
-copy /Y "$(TargetDir)*.dll" "$(SolutionDir)Library\lib"
-copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
-
-
-
-
-</Command>
+      <Command>copy /Y "$(ProjectDir)Export\*.h" "$(SolutionDir)Library\inc\Component"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -204,7 +192,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\Graphic</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(ProjectDir)Export;$(SolutionDir)Library\inc\Graphic;$(SolutionDir)Library\inc\Parser;$(SolutionDir)Library\inc\PhysX</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -217,19 +205,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(ProjectDir)Export\*.h" "$(SolutionDir)Library\inc\Component"
-
-copy /Y "$(ProjectDir)GraphicsEngine.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)ResourcesData.h" "$(SolutionDir)Library\inc"
-copy /Y "$(ProjectDir)EngineData.h" "$(SolutionDir)Library\inc"
-
-copy /Y "$(TargetDir)*.dll" "$(SolutionDir)Library\lib"
-copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
-
-
-
-
-</Command>
+      <Command>copy /Y "$(ProjectDir)Export\*.h" "$(SolutionDir)Library\inc\Component"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -245,6 +221,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClInclude Include="Export\Animator.h" />
     <ClInclude Include="Export\Camera.h" />
     <ClInclude Include="Export\Component.h" />
+    <ClInclude Include="Export\ComponentBase.h" />
     <ClInclude Include="Export\EaterEngineDLL.h" />
     <ClInclude Include="Export\GameObject.h" />
     <ClInclude Include="Export\Light.h" />
@@ -254,6 +231,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClInclude Include="Export\Rigidbody.h" />
     <ClInclude Include="Export\Scene.h" />
     <ClInclude Include="Export\SkinningFilter.h" />
+    <ClInclude Include="Export\Terrain.h" />
     <ClInclude Include="Export\Transform.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameEngine.h" />
@@ -295,6 +273,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkinningFilter.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>

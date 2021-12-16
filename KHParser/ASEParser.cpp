@@ -356,7 +356,7 @@ void ASEParser::SetBoneTM(ParserData::ASEMesh* pMesh)
 				pMesh->m_BoneMeshList.emplace_back(m_MeshList[j]);
 
 				// Bone Setting..
-				m_MeshList[j]->m_IsBone = true;
+				m_MeshList[j]->m_MeshType = BONE_MESH;
 			}
 
 			// Bone List size가 같아지면 더 돌 필요가 없다..
@@ -710,7 +710,7 @@ void ASEParser::DataParsing()
 			// 이게 있다면 이것은 Skinned Mesh라고 단정을 짓는다.
 			if (Parsing_NumberInt() > 0)
 			{
-				m_OneMesh->m_IsSkinningObject = true;
+				m_OneMesh->m_MeshType = SKIN_MESH;
 			}
 		}
 		break;
@@ -1056,7 +1056,7 @@ void ASEParser::Create_DiffuseMap_to_list()
 	m_materialmap = temp;
 	m_MaterialData->m_MapList.push_back(temp);
 	m_MaterialData->m_DiffuseMap = temp;
-	m_MaterialData->m_IsDiffuseMap = true;
+	m_MaterialData->m_TextureBind |= DIFFUSE_TEXTURE;
 }
 
 void ASEParser::Create_BumpMap_to_list()
@@ -1064,8 +1064,8 @@ void ASEParser::Create_BumpMap_to_list()
 	MaterialMap* temp = new MaterialMap;
 	m_materialmap = temp;
 	m_MaterialData->m_MapList.push_back(temp);
-	m_MaterialData->m_BumpMap = temp;
-	m_MaterialData->m_IsBumpMap = true;
+	m_MaterialData->m_NormalMap = temp;
+	m_MaterialData->m_TextureBind |= NORMAL_TEXTURE;
 }
 
 void ASEParser::Create_SpecularMap_to_list()
@@ -1074,7 +1074,7 @@ void ASEParser::Create_SpecularMap_to_list()
 	m_materialmap = temp;
 	m_MaterialData->m_MapList.push_back(temp);
 	m_MaterialData->m_SpecularMap = temp;
-	m_MaterialData->m_IsSpecularMap = true;
+	m_MaterialData->m_TextureBind |= SPECULAR_TEXTURE;
 }
 
 void ASEParser::Create_ShineMap_to_list()
@@ -1083,7 +1083,7 @@ void ASEParser::Create_ShineMap_to_list()
 	m_materialmap = temp;
 	m_MaterialData->m_MapList.push_back(temp);
 	m_MaterialData->m_ShineMap = temp;
-	m_MaterialData->m_IsShineMap = true;
+	m_MaterialData->m_TextureBind |= SHINE_TEXTURE;
 }
 
 void ASEParser::Create_AnimationData_to_mesh(Mesh* nowMesh)

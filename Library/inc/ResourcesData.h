@@ -48,11 +48,3 @@ public:
 
 	void* TextureBufferPointer = nullptr;
 };
-
-
-
-
-
-
-
-

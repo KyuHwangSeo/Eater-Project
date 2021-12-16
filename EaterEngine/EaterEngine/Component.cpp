@@ -24,4 +24,3 @@ void Component::SetManager(TimeManager* time, KeyinputManager* key)
 	mTimeManager = time;
 	mKeyInputManger = key;
 }
-

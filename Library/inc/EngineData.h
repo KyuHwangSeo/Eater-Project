@@ -1,33 +1,57 @@
 #pragma once
+#include <map>
+#include <functional>
 #include "ResourcesData.h"
 #include "ParserData.h"
-#include <functional>
-#include <map>
 #include "LightHelper.h"
-
 
 using namespace DirectX;
 using namespace SimpleMath;
 using namespace ParserData;
 
 class Component;
+
+typedef enum RENDER_OPTION_DESC : UINT
+{
+	RENDER_GAMMA_CORRECTION	= 0x00000001,
+	RENDER_SHADOW			= 0x00000010,
+	RENDER_SSAO				= 0x00000100,
+}RENDER_OPTION_DESC;
+
 enum class OBJECT_TYPE
 {
 	///현재 기본형으로 넣어둔 오브젝트 종류
 	///나중에 필요한건 넣고 필요없는건 빼자
 
-	DEFALT,		//값을 넣지않았을때 기본형
+	DEFALT,			//값을 넣지않았을때 기본형
 	GAMEOBJECT,		//다른 오브젝트들을 묶어놓는 용도
 	BASE,			//상속구조로 되어있는 오브젝트
 	SKINNING,		//스키닝이 추가된 오브젝트
 	BONE,			//본만 있는 오브젝트
+	TERRAIN,		//터레인 오브젝트
 	CAMERA,			//카메라 기능만 하는 오브젝트
 	LIGHT,			//라이트 객체
 	SKYBOX,			//스카이 박스
 	TEXTURE,		//한개의 텍스쳐로된 오브젝트(페이스두개가 합쳐진 사각형 텍스쳐)
-	DEBUGOBJECT,			//디버깅 오브젝트
+	DEBUGOBJECT,	//디버깅 오브젝트
 	PARTICLE,		//파티클 오브젝트
 	EFFECT			//이펙트 오브젝트
+};
+
+class MaterialBuffer
+{
+public:
+	UINT Material_Index = 0;				// Material Index
+
+	MaterialData* Material_Data = nullptr;	// Material Data
+
+	TextureBuffer* Albedo = nullptr;		// DiffuseMap Texture
+	TextureBuffer* Normal = nullptr;		// NormalMap Texture
+	TextureBuffer* Roughness = nullptr;		// RoughnessMap Texture
+	TextureBuffer* Metallic = nullptr;		// MetallicMap Texture
+
+	Vector4 Color_Base;			// Base Color
+	Vector4 Color_Add;			// Add Color
 };
 
 /// <summary>
@@ -37,29 +61,18 @@ class GlobalData
 {
 public:
 	//카메라 정보들
-	DirectX::XMMATRIX* mCamView;	// Camera View Matrix
-	DirectX::XMMATRIX* mCamProj;	// Camera Proj Matrix
-	DirectX::XMMATRIX* mCamPT;		// Camera Proj * TexSpace Matrix
-	DirectX::XMFLOAT3* mCamPos;		// Camera Pos
+	XMMATRIX* mCamView;	// Camera View Matrix
+	XMMATRIX* mCamProj;	// Camera Proj Matrix
+	XMMATRIX* mCamPT;		// Camera Proj * TexSpace Matrix
+	XMFLOAT3* mCamPos;		// Camera Pos
 
-	DirectX::XMMATRIX* mLightView;	// Light View Matrix
-	DirectX::XMMATRIX* mLightProj;	// Light Proj Matrix
-	DirectX::XMMATRIX* mLightVPT;	// Light View * Proj * TexSpace Matrix
+	XMMATRIX* mLightView;	// Light View Matrix
+	XMMATRIX* mLightProj;	// Light Proj Matrix
+	XMMATRIX* mLightVPT;	// Light View * Proj * TexSpace Matrix
 
 	LightData* mLightData;
-	MaterialData mMatData[5];
+	std::vector<MaterialData*> mMatData;
 };
-
-/// <summary>
-/// 게임엔진에서 그래픽엔진으로 던저줄 정적 데이터
-/// </summary>
-class StaticData
-{
-public:
-	LightData* mLightData;
-	MaterialData mMatData[5];
-};
-
 
 /// <summary>
 /// 게임엔진에서 그래픽엔진으로 던저줄 한개의 메쉬 데이터
@@ -74,26 +87,19 @@ public:
 	}
 
 public:
-	OBJECT_TYPE ObjType = OBJECT_TYPE::DEFALT;	//오브젝트 타입
+	OBJECT_TYPE ObjType = OBJECT_TYPE::DEFALT;		//오브젝트 타입
 
-	Indexbuffer* IB = nullptr;			//인덱스 버퍼
-	Vertexbuffer* VB = nullptr;			//버텍스 버퍼
+	Indexbuffer* IB = nullptr;						//인덱스 버퍼
+	Vertexbuffer* VB = nullptr;						//버텍스 버퍼
 
-	TextureBuffer* Albedo = nullptr;	// DiffuseMap Texture
-	TextureBuffer* Normal = nullptr;	// NormalMap Texture
-	TextureBuffer* Height = nullptr;	// HeightMap Texture
-	TextureBuffer* Roughness = nullptr;	// RoughnessMap Texture
-	TextureBuffer* Metallic = nullptr;	// MetallicMap Texture
+	std::vector<MaterialBuffer*> Material_List;		// Material List
 
-	UINT Material_Index = 0;			// Material Index
+	std::vector<Matrix> BoneOffsetTM;				//본 오프셋 TM
 
-	std::vector<DirectX::SimpleMath::Matrix> BoneOffsetTM; //본 오프셋 TM
-
-	DirectX::XMMATRIX mWorld = DirectX::XMMatrixIdentity();	//매쉬의 월드 행렬
-	DirectX::XMMATRIX mLocal = DirectX::XMMatrixIdentity();	//매쉬의 로컬행렬
+	XMMATRIX mWorld = XMMatrixIdentity();			//매쉬의 월드 행렬
+	XMMATRIX mLocal = XMMatrixIdentity();			//매쉬의 로컬행렬
+	XMMATRIX mTexTM = XMMatrixIdentity();
 };
-
-
 
 
 /// <summary>
@@ -117,26 +123,28 @@ public:
 		Parent = nullptr;
 	};
 
+	MESH_TYPE MeshType;				// 매쉬 타입
+
 	bool Top_Object = false;		//가장 최상위 오브젝트인지 여부
-	bool Bone_Object = false;		//본오브젝트 여부
-	bool Skinning_Object = false;		//스키닝 오브젝트 여부
 
-	int BoneIndex = -1;						//본일경우 자신의 인덱스
+	int BoneIndex = -1;				//본일경우 자신의 인덱스
 
-	std::string ParentName = "";			//부모의 이름
+	std::string ParentName = "";	//부모의 이름
 	std::string	Name = "";			//자기자신의 이름
 
-	DirectX::SimpleMath::Matrix* WorldTM = nullptr;	//월드 매트릭스
-	DirectX::SimpleMath::Matrix* LocalTM = nullptr;	//로컬 매트릭스
+	Matrix* WorldTM = nullptr;	//월드 매트릭스
+	Matrix* LocalTM = nullptr;	//로컬 매트릭스
 
 	Indexbuffer* IB = nullptr;			//인덱스 버퍼
 	Vertexbuffer* VB = nullptr;			//버텍스 버퍼
 
 	TextureBuffer* Albedo = nullptr;	// DiffuseMap Texture
 	TextureBuffer* Normal = nullptr;	// NormalMap Texture
-	TextureBuffer* Height = nullptr;	// HeightMap Texture
 	TextureBuffer* Roughness = nullptr;	// RoughnessMap Texture
 	TextureBuffer* Metallic = nullptr;	// MetallicMap Texture
+
+	std::vector<UINT> Index_List;		//	
+	std::vector<Vector3> Vertex_List;	//
 
 	ParserData::CMaterial* Material = nullptr;	//메테리얼 정보
 	ParserData::OneAnimation* Animation = nullptr;	//애니메이션 정보
@@ -147,9 +155,7 @@ public:
 	LoadMeshData* Parent = nullptr;			//부모 매쉬
 	std::vector<LoadMeshData*> Child;		//자식 매쉬 리스트
 
-
 	Matrix* BoneOffset = nullptr;			//본 매트릭스
-	Mesh* BoneNumber = nullptr;			//본 매쉬
 };
 
 /// <summary>

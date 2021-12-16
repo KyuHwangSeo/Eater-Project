@@ -81,11 +81,11 @@ void D3D11Graphic::CreateTextureBuffer(std::string filePath, ID3D11Resource** re
 	// 확장자에 따른 텍스처 파일 로드 방식..
 	if (filePath.rfind(".dds") != std::string::npos)
 	{
-		HR(DirectX::CreateDDSTextureFromFile(m_Device.Get(), wPath.c_str(), resource, srv));
+		DirectX::CreateDDSTextureFromFile(m_Device.Get(), wPath.c_str(), resource, srv);
 	}
 	else
 	{
-		HR(DirectX::CreateWICTextureFromFile(m_Device.Get(), wPath.c_str(), resource, srv));
+		DirectX::CreateWICTextureFromFile(m_Device.Get(), wPath.c_str(), resource, srv);
 	}
 }
 

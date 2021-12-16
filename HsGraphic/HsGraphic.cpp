@@ -103,6 +103,7 @@ Indexbuffer* HsGraphic::CreateIndexBuffer(ParserData::Mesh* mModel)
 	Device->CreateBuffer(&ibd, &iinitData, &mIB);
 
 	indexbuffer->IndexBufferPointer = mIB;
+	indexbuffer->Count = IndexCount * 3;
 
 	return indexbuffer;
 }
@@ -111,16 +112,22 @@ Vertexbuffer* HsGraphic::CreateVertexBuffer(ParserData::Mesh* mModel)
 {
 	//모델의 	
 	Vertexbuffer* vertexbuffer;
-	if (mModel->m_IsSkinningObject == true)
+	switch (mModel->m_MeshType)
 	{
+	case MESH_TYPE::SKIN_MESH:
 		vertexbuffer = CreateSkinngingVertexBuffer(mModel);
-	}
-	else
-	{
+		break;
+	default:
 		vertexbuffer = CreateBasicVertexBuffer(mModel);
+		break;
 	}
 
 	return vertexbuffer;
+}
+
+Vertexbuffer* HsGraphic::CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName)
+{
+	return nullptr;
 }
 
 ID3D11RenderTargetView* HsGraphic::GetEngineRTV()
@@ -228,6 +235,7 @@ Vertexbuffer* HsGraphic::CreateBasicVertexBuffer(ParserData::Mesh* mModel)
 	Device->CreateBuffer(&vbd, &vinitData, &mVB);
 
 	vertexbuffer->VertexbufferPointer = mVB;
+	vertexbuffer->Count = Vcount;
 
 	/////////////////////////////////////////////////// 중요함 꼭넣어주세요
 	vertexbuffer->VertexDataSize = sizeof(Deferred32);
@@ -289,6 +297,7 @@ Vertexbuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
 	Device->CreateBuffer(&vbd, &vinitData, &mVB);
 
 	vertexbuffer->VertexbufferPointer = mVB;
+	vertexbuffer->Count = Vcount;
 
 	/////////////////////////////////////////////////// 중요함 꼭넣어주세요
 	vertexbuffer->VertexDataSize = sizeof(Skinning32);
