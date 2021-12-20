@@ -35,9 +35,9 @@ private:
 	ResourceClass* RegisterResource(Hash_Code hash_code, Resource* resource);
 
 public:
-	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
-	Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) override;
-	Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mesh) override;
+	VertexBuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
+	VertexBuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) override;
+	IndexBuffer* CreateIndexBuffer(ParserData::Mesh* mesh) override;
 	TextureBuffer* CreateTextureBuffer(std::string path) override;
 
 public:
@@ -46,8 +46,8 @@ public:
 
 private:
 	template<typename T>
-	Vertexbuffer* CreateMeshVB(ParserData::Mesh* mesh);
-	Vertexbuffer* CreateTerrainVB(ParserData::Mesh* mesh, std::string maskName);
+	VertexBuffer* CreateMeshVB(ParserData::Mesh* mesh);
+	VertexBuffer* CreateTerrainVB(ParserData::Mesh* mesh, std::string maskName);
 
 	void CreateMainRenderTarget(Hash_Code hash_Code, UINT width, UINT height);
 
@@ -90,10 +90,10 @@ struct SkinVertex;
 struct TerrainVertex;
 
 template<typename T>
-inline Vertexbuffer* GraphicResourceFactory::CreateMeshVB(ParserData::Mesh* mesh) { return nullptr; }
+inline VertexBuffer* GraphicResourceFactory::CreateMeshVB(ParserData::Mesh* mesh) { return nullptr; }
 
 template<>
-inline Vertexbuffer* GraphicResourceFactory::CreateMeshVB<MeshVertex>(ParserData::Mesh* mesh);
+inline VertexBuffer* GraphicResourceFactory::CreateMeshVB<MeshVertex>(ParserData::Mesh* mesh);
 
 template<>
-inline Vertexbuffer* GraphicResourceFactory::CreateMeshVB<SkinVertex>(ParserData::Mesh* mesh);
+inline VertexBuffer* GraphicResourceFactory::CreateMeshVB<SkinVertex>(ParserData::Mesh* mesh);

@@ -20,7 +20,7 @@ public:
 	void AddSampler(Hash_Code hash_code, ID3D11SamplerState* sampler) override;
 
 public:
-	ShaderBase* LoadShader(eShaderType shaderType, std::string shaderName, std::string entry_point, std::string shaderKey = std::string(), const D3D_SHADER_MACRO* pDefines = nullptr);
+	ShaderBase* LoadShader(SHADER_TYPE shaderType, const char* fileName, const char* entry_point, const char* shaderName, const D3D_SHADER_MACRO* pDefines = nullptr);
 	OriginalShader GetShader(std::string shaderName) override;
 
 private:

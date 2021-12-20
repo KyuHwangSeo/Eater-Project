@@ -38,11 +38,16 @@ protected:
 	static KeyinputManager*	mKeyInputManger;
 
 protected:
-	//시작 단계에 가장먼저 실행되는 함수
+	///초기화 단계
+	//시작 단계 필요한 컨퍼넌트 Get
 	virtual void Awake() {};
-	//시작 함수
+	//컨퍼넌트 Initialize 
+	virtual void SetUp() {};
+	//초기화된값으로 컨퍼넌트 실행
 	virtual void Start() {};
-	//처음
+
+	///업데이트 단계
+	//시작 단계 업데이트
 	virtual void StartUpdate() {};
 	//이동 행렬 업데이트
 	virtual void TransformUpdate() {};
@@ -65,6 +70,9 @@ protected:
 	
 	unsigned int Awake_Order			= FUNCTION_ORDER_CENTER;
 	unsigned int Start_Order			= FUNCTION_ORDER_CENTER;
+	unsigned int SetUp_Order			= FUNCTION_ORDER_CENTER;
+
+
 	unsigned int StartUpdate_Order		= FUNCTION_ORDER_CENTER;
 	unsigned int TransformUpdate_Order	= FUNCTION_ORDER_CENTER;
 	unsigned int PhysicsUpdate_Order	= FUNCTION_ORDER_CENTER;

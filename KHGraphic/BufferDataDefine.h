@@ -7,5 +7,5 @@
 // Global BufferData
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-BUFFER_DATA(BD_FullScreen)
-BUFFER_DATA(BD_SSAOScreen)
+BUFFER_DATA(BD_Quad)
+BUFFER_DATA(BD_SSAO)

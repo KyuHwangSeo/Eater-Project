@@ -77,16 +77,16 @@ struct LightData
 	UINT gSpotLightCount;
 };
 
-struct MaterialData
+struct MaterialOption
 {
-	MaterialData() = default;
+	MaterialOption() = default;
 
 	DirectX::SimpleMath::Vector4 Ambient	= DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	DirectX::SimpleMath::Vector4 Diffuse	= DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
 	DirectX::SimpleMath::Vector4 Specular	= DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f); // w = SpecPower
 	DirectX::SimpleMath::Vector4 Reflect	= DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
 
-	bool operator==(const MaterialData& mat)
+	bool operator==(const MaterialOption& mat)
 	{
 		return (Ambient == mat.Ambient && Diffuse == mat.Diffuse && Specular == mat.Specular && Reflect == mat.Reflect);
 	}

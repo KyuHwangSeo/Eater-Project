@@ -11,12 +11,12 @@ using namespace ParserData;
 
 class Component;
 
-typedef enum RENDER_OPTION_DESC : UINT
+typedef enum RENDER_OPTION : UINT
 {
 	RENDER_GAMMA_CORRECTION	= 0x00000001,
 	RENDER_SHADOW			= 0x00000010,
 	RENDER_SSAO				= 0x00000100,
-}RENDER_OPTION_DESC;
+}RENDER_OPTION;
 
 enum class OBJECT_TYPE
 {
@@ -38,12 +38,12 @@ enum class OBJECT_TYPE
 	EFFECT			//이펙트 오브젝트
 };
 
-class MaterialBuffer
+class MaterialData
 {
 public:
 	UINT Material_Index = 0;				// Material Index
 
-	MaterialData* Material_Data = nullptr;	// Material Data
+	MaterialOption* Material_Data = nullptr;	// Material Data
 
 	TextureBuffer* Albedo = nullptr;		// DiffuseMap Texture
 	TextureBuffer* Normal = nullptr;		// NormalMap Texture
@@ -54,6 +54,19 @@ public:
 	Vector4 Color_Add;			// Add Color
 };
 
+class TerrainData
+{
+public:
+	std::vector<MaterialData*> Material_List;		// Material List
+};
+
+class ParticleData
+{
+public:
+	std::vector<Matrix*> m_Particles;
+};
+
+
 /// <summary>
 /// 게임엔진에서 그래픽엔진으로 던저줄 글로벌 데이터
 /// </summary>
@@ -61,17 +74,22 @@ class GlobalData
 {
 public:
 	//카메라 정보들
-	XMMATRIX* mCamView;	// Camera View Matrix
-	XMMATRIX* mCamProj;	// Camera Proj Matrix
-	XMMATRIX* mCamPT;		// Camera Proj * TexSpace Matrix
-	XMFLOAT3* mCamPos;		// Camera Pos
+	Matrix mCamView;	// Camera View Matrix
+	Matrix mCamProj;	// Camera Proj Matrix
+	Vector3 mCamPos;	// Camera Pos
 
-	XMMATRIX* mLightView;	// Light View Matrix
-	XMMATRIX* mLightProj;	// Light Proj Matrix
-	XMMATRIX* mLightVPT;	// Light View * Proj * TexSpace Matrix
+	Matrix mCamVP;		// Camera Proj * Proj Matrix
+	Matrix mCamPT;		// Camera Proj * TexSpace Matrix
+	Matrix mCamVPT;		// Camera View * Proj * TexSpace Matrix
+
+	Matrix mLightView;	// Light View Matrix
+	Matrix mLightProj;	// Light Proj Matrix
+
+	Matrix mLightVP;	// Light View * Proj Matrix
+	Matrix mLightVPT;	// Light View * Proj * TexSpace Matrix
 
 	LightData* mLightData;
-	std::vector<MaterialData*> mMatData;
+	std::vector<MaterialOption*> mMatData;
 };
 
 /// <summary>
@@ -89,18 +107,20 @@ public:
 public:
 	OBJECT_TYPE ObjType = OBJECT_TYPE::DEFALT;		//오브젝트 타입
 
-	Indexbuffer* IB = nullptr;						//인덱스 버퍼
-	Vertexbuffer* VB = nullptr;						//버텍스 버퍼
-
-	std::vector<MaterialBuffer*> Material_List;		// Material List
+	IndexBuffer* IB = nullptr;						//인덱스 버퍼
+	VertexBuffer* VB = nullptr;						//버텍스 버퍼
 
 	std::vector<Matrix> BoneOffsetTM;				//본 오프셋 TM
 
-	XMMATRIX mWorld = XMMatrixIdentity();			//매쉬의 월드 행렬
-	XMMATRIX mLocal = XMMatrixIdentity();			//매쉬의 로컬행렬
-	XMMATRIX mTexTM = XMMatrixIdentity();
-};
+	Matrix mWorld = XMMatrixIdentity();			//매쉬의 월드 행렬
+	Matrix mLocal = XMMatrixIdentity();			//매쉬의 로컬행렬
+	Matrix mTexTM = XMMatrixIdentity();
 
+	// 추가 데이터
+	MaterialData* Material_Data;		// Material Data
+	TerrainData* Terrain_Data;		// Terrain Data
+	ParticleData* Particle_Data;		// Particle Data
+};
 
 /// <summary>
 /// 규황이 파서에서 버텍스와 인덱스를 버퍼로 변경해주고
@@ -135,8 +155,8 @@ public:
 	Matrix* WorldTM = nullptr;	//월드 매트릭스
 	Matrix* LocalTM = nullptr;	//로컬 매트릭스
 
-	Indexbuffer* IB = nullptr;			//인덱스 버퍼
-	Vertexbuffer* VB = nullptr;			//버텍스 버퍼
+	IndexBuffer* IB = nullptr;			//인덱스 버퍼
+	VertexBuffer* VB = nullptr;			//버텍스 버퍼
 
 	TextureBuffer* Albedo = nullptr;	// DiffuseMap Texture
 	TextureBuffer* Normal = nullptr;	// NormalMap Texture
@@ -150,7 +170,10 @@ public:
 	ParserData::OneAnimation* Animation = nullptr;	//애니메이션 정보
 
 	std::vector<Matrix>* BoneTMList = nullptr;	//본 매트릭스
-	std::vector<Mesh*>* BoneList = nullptr;	//본 매쉬
+	std::vector<Mesh*>* BoneList = nullptr;		//본 매쉬
+
+	std::vector<Vector3>*	m_OriginVertexList;
+	std::vector<UINT>*		m_OriginIndexList;
 
 	LoadMeshData* Parent = nullptr;			//부모 매쉬
 	std::vector<LoadMeshData*> Child;		//자식 매쉬 리스트

@@ -11,6 +11,7 @@ public:
 	Player();
 	virtual ~Player();
 	void Awake();
+	void SetUp();
 	void Start();
 	void Update();
 private:

@@ -105,10 +105,11 @@ void ForwardPass::BeginRender()
 void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 {
 	Matrix world = mesh->mWorld;
-	Matrix view = *global->mCamView;
-	Matrix proj = *global->mCamProj;
-	Matrix shadowTrans = *global->mLightVPT;
-	MaterialBuffer* mat = *mesh->Material_List.begin();
+	Matrix view = global->mCamView;
+	Matrix proj = global->mCamProj;
+	Matrix viewproj = global->mCamVP;
+	Matrix shadowTrans = global->mLightVPT;
+	MaterialData* mat = mesh->Material_Data;
 
 	switch (mesh->ObjType)
 	{
@@ -117,10 +118,10 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		CB_MeshObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldView = world * view;
-		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gWorldViewProj = world * viewproj;
 		objectBuf.gShadowTransform = world * shadowTrans;
 
-		m_MeshVS->SetConstantBuffer(objectBuf);
+		m_MeshVS->ConstantBufferCopy(&objectBuf);
 
 		// Vertex Shader Update..
 		m_MeshVS->Update();
@@ -131,7 +132,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		CB_SkinObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldView = world * view;
-		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gWorldViewProj = world * viewproj;
 		objectBuf.gShadowTransform = world * shadowTrans;
 
 		for (int i = 0; i < mesh->BoneOffsetTM.size(); i++)
@@ -139,7 +140,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 			objectBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
 		}
 
-		m_SkinVS->SetConstantBuffer(objectBuf);
+		m_SkinVS->ConstantBufferCopy(&objectBuf);
 
 		// Vertex Shader Update..
 		m_SkinVS->Update();
@@ -170,12 +171,12 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 	{
 		lightBuf.gMaterials[m] = *global->mMatData[m];
 	}
-	m_ForwardPS->SetConstantBuffer(lightBuf);
+	m_ForwardPS->ConstantBufferCopy(&lightBuf);
 
 	CB_LightSub lightsubBuf;
-	lightsubBuf.gEyePosW = *global->mCamPos;
+	lightsubBuf.gEyePosW = global->mCamPos;
 
-	m_ForwardPS->SetConstantBuffer(lightsubBuf);
+	m_ForwardPS->ConstantBufferCopy(&lightsubBuf);
 
 	CB_Material materialBuf;
 	materialBuf.gMatID = mat->Material_Index;
@@ -191,7 +192,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 		m_ForwardPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mat->Normal->TextureBufferPointer);
 	}
 
-	m_ForwardPS->SetConstantBuffer(materialBuf);
+	m_ForwardPS->ConstantBufferCopy(&materialBuf);
 
 	// Pixel Shader Update..
 	m_ForwardPS->Update();
@@ -200,7 +201,7 @@ void ForwardPass::Update(MeshData* mesh, GlobalData* global)
 void ForwardPass::Render(MeshData* mesh)
 {
 	ID3D11Buffer* iBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->IB->IndexBufferPointer);
-	ID3D11Buffer* vBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->VB->VertexbufferPointer);
+	ID3D11Buffer* vBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->VB->VertexBufferPointer);
 
 	UINT indexCount = mesh->IB->Count;
 	UINT stride = mesh->VB->VertexDataSize;

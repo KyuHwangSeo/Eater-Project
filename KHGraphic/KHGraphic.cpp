@@ -93,17 +93,17 @@ void KHGraphic::Delete()
 
 }
 
-Indexbuffer* KHGraphic::CreateIndexBuffer(ParserData::Mesh* mesh)
+IndexBuffer* KHGraphic::CreateIndexBuffer(ParserData::Mesh* mesh)
 {
 	return m_ResourceFactory->CreateIndexBuffer(mesh);
 }
 
-Vertexbuffer* KHGraphic::CreateVertexBuffer(ParserData::Mesh* mesh)
+VertexBuffer* KHGraphic::CreateVertexBuffer(ParserData::Mesh* mesh)
 {
 	return m_ResourceFactory->CreateVertexBuffer(mesh);
 }
 
-Vertexbuffer* KHGraphic::CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName)
+VertexBuffer* KHGraphic::CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName)
 {
 	return m_ResourceFactory->CreateTerrainVertexBuffer(mesh, maskName);
 }

@@ -14,5 +14,5 @@ public:
 private:
 	float mLastMousePosX;
 	float mLastMousePosY;
-	float speed = 25;
+	float speed = 10;
 };

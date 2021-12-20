@@ -83,12 +83,12 @@ void ShaderBase::SetSamplerState(Hash_Code hash_code, ID3D11SamplerState* sample
 
 	// 해당 Key에 대한 Value가 없다면..
 	if (it == m_SamplerList.end()) return;
-
+	
 	// 해당 Register Slot에 삽입..
 	m_SamplerStates[it->second->register_number] = sampler;
 }
 
-eShaderType ShaderBase::GetType()
+SHADER_TYPE ShaderBase::GetType()
 {
 	return m_ShaderType;
 }

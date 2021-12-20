@@ -12,8 +12,8 @@ class ObjectManager;
 class MeshData;
 class GlobalData;
 class GraphicEngine;
-class Indexbuffer;
-class Vertexbuffer;
+class IndexBuffer;
+class VertexBuffer;
 class TextureBuffer;
 
 namespace ParserData
@@ -41,12 +41,12 @@ public:
 	void EndRender();
 
 	//선택한 그래픽엔진으로 인덱스버퍼를 생성함
-	Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mModel);
+	IndexBuffer* CreateIndexBuffer(ParserData::Mesh* mModel);
 
 	//선택한 그래픽 엔진으로 버텍스 버퍼를 생성함
-	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mModel);
+	VertexBuffer* CreateVertexBuffer(ParserData::Mesh* mModel);
 	//Terrain 전용 버텍스 버퍼 생성함수
-	Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName);
+	VertexBuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName);
 
 	//선택한 그래픽엔진으로 텍스쳐 생성
 	TextureBuffer* CreateTextureBuffer(std::string Name);

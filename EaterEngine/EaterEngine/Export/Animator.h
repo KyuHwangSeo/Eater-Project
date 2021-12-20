@@ -18,9 +18,6 @@ public:
 	Animator();
 	virtual ~Animator();
 
-	void Start();
-	void StartUpdate();
-
 	//애니메이션을 넣어준다
 	void SetAnimation(ParserData::OneAnimation*);
 

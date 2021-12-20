@@ -79,10 +79,8 @@ physx::PxShape* Factory::CreateCapsuleCollider(physx::PxMaterial* m, float Radiu
 
 void Factory::CreateDinamicActor(PhysData* Data, physx::PxShape* shape, physx::PxTransform* Tr)
 {
-	//Tr->rotate(physx::PxVec3(45, 45, 45));
-	//Tr->transform(PxVec3(10, 0, 0));
-
 	PxRigidDynamic* body = m_Phys->createRigidDynamic(*Tr);
+	SetLock(body, Data);
 
 	shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 	shape->setFlag(PxShapeFlag::eVISUALIZATION,true); //Ray, sweep등 할때 사용됨
@@ -93,15 +91,15 @@ void Factory::CreateDinamicActor(PhysData* Data, physx::PxShape* shape, physx::P
 	physx::PxVec3 temp = physx::PxVec3(Data->CenterPoint.x, Data->CenterPoint.y, Data->CenterPoint.z);
 
 	PxRigidBodyExt::updateMassAndInertia(*body, Data->MT_Mass,&temp);
-	m_Scene->addActor(*body);
+
+	body->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, Data->isKinematic);
+	body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !Data->isGrvity);
 
 	//서로 연결
 	body->userData = Data;
 	Data->ActorObj = body;
 
-	body->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC,Data->isKinematic);
-	body->setActorFlag(PxActorFlag::eDISABLE_GRAVITY ,!Data->isGrvity);
-	int num = 0;
+	m_Scene->addActor(*body);
 }
 
 void Factory::CreateStaticActor(PhysData* Data, physx::PxShape* shape, physx::PxTransform* Tr)
@@ -116,8 +114,9 @@ void Factory::CreateStaticActor(PhysData* Data, physx::PxShape* shape, physx::Px
 }
 void Factory::CreateTriangleBuffer(TriangleMeshData* TriangleData, PxVec3* mVertex, PxU32* mIndex)
 {
-	int VertexCount = TriangleData->VertexList->size();
-	int IndexCount = TriangleData->IndexList->size();
+	//가져온 데이터를 PhysX 에맞게 변환한다
+	int VertexCount = (int)TriangleData->VertexList->size();
+	int IndexCount	= (int)TriangleData->IndexList->size();
 
 	for (int i = 0; i < VertexCount; i++)
 	{
@@ -132,23 +131,48 @@ void Factory::CreateTriangleBuffer(TriangleMeshData* TriangleData, PxVec3* mVert
 	}
 }
 
+void Factory::SetLock(PxRigidDynamic* Actor, PhysData* Data)
+{	
+	PxRigidDynamicLockFlags Flag;
+	if((bool)Data->FreezePositon.x == true)
+	{
+		Flag |=PxRigidDynamicLockFlag::eLOCK_LINEAR_X;
+	}
+
+	if ((bool)Data->FreezePositon.y == true)
+	{
+		Flag |= PxRigidDynamicLockFlag::eLOCK_LINEAR_Y;
+	}
+	
+	if ((bool)Data->FreezePositon.z == true)
+	{
+		Flag |= PxRigidDynamicLockFlag::eLOCK_LINEAR_Z;
+	}
+
+	if ((bool)Data->FreezeRotaticon.x == true)
+	{
+		Flag |= PxRigidDynamicLockFlag::eLOCK_ANGULAR_X;
+	}
+	if ((bool)Data->FreezeRotaticon.x == true)
+	{
+		Flag |= PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y;
+	}
+	if ((bool)Data->FreezeRotaticon.x == true)
+	{
+		Flag |= PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z;
+	}
+
+	Actor->setRigidDynamicLockFlags(Flag);
+}
+
 physx::PxShape* Factory::CreateTriangleCollider(physx::PxMaterial* m, TriangleMeshData* TriangleData)
 { 
-	int num = sizeof(PxVec3);
+	int IndexCount	= (int)TriangleData->IndexList->size();
+	int VertexCount = (int)TriangleData->VertexList->size();
 
-	
-
-	int IndexCount = TriangleData->IndexList->size();
-	int VertexCount = TriangleData->VertexList->size();
-
-	//std::vector<PxVec3> VectexList;
-	//std::vector<PxU32> VectexList;
-
-	PxVec3* VectexList	= new PxVec3[VertexCount];
-	PxU32* IndexList	= new PxU32[IndexCount];
-
+	PxVec3* VectexList = new PxVec3[VertexCount];
+	PxU32* IndexList = new PxU32[IndexCount];
 	CreateTriangleBuffer(TriangleData, VectexList, IndexList);
-
 
 	PxTriangleMeshDesc meshDesc;
 	///버텍스 관련 데이터
@@ -157,8 +181,8 @@ physx::PxShape* Factory::CreateTriangleCollider(physx::PxMaterial* m, TriangleMe
 	meshDesc.points.data		= VectexList;
 
 	///페이스 관련 데이터
-	meshDesc.triangles.count	= IndexCount;
-	meshDesc.triangles.stride	= 3*sizeof(PxU32);
+	meshDesc.triangles.count	= IndexCount/3;
+	meshDesc.triangles.stride	= 3 * sizeof(PxU32);
 	meshDesc.triangles.data		= IndexList;
 
 	PxTriangleMesh* triMesh = m_Cooking->createTriangleMesh(meshDesc, m_Phys->getPhysicsInsertionCallback());
@@ -166,23 +190,6 @@ physx::PxShape* Factory::CreateTriangleCollider(physx::PxMaterial* m, TriangleMe
 	geom.triangleMesh = triMesh;
 	physx::PxShape* shape = m_Phys->createShape(geom, *m);
 
-	//bool t = m_Cooking->validateTriangleMesh(meshDesc);
-	//
-	//PxDefaultMemoryOutputStream writeBuffer;
-	//PxTriangleMeshCookingResult::Enum result;
-	//bool status = m_Cooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
-	//if (!status)
-	//	return NULL;
-	//
-	//PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-	//PxTriangleMesh* Triangle =  m_Phys->createTriangleMesh(readBuffer);
-	//
-	//PxTriangleMeshGeometry geom;
-	//geom.triangleMesh = Triangle;
-	//
-	//physx::PxShape* shape = m_Phys->createShape(geom, *m);
-
-	//Triangle->release();
 	return shape;
 }
 

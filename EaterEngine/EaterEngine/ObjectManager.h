@@ -38,8 +38,9 @@ public:
 	//엔진 초기화
 	void Initialize(HWND _g_hWnd);
 
-	/// 시작 단계
+	///초기화 단계
 	static void PushStart(Component* obj,int Order);
+	static void PushStartPlay(Component* obj, int Order);
 	static void PushAwake(Component* obj, int Order);
 
 	/// 컨퍼넌트의 업데이트 함수를 넣어준다
@@ -82,8 +83,9 @@ private:
 	std::queue<MeshData*> UIData;
 
 	/// 시작단계 한번만 실행됨
-	static Delegate_Map AwakeFunction;		//시작단계 보다 먼저 실행되는 함수
-	static Delegate_Map StartFunction;		//시작단계의 실행되는 함수
+	static Delegate_Map AwakeFunction;		//시작단계 컨퍼넌트 가져오는 함수
+	static Delegate_Map StartFunction;		//시작단계의 초기화 함수
+	static Delegate_Map SetUpFunction;		//시작단계의 실행되는 함수
 
 
 	/// 업데이트 단계 프레임마다 실행

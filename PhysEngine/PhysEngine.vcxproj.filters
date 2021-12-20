@@ -22,11 +22,17 @@
     <Filter Include="소스 파일\PhysAPI">
       <UniqueIdentifier>{2ebc0d29-1c01-4d20-8437-85155d19bc87}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Factory">
-      <UniqueIdentifier>{0e0d0ab0-8736-466d-ad9c-7a8ac1fd3f45}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\DataStruct">
       <UniqueIdentifier>{3f0e3621-b1f7-4509-8a8b-59017096badd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager">
+      <UniqueIdentifier>{b1e3e00d-d275-47f8-bbcd-90e8c0955eaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager\Factory">
+      <UniqueIdentifier>{0e0d0ab0-8736-466d-ad9c-7a8ac1fd3f45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager\RayCast">
+      <UniqueIdentifier>{9b963b53-2183-4d63-b9c9-d25bc40f429f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,10 +49,13 @@
       <Filter>소스 파일\PhysAPI</Filter>
     </ClInclude>
     <ClInclude Include="Factory.h">
-      <Filter>소스 파일\Factory</Filter>
+      <Filter>소스 파일\Manager\Factory</Filter>
     </ClInclude>
     <ClInclude Include="PhysData.h">
       <Filter>소스 파일\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="RaycastManager.h">
+      <Filter>소스 파일\Manager\RayCast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -60,10 +69,13 @@
       <Filter>소스 파일\PhysAPI</Filter>
     </ClCompile>
     <ClCompile Include="Factory.cpp">
-      <Filter>소스 파일\Factory</Filter>
+      <Filter>소스 파일\Manager\Factory</Filter>
     </ClCompile>
     <ClCompile Include="PhysData.cpp">
       <Filter>소스 파일\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="RaycastManager.cpp">
+      <Filter>소스 파일\Manager\RayCast</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -48,4 +48,8 @@ void PhysX_Delete_Actor(PhysData* data)
 	}
 }
 
+ bool PhysX_RayCast(PhysRayCast* ray)
+{
+	 return Engine->RayCast(ray);
+}
 

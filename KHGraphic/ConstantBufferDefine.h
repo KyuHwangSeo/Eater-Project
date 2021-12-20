@@ -61,7 +61,7 @@ struct CB_LightSub : public cbLightSub
 {
 	DirectX::SimpleMath::Matrix gViewProjTex;
 	DirectX::SimpleMath::Vector3 gEyePosW;
-};
+}; 
 
 CONSTANT_BUFFER(cbLight)
 struct CB_Light : public cbLight
@@ -69,7 +69,7 @@ struct CB_Light : public cbLight
 	DirectionalLightData gDirLights;
 	PointLightData gPointLights[5];
 	SpotLightData gSpotLights[5];
-	MaterialData gMaterials[5];
+	MaterialOption gMaterials[5];
 
 	UINT gPointLightCount;
 	UINT gSpotLightCount;

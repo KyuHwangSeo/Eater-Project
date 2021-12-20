@@ -7,6 +7,7 @@
 
 class GameObject;
 class Scene;
+class PhysRayCast;
 
 typedef enum PARSING_MODE
 {
@@ -21,9 +22,9 @@ extern "C" EATER_ENGINEDLL void UpdateEngine();						//GameEngine 업데이트
 extern "C" EATER_ENGINEDLL void OnReSize(int X,int Y);				//윈도우 사이즈 재조정	
 
 ///게임 오브젝트 생성
-extern "C" EATER_ENGINEDLL GameObject*	Instance(std::string ObjName= "GameObject");//오브젝트 생성
-extern "C" EATER_ENGINEDLL void			Destroy(GameObject* obj);					//오브젝트 삭제
-
+extern "C" EATER_ENGINEDLL GameObject*	Instance(std::string ObjName= "GameObject");		//오브젝트 생성
+extern "C" EATER_ENGINEDLL GameObject*	InstanceTerrain(std::string ObjName= "GameObject");	//오브젝트 생성
+extern "C" EATER_ENGINEDLL void			Destroy(GameObject* obj);							//오브젝트 삭제
 
 ///스크린 생성하기
 template<typename T>
@@ -55,6 +56,12 @@ EATER_ENGINEDLL Vector3 GetCameraLocalPosition_Look();
 
 ///시간 관련
 extern "C" EATER_ENGINEDLL float GetDeltaTime();
+
+
+///물리 관련
+extern "C" EATER_ENGINEDLL bool RayCast(PhysRayCast* ray);
+
+
 
 
 template<typename T>

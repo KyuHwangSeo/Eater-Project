@@ -68,16 +68,14 @@ public:
 	void SetLightViewProj();
 
 public:
-	DirectX::XMMATRIX* GetView() { return &m_LightView; }
-	DirectX::XMMATRIX* GetProj() { return &m_LightProj; }
-	DirectX::XMMATRIX* GetShadowTranspose() { return &m_ShadowTrans; }
+	DirectX::SimpleMath::Matrix GetView() { return m_LightView; }
+	DirectX::SimpleMath::Matrix GetProj() { return m_LightProj; }
 
 	DirectionalLightData* GetLightData();
 
 private:
-	DirectX::XMMATRIX m_LightView;
-	DirectX::XMMATRIX m_LightProj;
-	DirectX::XMMATRIX m_ShadowTrans;
+	DirectX::SimpleMath::Matrix m_LightView;
+	DirectX::SimpleMath::Matrix m_LightProj;
 
 	DirectX::SimpleMath::Vector3 m_CenterPos;
 	float m_ShadowRadius;

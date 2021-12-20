@@ -21,18 +21,18 @@ void Keyinput::Start()
 
 void Keyinput::Update()
 {
-	if (GetKeyDown(VK_F1))
+	float delta = GetDeltaTime();
+	
+	if (GetKey(VK_LSHIFT))
 	{
-		speed += 10;
+		speed += 10 * delta;
 	}
-
-	if (GetKeyDown(VK_F2))
+	else
 	{
-		speed -= 10;
+		speed = 20;
 	}
 
 	
-	float delta = GetDeltaTime();
 	if (GetKey('D'))
 	{
 		transform->SetLocalPosition((speed * delta),0,0);

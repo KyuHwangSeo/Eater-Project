@@ -26,10 +26,10 @@ public:
 
 public:
 	// Create Output IndexBuffer Graphic Resource..
-	virtual Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mesh) abstract;
+	virtual IndexBuffer* CreateIndexBuffer(ParserData::Mesh* mesh) abstract;
 	// Create Output VertexBuffer Graphic Resource..
-	virtual Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) abstract;
-	virtual Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) abstract;
+	virtual VertexBuffer* CreateVertexBuffer(ParserData::Mesh* mesh) abstract;
+	virtual VertexBuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) abstract;
 	// Create Output TextureBuffer Graphic Resource..
 	virtual TextureBuffer* CreateTextureBuffer(std::string path) abstract;
 

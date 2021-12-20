@@ -20,7 +20,7 @@ Camera::~Camera()
 	CamList[MyIndex] = nullptr;
 }
 
-void Camera::Awake()
+void Camera::Start()
 {
 	//오브젝트의 컨퍼넌트 가져오기
 	tranform = gameobject->transform;
@@ -33,9 +33,9 @@ void Camera::Update()
 	CreateView();
 }
 
-DirectX::XMMATRIX* Camera::GetProj()
+DirectX::SimpleMath::Matrix Camera::GetProj()
 {
-	return &mProj_M;
+	return mProj;
 }
 
 //DirectX::XMFLOAT3 Camera::GetLocalPos_Up()
@@ -56,14 +56,9 @@ DirectX::XMMATRIX* Camera::GetProj()
 //	return g_MainCam->gameobject->GetTransform()->GetLocalPosition_Look();
 //}
 
-DirectX::XMFLOAT3* Camera::GetPos()
+DirectX::SimpleMath::Vector3 Camera::GetPos()
 {
-	return &tranform->Position;
-}
-
-DirectX::XMMATRIX* Camera::GetViewTex()
-{
-	return &mViewTex_M;
+	return tranform->Position;
 }
 
 void Camera::SetSize(int Change_Width, int Change_Height)
@@ -76,9 +71,9 @@ void Camera::ChoiceMainCam()
 	g_MainCam = this;
 }
 
-DirectX::XMMATRIX* Camera::GetView()
+DirectX::SimpleMath::Matrix Camera::GetView()
 {
-	return &mView_M;
+	return mView;
 }
 
 void Camera::CreateProj(int winsizeX, int WinSizeY, bool ViewPoint)
@@ -107,18 +102,12 @@ void Camera::CreateProj(int winsizeX, int WinSizeY, bool ViewPoint)
 	if (ViewPoint == false)
 	{
 		//원근 투영
-		mProj_M = DirectX::XMMatrixPerspectiveFovLH(mFovY, mAspect, mNearZ, mFarZ);
-
-		//View TexSpace
-		mViewTex_M = mProj_M * gTexSpace;
+		mProj = DirectX::XMMatrixPerspectiveFovLH(mFovY, mAspect, mNearZ, mFarZ);
 	}
 	else
 	{
 		//직교 투영
-		mProj_M = DirectX::XMMatrixOrthographicLH(mFovY, mAspect, mNearZ, mFarZ);
-
-		//View TexSpace
-		mViewTex_M = mProj_M * gTexSpace;
+		mProj = DirectX::XMMatrixOrthographicLH(mFovY, mAspect, mNearZ, mFarZ);
 	}
 }
 
@@ -142,13 +131,10 @@ void Camera::CreateView()
 	float y = DirectX::XMVectorGetX(DirectX::XMVector3Dot(P, U));
 	float z = DirectX::XMVectorGetX(DirectX::XMVector3Dot(P, L));
 
-
 	mView._11 = r_.x;	mView._12 = u_.x;	mView._13 = l_.x; mView._14 = 0;
 	mView._21 = r_.y;	mView._22 = u_.y;	mView._23 = l_.y; mView._24 = 0;
 	mView._31 = r_.z;	mView._32 = u_.z;	mView._33 = l_.z; mView._34 = 0;
 	mView._41 = -x;		mView._42 = -y;		mView._43 = -z;	  mView._44 = 1;
-
-	mView_M = DirectX::XMLoadFloat4x4(&mView);
 }
 
 void Camera::PushCamList()

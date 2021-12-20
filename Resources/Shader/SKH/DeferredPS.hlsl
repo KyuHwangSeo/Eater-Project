@@ -34,7 +34,7 @@ struct VertexIn
     float3x3 TBNV       : TANGENTV;
     
 #ifdef TERRAIN_MESH
-    float4 MaskColor : MASK;
+    float4 MaskColor    : MASK_COLOR;
 #endif
 };
 
@@ -50,7 +50,7 @@ struct PixelOut
 
 PixelOut Deferred_PS(VertexIn pin)
 {
-    PixelOut vout;
+    PixelOut pout;
 
     float4 albedo = gColor;
 
@@ -81,6 +81,8 @@ PixelOut Deferred_PS(VertexIn pin)
     
     normalW = mul(normalSample, pin.TBNW);
     normalV = mul(normalSample, pin.TBNV);
+    
+    gamma = 1.0f;
 #else
     if (gTexID & ALBEDO_MAP)
     {
@@ -96,11 +98,11 @@ PixelOut Deferred_PS(VertexIn pin)
     }
 #endif
     
-    vout.Albedo = albedo;
-    vout.Normal = float4(normalW, gamma);
-    vout.Position = float4(pin.PosW, gMatID);
-    vout.Shadow = float4(pin.ShadowPosH.xyz, 0.0f);
-    vout.Depth = float4(normalV, pin.PosV.z);
+    pout.Albedo = albedo;
+    pout.Normal = float4(normalW, gamma);
+    pout.Position = float4(pin.PosW, gMatID);
+    pout.Shadow = float4(pin.ShadowPosH.xyz, 0.0f);
+    pout.Depth = float4(normalV, pin.PosV.z);
     
-    return vout;
+    return pout;
 }

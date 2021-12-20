@@ -16,9 +16,6 @@ void LightManager::Initialize()
 {
 	// Light 관련 Global Data 등록..
 	Global->mLightData = m_LightData;
-	//Global->mLightViewMX = DirectionLight::g_DirLight->GetView();
-	//Global->mLightProj = DirectionLight::g_DirLight->GetProj();
-	//Global->mShadowTrans = DirectionLight::g_DirLight->GetShadowTranspose();
 }
 
 void LightManager::AddLight(Light* light)

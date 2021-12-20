@@ -10,6 +10,7 @@
 
 #define AWAKE				0x00000001
 #define START				0x00000010
+#define SETUP				0x10000000
 #define START_UPDATE		0x00000100
 #define Transform_UPDATE	0x00001000
 #define Physics_UPDATE		0x00010000
@@ -85,12 +86,12 @@ inline T* GameObject::AddComponent(typename std::enable_if<std::is_base_of<Compo
 	//그래서 Component 안에 함수만 사용함
 
 	T* ComponentBox = new T();
+	//게임오브젝트 설정
+	ComponentBox->gameobject = this;
 
 	//생성한 컨퍼넌트를 리스트에 넣는다
 	ComponentList.push_back(ComponentBox);
 
-	//게임오브젝트 설정
-	ComponentBox->gameobject = this;
 
 	//게임오브젝트 추가 데이터 설정
 	ComponentBox->SetObjectData();
@@ -109,6 +110,12 @@ inline T* GameObject::AddComponent(typename std::enable_if<std::is_base_of<Compo
 	if (typeid(&Component::Start).hash_code() != typeid(&T::Start).hash_code())
 	{
 		PushComponentFunction(ComponentBox, START);
+	}
+
+	//StartUpdate
+	if (typeid(&Component::SetUp).hash_code() != typeid(&T::SetUp).hash_code())
+	{
+		PushComponentFunction(ComponentBox, SETUP);
 	}
 
 	//StartUpdate

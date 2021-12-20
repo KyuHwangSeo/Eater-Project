@@ -16,7 +16,7 @@ MaterialManager::~MaterialManager()
 void MaterialManager::Initialize()
 {
 	// Basic Material..
-	MaterialData* mat = new MaterialData();
+	MaterialOption* mat = new MaterialOption();
 
 	Global->mMatData.push_back(mat);
 
@@ -34,10 +34,10 @@ void MaterialManager::AddMaterial(Material* mat)
 	// 동일한 Material 체크
 	for (auto& matData : m_MaterialList)
 	{
-		MaterialData* material = matData.second;
+		MaterialOption* material = matData.second;
 
 		// 해당 Material Data가 List에 올라가있는지 체크..
-		if (*material == *mat->MaterialBuffers->Material_Data)
+		if (*material == *mat->MaterialDatas->Material_Data)
 		{
 			mat->SetMaterialIndex(matData.first);
 			return;
@@ -45,7 +45,7 @@ void MaterialManager::AddMaterial(Material* mat)
 	}
 
 	// Material 추가 될때마다 Global Data 설정..
-	MaterialBuffer* matBuf = mat->MaterialBuffers;
+	MaterialData* matBuf = mat->MaterialDatas;
 
 	// 현재 Material Index 설정..
 	matBuf->Material_Index = m_MaterialCount;

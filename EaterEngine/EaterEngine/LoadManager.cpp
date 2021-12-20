@@ -88,7 +88,7 @@ void LoadManager::LoadTerrain(std::string Name, std::string MaskName, UINT parsi
 
 	//파서를 통해서 매쉬를 로드
 	ParserData::Model* temp = EaterParser->LoadModel(modelPath, parsingMode);
-
+	
 	if (temp == nullptr)
 	{
 		DebugManager::Print(DebugManager::MSG_TYPE::MSG_LOAD, "Mesh", Name, true);
@@ -472,18 +472,18 @@ void LoadManager::SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData)
 			MeshData->Index_List.push_back(LoadData->m_IndexList[i]->m_Index[j]);
 		}
 	}
-
+	
 	// Vertex List 삽입..
 	for (int i = 0; i < LoadData->m_VertexList.size(); i++)
 	{
 		DirectX::XMVECTOR  LocalVertex	= LoadData->m_VertexList[i]->m_Pos;
 		DirectX::XMMATRIX  LocalTM		= LoadData->m_LocalTM;
-
+	
 		DirectX::XMVECTOR WorldVertex = DirectX::XMVector3Transform(LocalVertex, LocalTM);
 		DirectX::SimpleMath::Vector3 world = WorldVertex;
 		//DirectX::SimpleMath::
 		//LocalVertex* LocalTM;
-
+	
 		
 		MeshData->Vertex_List.push_back(world);
 	}
@@ -491,6 +491,23 @@ void LoadManager::SetData(LoadMeshData* MeshData, ParserData::Mesh* LoadData)
 	//매트릭스 정보 받기
 	MeshData->WorldTM = &LoadData->m_WorldTM;
 	MeshData->LocalTM = &LoadData->m_LocalTM;
+
+
+	for (int i = 0; i < LoadData->m_OriginVertexList.size(); i++)
+	{
+		DirectX::XMVECTOR  LocalVertex = LoadData->m_OriginVertexList[i];
+		DirectX::XMMATRIX  LocalTM = LoadData->m_LocalTM;
+
+		DirectX::XMVECTOR WorldVertex = DirectX::XMVector3Transform(LocalVertex, LocalTM);
+		DirectX::SimpleMath::Vector3 world = WorldVertex;
+
+		LoadData->m_OriginVertexList[i] = WorldVertex;
+	}
+
+
+	//스플릿 안한 데이터 정보 받기
+	MeshData->m_OriginIndexList = &LoadData->m_OriginIndexList;
+	MeshData->m_OriginVertexList = &LoadData->m_OriginVertexList;
 }
 
 

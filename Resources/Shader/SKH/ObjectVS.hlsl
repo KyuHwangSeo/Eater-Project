@@ -1,20 +1,20 @@
 cbuffer cbMeshObject
 {
-    float4x4 gMeshWorld : packoffset(c0);
-    float4x4 gMeshWorldView : packoffset(c4);
-    float4x4 gMeshWorldViewProj : packoffset(c8);
-    float4x4 gMeshTexTransform : packoffset(c12);
-    float4x4 gMeshShadowTransform : packoffset(c16);
+    float4x4 gMeshWorld             : packoffset(c0);
+    float4x4 gMeshWorldView         : packoffset(c4);
+    float4x4 gMeshWorldViewProj     : packoffset(c8);
+    float4x4 gMeshTexTransform      : packoffset(c12);
+    float4x4 gMeshShadowTransform   : packoffset(c16);
 };
 
 cbuffer cbSkinObject
 {
-    float4x4 gSkinWorld : packoffset(c0);
-    float4x4 gSkinWorldView : packoffset(c4);
-    float4x4 gSkinWorldViewProj : packoffset(c8);
-    float4x4 gSkinTexTransform : packoffset(c12);
-    float4x4 gSkinShadowTransform : packoffset(c16);
-    float4x4 gSkinBoneTransforms[96] : packoffset(c20);
+    float4x4 gSkinWorld                 : packoffset(c0);
+    float4x4 gSkinWorldView             : packoffset(c4);
+    float4x4 gSkinWorldViewProj         : packoffset(c8);
+    float4x4 gSkinTexTransform          : packoffset(c12);
+    float4x4 gSkinShadowTransform       : packoffset(c16);
+    float4x4 gSkinBoneTransforms[96]    : packoffset(c20);
 };
 
 struct MeshVertexIn
@@ -23,33 +23,41 @@ struct MeshVertexIn
     float2 Tex : TEXCOORD;
     float3 NormalL : NORMAL;
     float3 TangentL : TANGENT;
+    
+#ifdef TERRAIN_MESH
+    float4 Mask     : MASK;
+#endif
 };
 
 struct SkinVertexIn
 {
-    uint4 BoneIndices1 : BONEINDICES1;
-    uint4 BoneIndices2 : BONEINDICES2;
+    uint4 BoneIndices1  : BONEINDICES1;
+    uint4 BoneIndices2  : BONEINDICES2;
     float4 BoneWeights1 : WEIGHTS1;
     float4 BoneWeights2 : WEIGHTS2;
     
-    float3 PosL : POSITION;
-    float2 Tex : TEXCOORD;
-    float3 NormalL : NORMAL;
+    float3 PosL     : POSITION;
+    float2 Tex      : TEXCOORD;
+    float3 NormalL  : NORMAL;
     float3 TangentL : TANGENT;
 };
 
 struct VertexOut
 {
-    float4 PosH : SV_POSITION;
-    float3 PosW : POSITIONW;
-    float3 PosV : POSITIONV;
-    float3 NormalW : NORMALW;
-    float3 NormalV : NORMALV;
-    float2 Tex : TEXCOORD;
-    float3 ShadowPosH : POS_SHADOW;
+    float4 PosH         : SV_POSITION;
+    float3 PosW         : POSITIONW;
+    float3 PosV         : POSITIONV;
+    float3 NormalW      : NORMALW;
+    float3 NormalV      : NORMALV;
+    float2 Tex          : TEXCOORD;
+    float3 ShadowPosH   : POS_SHADOW;
     
-    float3x3 TBNW : TANGENTW;
-    float3x3 TBNV : TANGENTV;
+    float3x3 TBNW       : TANGENTW;
+    float3x3 TBNV       : TANGENTV;
+    
+#ifdef TERRAIN_MESH
+    float4 MaskColor    : MASK_COLOR;
+#endif
 };
 
 VertexOut Mesh_VS(MeshVertexIn vin)
@@ -98,6 +106,10 @@ VertexOut Mesh_VS(MeshVertexIn vin)
 
     vout.TBNV = float3x3(T, B, N);
 
+#ifdef TERRAIN_MESH
+    vout.MaskColor = vin.Mask;
+#endif
+    
     return vout;
 }
 

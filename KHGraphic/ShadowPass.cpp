@@ -119,8 +119,9 @@ void ShadowPass::BeginRender()
 void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 {
 	Matrix world = mesh->mWorld;
-	Matrix view = *global->mLightView;
-	Matrix proj = *global->mLightProj;
+	Matrix view = global->mLightView;
+	Matrix proj = global->mLightProj;
+	Matrix viewproj = global->mLightVP;
 
 	switch (mesh->ObjType)
 	{
@@ -128,9 +129,9 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 	case OBJECT_TYPE::TERRAIN:
 	{
 		CB_ShadowMeshObject shadowBuf;
-		shadowBuf.gWorldViewProj = world * view * proj;
+		shadowBuf.gWorldViewProj = world * viewproj;
 
-		m_MeshShadowVS->SetConstantBuffer(shadowBuf);
+		m_MeshShadowVS->ConstantBufferCopy(&shadowBuf);
 
 		m_MeshShadowVS->Update();
 	}
@@ -138,14 +139,14 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 	case OBJECT_TYPE::SKINNING:
 	{
 		CB_ShadowSkinObject shadowBuf;
-		shadowBuf.gWorldViewProj = world * view * proj;
+		shadowBuf.gWorldViewProj = world * viewproj;
 
 		for (int i = 0; i < mesh->BoneOffsetTM.size(); i++)
 		{
 			shadowBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
 		}
 
-		m_SkinShadowVS->SetConstantBuffer(shadowBuf);
+		m_SkinShadowVS->ConstantBufferCopy(&shadowBuf);
 
 		m_SkinShadowVS->Update();
 	}
@@ -159,7 +160,7 @@ void ShadowPass::Render(MeshData* mesh)
 {
 	/// 실제 렌더링 추가
 	ID3D11Buffer* iBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->IB->IndexBufferPointer);
-	ID3D11Buffer* vBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->VB->VertexbufferPointer);
+	ID3D11Buffer* vBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->VB->VertexBufferPointer);
 
 	UINT indexCount = mesh->IB->Count;
 	UINT stride = mesh->VB->VertexDataSize;

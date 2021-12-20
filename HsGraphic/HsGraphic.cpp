@@ -68,10 +68,10 @@ void HsGraphic::Initialize(HWND _hWnd, int screenWidth, int screenHeight)
 	mRenderManager->Initialize(Device, DeviceContext, mShaderManager, mDebugManager);
 }
 
-Indexbuffer* HsGraphic::CreateIndexBuffer(ParserData::Mesh* mModel)
+IndexBuffer* HsGraphic::CreateIndexBuffer(ParserData::Mesh* mModel)
 {
 	ID3D11Buffer* mIB = nullptr;
-	Indexbuffer* indexbuffer = new Indexbuffer();
+	IndexBuffer* indexbuffer = new IndexBuffer();
 
 	//모델의 계수
 	int IndexFaceCount = (int)mModel->m_IndexList.size();
@@ -108,10 +108,10 @@ Indexbuffer* HsGraphic::CreateIndexBuffer(ParserData::Mesh* mModel)
 	return indexbuffer;
 }
 
-Vertexbuffer* HsGraphic::CreateVertexBuffer(ParserData::Mesh* mModel)
+VertexBuffer* HsGraphic::CreateVertexBuffer(ParserData::Mesh* mModel)
 {
 	//모델의 	
-	Vertexbuffer* vertexbuffer;
+	VertexBuffer* vertexbuffer;
 	switch (mModel->m_MeshType)
 	{
 	case MESH_TYPE::SKIN_MESH:
@@ -125,7 +125,7 @@ Vertexbuffer* HsGraphic::CreateVertexBuffer(ParserData::Mesh* mModel)
 	return vertexbuffer;
 }
 
-Vertexbuffer* HsGraphic::CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName)
+VertexBuffer* HsGraphic::CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName)
 {
 	return nullptr;
 }
@@ -205,11 +205,11 @@ void HsGraphic::EndRender()
 	mSwapChain->Present(0, 0);
 }
 
-Vertexbuffer* HsGraphic::CreateBasicVertexBuffer(ParserData::Mesh* mModel)
+VertexBuffer* HsGraphic::CreateBasicVertexBuffer(ParserData::Mesh* mModel)
 {
 	///스키닝이없는 기본 오브젝트를 생성해줌
 	ID3D11Buffer* mVB = nullptr;
-	Vertexbuffer* vertexbuffer = new Vertexbuffer();
+	VertexBuffer* vertexbuffer = new VertexBuffer();
 
 	//포지션 , 노말, uv, 탄젠타 값만 읽어옴
 	std::vector<Deferred32> temp;
@@ -234,7 +234,7 @@ Vertexbuffer* HsGraphic::CreateBasicVertexBuffer(ParserData::Mesh* mModel)
 	vinitData.pSysMem = &temp[0];
 	Device->CreateBuffer(&vbd, &vinitData, &mVB);
 
-	vertexbuffer->VertexbufferPointer = mVB;
+	vertexbuffer->VertexBufferPointer = mVB;
 	vertexbuffer->Count = Vcount;
 
 	/////////////////////////////////////////////////// 중요함 꼭넣어주세요
@@ -245,11 +245,11 @@ Vertexbuffer* HsGraphic::CreateBasicVertexBuffer(ParserData::Mesh* mModel)
 	return vertexbuffer;
 }
 
-Vertexbuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
+VertexBuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
 {
 	///스키닝이 오브젝트를 생성해줌
 	ID3D11Buffer* mVB = nullptr;
-	Vertexbuffer* vertexbuffer = new Vertexbuffer();
+	VertexBuffer* vertexbuffer = new VertexBuffer();
 
 	//포지션 , 노말, uv, 탄젠타 값만 읽어옴
 	std::vector<Skinning32> temp;
@@ -296,7 +296,7 @@ Vertexbuffer* HsGraphic::CreateSkinngingVertexBuffer(ParserData::Mesh* mModel)
 	vinitData.pSysMem = &temp[0];
 	Device->CreateBuffer(&vbd, &vinitData, &mVB);
 
-	vertexbuffer->VertexbufferPointer = mVB;
+	vertexbuffer->VertexBufferPointer = mVB;
 	vertexbuffer->Count = Vcount;
 
 	/////////////////////////////////////////////////// 중요함 꼭넣어주세요

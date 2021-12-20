@@ -90,9 +90,11 @@ void RenderManager::BeginRender(UINT& renderOption)
 			break;
 		case RENDER_SHADOW:
 			m_RenderOption ^= RENDER_SHADOW;
+			m_Shadow->Reset();
 			break;
 		case RENDER_SSAO:
 			m_RenderOption ^= RENDER_SSAO;
+			m_SSAO->Reset();
 			break;
 		default:
 			break;
@@ -125,6 +127,7 @@ void RenderManager::BeginRender(UINT& renderOption)
 		m_Light->SetOption("Light_PS_Option0");
 		break;
 	default:
+		m_Light->SetOption("Light_PS_Option7");
 		break;
 	}
 

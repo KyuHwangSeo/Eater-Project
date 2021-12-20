@@ -8,7 +8,7 @@
 #include <fstream>
 
 ComputeShader::ComputeShader(const char* fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines)
-	:ShaderBase(eShaderType::COMPUTE)
+	:ShaderBase(SHADER_TYPE::COMPUTE_SHADER)
 {
 	LoadShader(g_ShaderRoute + fileName, entry_point, shader_model, pDefines);
 }

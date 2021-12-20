@@ -3,7 +3,11 @@
 #include "SimpleMath.h"
 #include <vector>
 
-//typedef unsigned int UINT;
+#pragma warning(disable : 4251)
+
+using namespace DirectX;
+using namespace SimpleMath;
+
  enum class SHAPE_TYPE
 {
 	BOX,
@@ -12,28 +16,11 @@
 	TRIANGLE
 };
 
- enum class ACTOR_TYPE
- {
-	 DINAMIC,
-	 STATIC,
-	 KNEMATIC,
- };
-
 ///페이스 기준으로 콜라이더를 생성하고싶을때 필요한 데이터
 struct TriangleMeshData 
 {
-	std::vector<DirectX::SimpleMath::Vector3>* VertexList;
-	std::vector<UINT>* IndexList;
-};
-
-///하나의 강체를 만드는 구조체 무슨내용인지 보고싶으면 아래쪽에 설명
-///사용하지 않는 값은 그냥 디폴트값으로 놔두면된다
-struct Vec
-{
-	float x = 0.0f;
-	float y = 0.0f;
-	float z = 0.0f;
-	float w = 0.0f; //회전값 있을때만
+	std::vector<Vector3>*	VertexList;
+	std::vector<UINT>*		IndexList;
 };
 
 ///하나의 강체를 만드는 구조체 무슨내용인지 보고싶으면 아래쪽에 설명
@@ -44,11 +31,11 @@ public:
 	PhysData();
 	~PhysData();
 	//월드 위치
-	Vec WorldPosition;
+	Vector3 WorldPosition;
 	//회전
-	Vec Rotation;
+	Vector4 Rotation;
 	//이객체의 무게 중심점
-	Vec CenterPoint;
+	Vector3 CenterPoint;
 	//월드상의 위치
 	void SetWorldPosition(float x, float y, float z);
 	void SetLocalPosition(float x, float y, float z);
@@ -58,6 +45,8 @@ public:
 	void SetRotation(float x, float y, float z);
 	void SetRotate(float x, float y, float z);
 	void AddForce(float x, float y, float z);
+	void SetVelocity(float x, float y, float z);
+	Vector3 GetVelocity();
 public:
 	///재질(메테리얼) 데이터
 	//정지 마찰력
@@ -87,26 +76,34 @@ public:
 	void CreateCapsuleCollider(float Radius, float Height);
 	//페이스기준으로 콜라이더를 만들때
 	void CreateTriangleCollider(TriangleMeshData*  Data);
+	
+	//이동에 관한 축변환을 막는다
+	void SetLockAxis_Position(bool x, bool y, bool z);
+	//회전에 관한 축변환을 막는다
+	void SetLockAxis_Rotation(bool x, bool y, bool z);
 private:
 	///위치 데이터
-	Vec MovePoint;
+	Vector3 MovePoint;
 	//로컬 위치 (계층 구조일때)
-	Vec LocalPosition;
+	Vector3 LocalPosition;
 	//어떠한 축 이동을 고정 시킬때 사용 
-	Vec FreezePositon;
+	Vector3 FreezePositon;
 	//어떠한 축 회전을 고정 시킬때 사용
-	Vec FreezeRotaticon;
+	Vector3 FreezeRotaticon;
 	//이객체의 이동속력을 넣어준다
-	Vec Velocity;
+	Vector3 Velocity;
+	//PhysX쪽의 방향을 가져온다
+	Vector3 PhysX_Velocity;
 	//현재 벡터 방향으로 힘을 줄때 사용
-	Vec Force;
+	Vector3 Force;
 private:
 	///콜라이더 데이터
-	Vec Shape_Size;			//사이즈
+	Vector3 Shape_Size;			//사이즈
 	SHAPE_TYPE	Shape_type; //타입
 private:
 	bool isMove;
 	bool isForce;
+	bool isVelocity;
 private:
 	void* ActorObj;
 	TriangleMeshData* Triangle;
@@ -121,9 +118,22 @@ struct PhysSceneData
 
 };
 
+class PHYS_ENGINEDLL PhysRayCast
+{
+public:
+	struct RaycastHit
+	{
+		int HitCount; //충돌한 오브젝트 개수
+	};
 
+	PhysRayCast();
+	~PhysRayCast();
+	Vector3 Origin;			//쏘기시작한 위치
+	Vector3 Direction;		//쏘는 방향
+	float MaxDistance;		//최대 거리
 
-
+	RaycastHit Hit;
+};
 
 /*
 *

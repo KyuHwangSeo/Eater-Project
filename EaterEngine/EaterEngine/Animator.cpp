@@ -27,15 +27,6 @@ Animator::~Animator()
 
 }
 
-void Animator::Start()
-{
-}
-
-void Animator::StartUpdate()
-{
-	
-}
-
 void Animator::SetAnimation(ParserData::OneAnimation* data)
 {
 	NowAnimationData = data;

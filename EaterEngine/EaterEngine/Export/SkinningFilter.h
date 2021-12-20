@@ -26,7 +26,7 @@ public:
 
 	EATER_ENGINEDLL SkinningFilter();
 	virtual EATER_ENGINEDLL ~SkinningFilter();
-	virtual void Start();
+	virtual void StartPlay();
 	virtual void Update();
 
 	void PushBoneList(std::vector<GameObject*>* mBoneList);

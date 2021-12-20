@@ -5,7 +5,6 @@
 #else
 #define EATER_ENGINEDLL __declspec(dllimport)
 
-
 	#ifdef _DEBUG
 	#pragma comment(lib,"EaterEngine_x64d")
 	#else

@@ -10,10 +10,10 @@ public:
 };
 
 //인덱스 버퍼를 받을 클래스
-class Indexbuffer : Resources
+class IndexBuffer : Resources
 {
 public:
-	virtual ~Indexbuffer()
+	virtual ~IndexBuffer()
 	{
 		delete IndexBufferPointer;
 	};
@@ -24,15 +24,15 @@ public:
 
 
 //버텍스 버퍼를 받을 클래스
-class Vertexbuffer : Resources
+class VertexBuffer : Resources
 {
 public:
-	virtual ~Vertexbuffer()
+	virtual ~VertexBuffer()
 	{
-		delete VertexbufferPointer;
+		delete VertexBufferPointer;
 	};
 
-	void* VertexbufferPointer = nullptr;
+	void* VertexBufferPointer = nullptr;
 
 	unsigned int VectexDataSize = 0;	//버텍스 
 	unsigned int Count	= 0;			//버텍스 개수

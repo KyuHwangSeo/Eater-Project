@@ -9,26 +9,26 @@ cbuffer cbMeshObject
 
 struct VertexIn
 {
-    float3 PosL : POSITION;
-    float2 Tex : TEXCOORD;
-    float3 NormalL : NORMAL;
+    float3 PosL     : POSITION;
+    float2 Tex      : TEXCOORD;
+    float3 NormalL  : NORMAL;
     float3 TangentL : TANGENT;
-    float4 MaskColor : MASK;
+    float4 Mask     : MASK;
 };
 
 struct VertexOut
 {
-    float4 PosH : SV_POSITION;
-    float3 PosW : POSITIONW;
-    float3 PosV : POSITIONV;
-    float3 NormalW : NORMALW;
-    float3 NormalV : NORMALV;
-    float2 Tex : TEXCOORD;
-    float3 ShadowPosH : POS_SHADOW;
+    float4 PosH         : SV_POSITION;
+    float3 PosW         : POSITIONW;
+    float3 PosV         : POSITIONV;
+    float3 NormalW      : NORMALW;
+    float3 NormalV      : NORMALV;
+    float2 Tex          : TEXCOORD;
+    float3 ShadowPosH   : POS_SHADOW;
     
-    float3x3 TBNW : TANGENTW;
-    float3x3 TBNV : TANGENTV;
-    float4 MaskColor : MASK_COLOR;
+    float3x3 TBNW       : TANGENTW;
+    float3x3 TBNV       : TANGENTV;
+    float4 MaskColor    : MASK_COLOR;
 };
 
 
@@ -77,7 +77,7 @@ VertexOut Terrain_VS(VertexIn vin)
     B = cross(N, T);
 
     vout.TBNV = float3x3(T, B, N);
-    vout.MaskColor = vin.MaskColor;
+    vout.MaskColor = vin.Mask;
     
     return vout;
 }

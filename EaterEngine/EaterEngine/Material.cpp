@@ -8,10 +8,10 @@ MaterialManager* Material::MAT_Manager = nullptr;
 Material::Material()
 {
 	// Material Buffer »ý¼º..
-	MaterialBuffers = new MaterialBuffer();
+	MaterialDatas = new MaterialData();
 
 	// Material Data »ý¼º..
-	MaterialBuffers->Material_Data = new MaterialData();
+	MaterialDatas->Material_Data = new MaterialOption();
 
 	// Material µî·Ï..
 	MAT_Manager->AddMaterial(this);
@@ -35,7 +35,7 @@ void Material::SetMeshData(MeshData* meshData)
 void Material::SetMaterialIndex(UINT index)
 {
 	// ÇØ´ç Material Index »ðÀÔ..
-	MaterialBuffers->Material_Index = index;
+	MaterialDatas->Material_Index = index;
 }
 
 void Material::PushMaterialData(LoadMeshData* mesh)
@@ -44,7 +44,7 @@ void Material::PushMaterialData(LoadMeshData* mesh)
 	if (mesh->Material == nullptr) return;
 
 	// Material Data ÃßÃâ..
-	MaterialData* matData = MaterialBuffers->Material_Data;
+	MaterialOption* matData = MaterialDatas->Material_Data;
 
 	// Material Data »ðÀÔ..
 	matData->Ambient = mesh->Material->m_Material_Ambient;
@@ -53,8 +53,8 @@ void Material::PushMaterialData(LoadMeshData* mesh)
 	matData->Ambient = mesh->Material->m_Material_Ambient;
 
 	// Texture Map »ðÀÔ..
-	MaterialBuffers->Albedo = mesh->Albedo;
-	MaterialBuffers->Normal = mesh->Normal;
+	MaterialDatas->Albedo = mesh->Albedo;
+	MaterialDatas->Normal = mesh->Normal;
 }
 
 void Material::SetTexTransform(DirectX::SimpleMath::Vector3 scale)
@@ -69,30 +69,30 @@ void Material::SetTexTransform(float x, float y, float z)
 
 void Material::SetDiffuseMap(std::string diffuseName)
 {
-	MaterialBuffers->Albedo = LoadManager::GetTexture(diffuseName);
+	MaterialDatas->Albedo = LoadManager::GetTexture(diffuseName);
 }
 
 void Material::SetNormalMap(std::string noramlName)
 {
-	MaterialBuffers->Albedo = LoadManager::GetTexture(noramlName);
+	MaterialDatas->Albedo = LoadManager::GetTexture(noramlName);
 }
 
 void Material::SetBaseColor(DirectX::SimpleMath::Vector4 color)
 {
-	MaterialBuffers->Color_Base = color;
+	MaterialDatas->Color_Base = color;
 }
 
 void Material::SetAddColor(DirectX::SimpleMath::Vector4 color)
 {
-	MaterialBuffers->Color_Add = color;
+	MaterialDatas->Color_Add = color;
 }
 
-MaterialBuffer* Material::GetMaterialData()
+MaterialData* Material::GetMaterialData()
 {
-	return MaterialBuffers;
+	return MaterialDatas;
 }
 
 UINT Material::GetMaterialIndex()
 {
-	return MaterialBuffers->Material_Index;
+	return MaterialDatas->Material_Index;
 }

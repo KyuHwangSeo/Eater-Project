@@ -7,8 +7,8 @@ class ShaderManager;
 class RenderingManager;
 class GraphicDebugManager;
 class TextureBuffer;
-class Indexbuffer;
-class Vertexbuffer;
+class IndexBuffer;
+class VertexBuffer;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -35,11 +35,11 @@ public:
 	//텍스쳐 버퍼를생성
 	virtual HS_GRAPHICDLL TextureBuffer* CreateTextureBuffer(std::string path) override;
 	//인덱스 버퍼를 생성
-	virtual HS_GRAPHICDLL Indexbuffer*	CreateIndexBuffer(ParserData::Mesh* mModel) override;
+	virtual HS_GRAPHICDLL IndexBuffer*	CreateIndexBuffer(ParserData::Mesh* mModel) override;
 	//버텍스 버퍼를 생성
-	virtual HS_GRAPHICDLL Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mModel) override;
+	virtual HS_GRAPHICDLL VertexBuffer* CreateVertexBuffer(ParserData::Mesh* mModel) override;
 	
-	virtual HS_GRAPHICDLL Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName) override;
+	virtual HS_GRAPHICDLL VertexBuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName) override;
 
 	ID3D11RenderTargetView* GetEngineRTV();
 	ID3D11DepthStencilView* GetEngineDSV();
@@ -51,8 +51,8 @@ private:
 	void EndRender();			//랜더링 종료
 	
 	//메쉬 타입별 생성
-	Vertexbuffer* CreateBasicVertexBuffer(ParserData::Mesh* mModel);
-	Vertexbuffer* CreateSkinngingVertexBuffer(ParserData::Mesh* mModel);
+	VertexBuffer* CreateBasicVertexBuffer(ParserData::Mesh* mModel);
+	VertexBuffer* CreateSkinngingVertexBuffer(ParserData::Mesh* mModel);
 private:
 
 	///엔진 데이터

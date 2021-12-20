@@ -12,6 +12,7 @@
 //함수포인터 리스트들
 Delegate_Map ObjectManager::AwakeFunction;
 Delegate_Map ObjectManager::StartFunction;
+Delegate_Map ObjectManager::SetUpFunction;
 Delegate_Map ObjectManager::StartUpdate;
 Delegate_Map ObjectManager::TransformUpdate;
 Delegate_Map ObjectManager::PhysicsUpdate;
@@ -20,10 +21,12 @@ Delegate_Map ObjectManager::EndUpdate;
 
 ObjectManager::ObjectManager()
 {
+
 }
 
 ObjectManager::~ObjectManager()
 {
+
 }
 
 void ObjectManager::PushCreateObject(GameObject* obj)
@@ -205,38 +208,46 @@ void ObjectManager::PushStart(Component* mComponent, int Order)
 	StartFunction.Push(data);
 }
 
+void ObjectManager::PushStartPlay(Component* mComponent, int Order)
+{
+	ComponentFunctionData data;
+	//활성화 여부
+	data.Enabled = &mComponent->Enabled;
+	//함수 포인터
+	data.FunctionPointer = std::bind(&Component::SetUp, mComponent);
+	//컨퍼넌트 포인터
+	data.ComponentPointer = mComponent;
+	//컨퍼넌트 순서
+	data.OrderCount = Order;
+
+	SetUpFunction.Push(data);
+}
+
 
 void ObjectManager::PlayUpdate()
 {
-	//한번만 실행되는 함수포인터 리스트
+	///컨퍼넌트들을 가져오는 함수 포인터
 	AwakeFunction.Play(true);
+	///컨퍼넌트 초기화된 값을 한번 실행하는 함수포인터
+	SetUpFunction.Play(true);
+	///컨퍼넌트들을 초기화 하는 함수포인터
 	StartFunction.Play(true);
+
 
 	///가장 먼저실행되는 StartUpdate 함수 리스트(각 컨퍼넌트들의 초기화작업을 해줄때)
 	StartUpdate.Play();
 
-	///이동행렬 실행되는 Update 함수 리스트
-	TransformUpdate.Play();
-
 	///물리 충돌관련 Update 함수 리스트 (물리관련 컨퍼넌트들을 업데이트)
 	PhysicsUpdate.Play();
+
+	///이동행렬 실행되는 Update 함수 리스트
+	TransformUpdate.Play();
 
 	///중간 단계에 실행되는 Update 함수 리스트 (클라이언트쪽에서 만든 컨퍼넌트들이 업데이트될곳)
 	Update.Play();
 
 	///가장 마지막에 실행되는 Update 함수 리스트
 	EndUpdate.Play();
-
-	//글로벌 데이터
-	Global->mCamView	= Camera::g_MainCam->GetView();
-	Global->mCamProj	= Camera::g_MainCam->GetProj();
-	Global->mCamPT		= Camera::g_MainCam->GetViewTex();
-	Global->mCamPos		= Camera::g_MainCam->GetPos();
-
-	//라이트 데이터
-	Global->mLightView	= DirectionLight::g_DirLight->GetView();
-	Global->mLightProj	= DirectionLight::g_DirLight->GetProj();
-	Global->mLightVPT	= DirectionLight::g_DirLight->GetShadowTranspose();
 }
 
 void ObjectManager::CreateRenderQueue()

@@ -40,7 +40,8 @@ DeferredPass::~DeferredPass()
 
 void DeferredPass::Create(int width, int height)
 {
-	// Texture 2D
+	/// Texture 2D
+	// Albedo 전용 Texture 2D 
 	D3D11_TEXTURE2D_DESC texDescDiffuse;
 	ZeroMemory(&texDescDiffuse, sizeof(texDescDiffuse));
 	texDescDiffuse.Width = width;
@@ -55,6 +56,7 @@ void DeferredPass::Create(int width, int height)
 	texDescDiffuse.CPUAccessFlags = 0;
 	texDescDiffuse.MiscFlags = 0;
 
+	// Pixel Data 전용 Texture 2D
 	D3D11_TEXTURE2D_DESC texDescPosNormal;
 	ZeroMemory(&texDescPosNormal, sizeof(texDescPosNormal));
 	texDescPosNormal.Width = width;
@@ -69,7 +71,7 @@ void DeferredPass::Create(int width, int height)
 	texDescPosNormal.CPUAccessFlags = 0;
 	texDescPosNormal.MiscFlags = 0;
 
-	// RenderTargetView 2D
+	/// RenderTargetView 2D
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDescDiffuse;
 	ZeroMemory(&rtvDescDiffuse, sizeof(rtvDescDiffuse));
 	rtvDescDiffuse.Format = texDescDiffuse.Format;
@@ -82,7 +84,7 @@ void DeferredPass::Create(int width, int height)
 	rtvDescPosNormal.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	rtvDescPosNormal.Texture2D.MipSlice = 0;
 
-	// ShaderResourceView 2D
+	/// ShaderResourceView 2D
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDescDiffuse;
 	ZeroMemory(&srvDescDiffuse, sizeof(srvDescDiffuse));
 	srvDescDiffuse.Format = texDescDiffuse.Format;
@@ -195,10 +197,11 @@ void DeferredPass::BeginRender()
 void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 {
 	Matrix world = mesh->mWorld;
-	Matrix view = *global->mCamView;
-	Matrix proj = *global->mCamProj;
-	Matrix shadowTrans = *global->mLightVPT;
-	MaterialBuffer* mat = *mesh->Material_List.begin();
+	Matrix view = global->mCamView;
+	Matrix proj = global->mCamProj;
+	Matrix viewproj = global->mCamVP;
+	Matrix shadowTrans = global->mLightVPT;
+	MaterialData* mat = mesh->Material_Data;
 
 	switch (mesh->ObjType)
 	{
@@ -207,10 +210,10 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 		CB_MeshObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldView = world * view;
-		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gWorldViewProj = world * viewproj;
 		objectBuf.gShadowTransform = world * shadowTrans;
 
-		m_MeshVS->SetConstantBuffer(objectBuf);
+		m_MeshVS->ConstantBufferCopy(&objectBuf);
 
 		// Vertex Shader Update..
 		m_MeshVS->Update();
@@ -221,16 +224,16 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 		CB_MeshObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldView = world * view;
-		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gWorldViewProj = world * viewproj;
 		objectBuf.gShadowTransform = world * shadowTrans;
 		objectBuf.gTexTransform = mesh->mTexTM;
-		m_TerrainVS->SetConstantBuffer(objectBuf);
+		m_TerrainVS->ConstantBufferCopy(&objectBuf);
 
 		// Vertex Shader Update..
 		m_TerrainVS->Update();
 
-		MaterialBuffer* layer1 = mesh->Material_List[1];
-		MaterialBuffer* layer2 = mesh->Material_List[2];
+		MaterialData* layer1 = mesh->Terrain_Data->Material_List[0];
+		MaterialData* layer2 = mesh->Terrain_Data->Material_List[1];
 		m_TerrainPS->SetShaderResourceView<gDiffuseLayer1>((ID3D11ShaderResourceView*)layer1->Albedo->TextureBufferPointer);
 		m_TerrainPS->SetShaderResourceView<gNormalLayer1>((ID3D11ShaderResourceView*)layer1->Normal->TextureBufferPointer);
 		m_TerrainPS->SetShaderResourceView<gDiffuseLayer2>((ID3D11ShaderResourceView*)layer2->Albedo->TextureBufferPointer);
@@ -238,7 +241,7 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 
 		CB_Material materialBuf;
 		materialBuf.gMatID = mat->Material_Index;
-		m_TerrainPS->SetConstantBuffer(materialBuf);
+		m_TerrainPS->ConstantBufferCopy(&materialBuf);
 
 		// Pixel Shader Update..
 		m_TerrainPS->Update();
@@ -251,7 +254,7 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 		CB_SkinObject objectBuf;
 		objectBuf.gWorld = world;
 		objectBuf.gWorldView = world * view;
-		objectBuf.gWorldViewProj = world * view * proj;
+		objectBuf.gWorldViewProj = world * viewproj;
 		objectBuf.gShadowTransform = world * shadowTrans;
 
 		for (size_t i = 0; i < mesh->BoneOffsetTM.size(); i++)
@@ -259,7 +262,7 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 			objectBuf.gBoneTransforms[i] = mesh->BoneOffsetTM[i];
 		}
 
-		m_SkinVS->SetConstantBuffer(objectBuf);
+		m_SkinVS->ConstantBufferCopy(&objectBuf);
 
 		// Vertex Shader Update..
 		m_SkinVS->Update();
@@ -283,7 +286,7 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 		m_DeferredPS->SetShaderResourceView<gNormalMap>((ID3D11ShaderResourceView*)mat->Normal->TextureBufferPointer);
 	}
 
-	m_DeferredPS->SetConstantBuffer(materialBuf);
+	m_DeferredPS->ConstantBufferCopy(&materialBuf);
 
 	// Pixel Shader Update..
 	m_DeferredPS->Update();
@@ -292,7 +295,7 @@ void DeferredPass::Update(MeshData* mesh, GlobalData* global)
 void DeferredPass::Render(MeshData* mesh)
 {
 	ID3D11Buffer* iBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->IB->IndexBufferPointer);
-	ID3D11Buffer* vBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->VB->VertexbufferPointer);
+	ID3D11Buffer* vBuffer = reinterpret_cast<ID3D11Buffer*>(mesh->VB->VertexBufferPointer);
 
 	UINT indexCount = mesh->IB->Count;
 	UINT stride = mesh->VB->VertexDataSize;

@@ -27,3 +27,7 @@ extern "C"	PHYS_ENGINEDLL void PhysX_Update_Actor(PhysData* data);
 ///물리 객체 삭제
 //삭제할 physData를 포함한 PhysX내부에 객체도 삭제
 extern "C"	PHYS_ENGINEDLL void PhysX_Delete_Actor(PhysData* data);
+
+///RayCast
+//충돌 여부 반환
+extern "C"	PHYS_ENGINEDLL bool PhysX_RayCast(PhysRayCast* ray);

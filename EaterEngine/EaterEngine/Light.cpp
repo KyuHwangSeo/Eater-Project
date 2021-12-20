@@ -57,11 +57,6 @@ DirectionLight::~DirectionLight()
 
 void DirectionLight::SetLightViewProj()
 {
-	static XMMATRIX g_TexSpace = Matrix(0.5f, 0.0f, 0.0f, 0.0f,
-										0.0f, -0.5f, 0.0f, 0.0f,
-										0.0f, 0.0f, 1.0f, 0.0f,
-										0.5f, 0.5f, 0.0f, 1.0f);
-
 	/// Light Direction 값 변동시 같이 실행해주어야 함..
 	// Light View, Proj 설정..
 	Vector3 lightPos = m_DirLight->Direction * -2.0f * m_ShadowRadius;
@@ -81,9 +76,6 @@ void DirectionLight::SetLightViewProj()
 
 	// Light Proj
 	m_LightProj = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
-
-	// Shadow Transpose
-	m_ShadowTrans = m_LightView * m_LightProj * g_TexSpace;
 }
 
 void DirectionLight::Awake()

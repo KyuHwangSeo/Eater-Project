@@ -73,7 +73,7 @@ void SSAOPass::Start(int width, int height)
 	m_BlurPS = g_Shader->GetShader("SSAOBlur_PS");
 
 	// Buffer ¼³Á¤..
-	m_SsaoBuffer = g_Resource->GetBuffer<BD_SSAOScreen>();
+	m_SsaoBuffer = g_Resource->GetBuffer<BD_SSAO>();
 
 	// ViewPort ¼³Á¤..
 	m_SsaoViewport = g_Resource->GetViewPort<VP_SSAO>()->Get();
@@ -140,8 +140,7 @@ void SSAOPass::Release()
 
 void SSAOPass::Reset()
 {
-	g_Context->ClearRenderTargetView(m_SsaoRTV, reinterpret_cast<const float*>(&DXColors::White));
-	g_Context->ClearRenderTargetView(m_SsaoBlurRTV, reinterpret_cast<const float*>(&DXColors::White));
+	g_Context->ClearRenderTargetView(m_SsaoRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
 }
 
 void SSAOPass::BeginRender()
@@ -155,9 +154,9 @@ void SSAOPass::BeginRender()
 void SSAOPass::Render(GlobalData* global)
 {
 	CB_SsaoObject objectBuf;
-	objectBuf.gViewToTexSpace = *global->mCamPT;
+	objectBuf.gViewToTexSpace = global->mCamPT;
 
-	m_SsaoPS->SetConstantBuffer(objectBuf);
+	m_SsaoPS->ConstantBufferCopy(&objectBuf);
 
 	// Vertex Shader Update..
 	m_SsaoVS->Update();
@@ -201,7 +200,7 @@ void SSAOPass::BlurRender(bool horizon)
 		m_BlurPS->SetShaderResourceView<gInputMap>(m_SsaoBlurSRV);
 	}
 
-	m_BlurPS->SetConstantBuffer(m_BlurOption);
+	m_BlurPS->ConstantBufferCopy(&m_BlurOption);
 
 	// Vertex Shader Update..
 	m_BlurVS->Update();
@@ -257,14 +256,9 @@ void SSAOPass::SetOffsetVectors()
 		// OffsetVector Constant Buffer Data »ðÀÔ..
 		XMStoreFloat4(&option.gOffsetVectors[i], v);
 	}
-	
-	option.gOcclusionRadius = 0.1f;
-	option.gOcclusionFadeStart = 0.01f;
-	option.gOcclusionFadeEnd = 1.0f;
-	option.gSurfaceEpsilon = 0.1f;
 
 	// SSAO Option Constant Buffer Update..
-	m_SsaoPS->SetConstantBuffer(option);
+	m_SsaoPS->ConstantBufferCopy(&option);
 }
 
 void SSAOPass::SetRandomVectorTexture()
@@ -317,5 +311,5 @@ void SSAOPass::SetFrustumFarCorners(int width, int height)
 	frustum.gFrustumCorners[3] = XMFLOAT4(+halfWidth, -halfHeight, farZ, 0.0f);
 
 	// FrustumCorner Constant Buffer Data »ðÀÔ..
-	m_SsaoVS->SetConstantBuffer(frustum);
+	m_SsaoVS->ConstantBufferCopy(&frustum);
 }

@@ -8,12 +8,12 @@
 /// https://docs.microsoft.com/ko-kr/windows/win32/api/d3d11shader/ns-d3d11shader-d3d11_shader_desc?f1url=%3FappId%3DDev16IDEF1%26l%3DKO-KR%26k%3Dk(D3D11SHADER%252FD3D11_SHADER_DESC);k(D3D11_SHADER_DESC);k(DevLang-C%252B%252B);k(TargetOS-Windows)%26rd%3Dtrue
 
 // Shader Type Enum Class..
-enum class eShaderType
+typedef enum SHADER_TYPE
 {
-	VERTEX,
-	PIXEL,
-	COMPUTE
-};
+	VERTEX_SHADER,
+	PIXEL_SHADER,
+	COMPUTE_SHADER
+}SHADER_TYPE;
 
 /// <summary>
 /// IShader Class
@@ -55,24 +55,25 @@ public:
 /// - 모든 Shader Class의 Base Class
 /// - Vertex, Pixel, Compute Shader의 기본적으로 사용하는 Resource를 포함한 Base Class
 /// 
-
 class ShaderBase : public IShader
 {
 public:
-	ShaderBase(eShaderType shaderType) : m_ShaderType(shaderType) {}
+	ShaderBase(SHADER_TYPE shaderType) : m_ShaderType(shaderType) {}
 
 public:
 	virtual void LoadShader(std::string fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines) abstract;
 	virtual void Update() abstract;
 	virtual void Release();
 
-
 	// Shader SamplerState 설정..
 	void SetSamplerState(Hash_Code hash_code, ID3D11SamplerState* sampler);
 
 	// Shader ConstantBuffer Resource Update..
 	template<typename T>
-	void SetConstantBuffer(T cBuffer);
+	void ConstantBufferCopy(T* cBuffer);
+
+	template<typename T>
+	void ConstantBufferUpdate(T* cBuffer);
 
 	// Shader ShaderResourceView 설정..
 	template<typename T>
@@ -80,7 +81,7 @@ public:
 
 public:
 	// 현재 Shader Type 반환 함수..
-	eShaderType GetType();
+	SHADER_TYPE GetType();
 
 protected:
 	void CreateShader(const wchar_t* wPath, const D3D_SHADER_MACRO* pDefines, LPCSTR entry_point, LPCSTR shader_model, ID3DBlob** ppShader);
@@ -106,11 +107,37 @@ protected:
 
 private:
 	// 현재 Shader Type..
-	eShaderType m_ShaderType;
+	SHADER_TYPE m_ShaderType;
 };
 
 template<typename T>
-inline void ShaderBase::SetConstantBuffer(T cBuffer)
+inline void ShaderBase::ConstantBufferCopy(T* cBuffer)
+{
+	// 해당 Value 찾기..
+	std::unordered_map<Hash_Code, ConstantBuffer*>::iterator it = m_ConstantBufferList.find(T::GetHashCode());
+
+	// 해당 Key에 대한 Value가 없다면..
+	if (it == m_ConstantBufferList.end()) return;
+
+	// Update Buffer Get..
+	ID3D11Buffer* buffer = it->second->cBuffer.Get();
+	
+	// Mapping SubResource Data..
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	// GPU Access Lock Buffer Data..
+	g_DeviceContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	// Copy Resource Data..
+	memcpy((T*)mappedResource.pData, cBuffer, sizeof(T));
+
+	// GPU Access UnLock Buffer Data..
+	g_DeviceContext->Unmap(buffer, 0);
+}
+
+template<typename T>
+inline void ShaderBase::ConstantBufferUpdate(T* cBuffer)
 {
 	// 해당 Value 찾기..
 	std::unordered_map<Hash_Code, ConstantBuffer*>::iterator it = m_ConstantBufferList.find(T::GetHashCode());
@@ -119,7 +146,7 @@ inline void ShaderBase::SetConstantBuffer(T cBuffer)
 	if (it == m_ConstantBufferList.end()) return;
 
 	// Resource 복제..
-	g_DeviceContext->UpdateSubresource(it->second->cBuffer.Get(), 0, nullptr, &cBuffer, 0, 0);
+	g_DeviceContext->UpdateSubresource(it->second->cBuffer.Get(), 0, nullptr, cBuffer, 0, 0);
 }
 
 template<typename T>

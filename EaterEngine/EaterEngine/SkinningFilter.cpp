@@ -16,10 +16,10 @@ SkinningFilter::~SkinningFilter()
 
 }
 
-void SkinningFilter::Start()
+void SkinningFilter::StartPlay()
 {
-	BoneOffsetTM->resize(BoneSize);
-	gameobject->OneMeshData->BoneOffsetTM.resize(BoneSize);
+	//BoneOffsetTM->resize(BoneSize);
+	//gameobject->OneMeshData->BoneOffsetTM.resize(BoneSize);
 }
 
 void SkinningFilter::Update()
@@ -58,4 +58,7 @@ void SkinningFilter::PushBoneList(std::vector<GameObject*>* mBoneList)
 void SkinningFilter::PushBone_OffsetList(std::vector<DirectX::SimpleMath::Matrix>* mBoneOffsetTM)
 {
 	BoneOffsetTM = mBoneOffsetTM;
+
+	BoneOffsetTM->resize(BoneSize);
+	gameobject->OneMeshData->BoneOffsetTM.resize(BoneSize);
 }

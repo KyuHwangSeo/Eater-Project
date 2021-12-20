@@ -209,6 +209,7 @@ copy /Y "$(ProjectDir)PhysData.h" "$(SolutionDir)Library\inc\PhysX"
     <ClInclude Include="PhysEngine.h" />
     <ClInclude Include="PhysEngineDLL.h" />
     <ClInclude Include="PhysX_API.h" />
+    <ClInclude Include="RaycastManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Factory.cpp" />
@@ -216,6 +217,7 @@ copy /Y "$(ProjectDir)PhysData.h" "$(SolutionDir)Library\inc\PhysX"
     <ClCompile Include="PhysData.cpp" />
     <ClCompile Include="PhysEngine.cpp" />
     <ClCompile Include="PhysX_API.cpp" />
+    <ClCompile Include="RaycastManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

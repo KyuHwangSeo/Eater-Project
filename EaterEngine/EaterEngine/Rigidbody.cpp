@@ -11,7 +11,7 @@ Rigidbody::Rigidbody()
 {
 	//컨퍼넌트 실행 순서를 변경
 	Component::TransformUpdate_Order	= Component::FUNCTION_ORDER_FIRST;
-	Component::Start_Order				= Component::FUNCTION_ORDER_LAST;
+	Component::SetUp_Order				= Component::FUNCTION_ORDER_LAST;
 	RigidbodyData = new PhysData();
 }
 
@@ -22,8 +22,16 @@ Rigidbody::~Rigidbody()
 
 void Rigidbody::Start()
 {
-	/// 시작 값을 넣어준다
-	Tr = gameobject->GetTransform();
+	if (ColliderName != "")
+	{
+		ModelData* data = LoadManager::GetMesh(ColliderName);
+
+		TriangleMeshData* TRData = new TriangleMeshData();
+		TRData->IndexList = (data->TopMeshList[0]->m_OriginIndexList);
+		TRData->VertexList = (data->TopMeshList[0]->m_OriginVertexList);
+
+		RigidbodyData->CreateTriangleCollider(TRData);
+	}
 
 	RigidbodyData->SetWorldPosition(Tr->Position.x, Tr->Position.y, Tr->Position.z);
 	RigidbodyData->SetRotation(Tr->Rotation.x, Tr->Rotation.y, Tr->Rotation.z);
@@ -31,28 +39,25 @@ void Rigidbody::Start()
 	PhysX_Create_Actor(RigidbodyData);
 }
 
-void Rigidbody::TransformUpdate()
+void Rigidbody::SetUp()
+{
+	/// 시작 값을 넣어준다
+	Tr = gameobject->GetTransform();
+}
+
+void Rigidbody::PhysicsUpdate()
 {
 	PhysX_Update_Actor(RigidbodyData);
 
 	Tr->Position.x = RigidbodyData->WorldPosition.x;
 	Tr->Position.y = RigidbodyData->WorldPosition.y;
 	Tr->Position.z = RigidbodyData->WorldPosition.z;
-
+	
 	Tr->Q_Rotation.x = RigidbodyData->Rotation.x;
 	Tr->Q_Rotation.y = RigidbodyData->Rotation.y;
 	Tr->Q_Rotation.z = RigidbodyData->Rotation.z;
 	Tr->Q_Rotation.w = RigidbodyData->Rotation.w;
 
-	//if (mKeyInputManger->GetKey(VK_RIGHT))
-	//{
-	//	RigidbodyData->Velocity.x = 0.1f;
-	//	RigidbodyData->Velocity.y = PhysX_GetGrvity();
-	//}
-	//else if(mKeyInputManger->GetKey(VK_LEFT))
-	//{
-	//	RigidbodyData->Velocity.x = -0.1f;
-	//}
 }
 
  void Rigidbody::SetType(bool Dinamic)
@@ -72,24 +77,35 @@ void Rigidbody::SetKinematic(bool kinematic)
 	RigidbodyData->isKinematic = kinematic;
 }
 
-void Rigidbody::SetSetMass(float mass)
+void Rigidbody::SetMass(float mass)
 {
 	RigidbodyData->MT_Mass = mass;
+	RigidbodyData->MT_Restitution;
+}
+
+void Rigidbody::SetRestitution(float mRestitution)
+{
+	RigidbodyData->MT_Restitution = mRestitution;
 }
 
 void Rigidbody::SetFreezePosition(bool x, bool y, bool z)
 {
-	//RigidbodyData->FreezePositon = { (float)x,(float)y,(float)z };
+	RigidbodyData->SetLockAxis_Position(x, y, z);
 }
 
 void Rigidbody::SetFreezeRotation(bool x, bool y, bool z)
 {
-	//RigidbodyData->FreezeRotaticon = { (float)x,(float)y,(float)z };
+	RigidbodyData->SetLockAxis_Rotation(x, y, z);
 }
 
 void Rigidbody::SetVelocity(float x, float y, float z)
 {
-	//RigidbodyData->Velocity = { x,y,z };
+	RigidbodyData->SetVelocity(x, y, z);
+}
+
+Vector3 Rigidbody::GetVelocity()
+{
+	return RigidbodyData->GetVelocity();
 }
 
  void Rigidbody::SetTranlate(float x, float y, float z)
@@ -124,13 +140,7 @@ void Rigidbody::SetVelocity(float x, float y, float z)
 
  void Rigidbody::CreateTriangleCollider(std::string MeshName)
  {
-	 ModelData* data = LoadManager::GetMesh(MeshName);
-
-	 TriangleMeshData* TRData = new TriangleMeshData();
-	 TRData->IndexList	= &(data->TopMeshList[0]->Index_List);
-	 TRData->VertexList = &(data->TopMeshList[0]->Vertex_List);
-
-	 RigidbodyData->CreateTriangleCollider(TRData);
+	 ColliderName = MeshName;
  }
 
 

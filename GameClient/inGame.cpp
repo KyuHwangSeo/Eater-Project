@@ -26,9 +26,9 @@ void InGame::Awake()
 	LoadMesh("Player_Idle", ANIMATION_ONLY);
 	LoadMesh("Pistol", SCALING);
 	LoadMesh("Weapon", SCALING);
+	LoadMesh("TerrainDecimate", SCALING);
 
 	LoadTerrainMesh("Terrain", "Terrain_RGB.png", SCALING);
-	//LoadTerrainMesh("Terrain3", "Terrain_RGB.png", SCALING);
 
 	LoadTexture("Player.dds");
 	LoadTexture("Dump.png");
@@ -37,31 +37,37 @@ void InGame::Awake()
 	LoadTexture("ground01_Normal.png");
 	LoadTexture("ground02_Normal.png");
 
-
-	///카메라
-	testobj = Instance("Cam");
-	testobj->AddComponent<Camera>();
-	testobj->AddComponent<Keyinput>();
-	testobj->GetTransform()->Position = { 0,0,-25 };
-
-	///라이트
-	testobj = Instance("DirectionLight");
-	testobj->AddComponent<DirectionLight>();
-
 	///캐릭터
 	testobj = Instance("Player");
 	testobj->AddComponent<AnimationController>();
 	testobj->AddComponent<MeshFilter>();
 	testobj->AddComponent<Player>();
 
+	///카메라
+	testobj = Instance("Cam");
+	testobj->AddComponent<Camera>();
+	testobj->AddComponent<Keyinput>();
+	testobj->GetTransform()->Position = { 0,5,-25 };
+	
+	///라이트
+	testobj = Instance("DirectionLight");
+	testobj->AddComponent<DirectionLight>();
+
+
 	///터레인
-	testobj = Instance("Terrain");
-	testobj->AddComponent<MeshFilter>();
+	testobj = InstanceTerrain("Terrain");
 	testobj->GetComponent<MeshFilter>()->SetMeshName("Terrain");
-	testobj->GetComponent<Terrain>()->AddLayer("ground01_Albedo", "ground01_Normal");
-	testobj->GetComponent<Terrain>()->AddLayer("ground02_Albedo", "ground02_Normal");
-	testobj->GetComponent<Terrain>()->SetTextureTiling(1.0f / 31.0f, 1.0f / 31.0f);
+	testobj->GetComponent<Terrain>()->SetLayerName("ground01_Albedo", "ground01_Normal");
+	testobj->GetComponent<Terrain>()->SetLayerName("ground02_Albedo", "ground02_Normal");
+	testobj->GetComponent<Terrain>()->SetColliderName("TerrainDecimate");
+	testobj->GetComponent<Terrain>()->SetTextureTiling(1.0f / 31.0f);
 	testobj->GetTransform()->Rotation = { 0, 0, 0 };
+
+	/// 바닥
+	//testobj = Instance("Field");
+	//testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
+	//testobj->GetComponent<Transform>()->Rotation = { -90.f, 0.f, 0.f };
+	//testobj->GetComponent<Transform>()->Scale = { 0.05f, 0.05f, 0.05f };
 
 
 	///캐릭터
@@ -70,16 +76,12 @@ void InGame::Awake()
 	testobj->AddComponent<MeshFilter>();
 	testobj->GetComponent<MeshFilter>()->SetMeshName("CHARACTER");
 	testobj->GetComponent<MeshFilter>()->SetAnimationName("CHARACTER");
-	testobj->GetComponent<AnimationController>()->Choice("idle");
+	//testobj->GetComponent<AnimationController>()->Choice("idle");
 
-	testobj->GetTransform()->Scale = { 0.2f, 0.2f, 0.2f };
+	testobj->GetTransform()->Scale = { 0.5f, 0.5f, 0.5f };
 	testobj->GetTransform()->Rotation = { -90.0f, 0.0f, 0.0f };
-	testobj->GetTransform()->Position = { 100.0f, 0.0f, 0.0f };
+	testobj->GetTransform()->Position = { 100.0f, 1.0f, 0.0f };
 
-	/// 바닥
-	//testobj = Instance("Field");
-	//testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
-	//testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
 
 	//testobj = Instance("Field1");
 	//testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
@@ -99,8 +101,6 @@ void InGame::Start()
 
 void InGame::Update()
 {
-	testobj->GetComponent<AnimationController>()->Play(1, true);
-	
 	if (GetKey(VK_LEFT) == true)
 	{
 		testobj->GetTransform()->Position.x -= 250.0f * GetDeltaTime();

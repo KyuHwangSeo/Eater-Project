@@ -81,19 +81,19 @@ void GraphicEngineManager::EndRender()
 	GEngine->EndRender();
 }
 
-Indexbuffer* GraphicEngineManager::CreateIndexBuffer(ParserData::Mesh* mModel)
+IndexBuffer* GraphicEngineManager::CreateIndexBuffer(ParserData::Mesh* mModel)
 {
 	//인덱스버퍼 생성
 	return GEngine->CreateIndexBuffer(mModel);
 }
 
-Vertexbuffer* GraphicEngineManager::CreateVertexBuffer(ParserData::Mesh* mModel)
+VertexBuffer* GraphicEngineManager::CreateVertexBuffer(ParserData::Mesh* mModel)
 {
 	//버텍스 버퍼 생성
 	return GEngine->CreateVertexBuffer(mModel);
 }
 
-Vertexbuffer* GraphicEngineManager::CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName)
+VertexBuffer* GraphicEngineManager::CreateTerrainVertexBuffer(ParserData::Mesh* mModel, std::string maskName)
 {
 	//버텍스 버퍼 생성
 	return GEngine->CreateTerrainVertexBuffer(mModel, maskName);

@@ -46,7 +46,7 @@ void LightPass::Start(int width, int height)
 	m_LightPS = g_Shader->GetShader("Light_PS_Option0");
 
 	// Buffer 설정..
-	m_ScreenBuffer = g_Resource->GetBuffer<BD_FullScreen>();
+	m_ScreenBuffer = g_Resource->GetBuffer<BD_Quad>();
 
 	// BackBuffer 설정..
 	m_BackBuffer = g_Resource->GetMainRenderTarget();
@@ -97,7 +97,7 @@ void LightPass::OnResize(int width, int height)
 	ShaderResourceView* ssaoSRV = g_Resource->GetShaderResourceView<RT_SSAO_Main>();
 	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
 
-	m_LightPS->SetShaderResourceView<gShadowMap>(m_ShadowRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gShadowMap>(shadowSRV->Get());
 	m_LightPS->SetShaderResourceView<gSsaoMap>(ssaoSRV->Get());
 }
 
@@ -125,7 +125,7 @@ void LightPass::Reset()
 	ShaderResourceView* ssaoSRV = g_Resource->GetShaderResourceView<RT_SSAO_Main>();
 	ShaderResourceView* shadowSRV = g_Resource->GetShaderResourceView<DS_Shadow>();
 
-	m_LightPS->SetShaderResourceView<gShadowMap>(m_ShadowRT->GetSRV()->Get());
+	m_LightPS->SetShaderResourceView<gShadowMap>(shadowSRV->Get());
 	m_LightPS->SetShaderResourceView<gSsaoMap>(ssaoSRV->Get());
 }
 
@@ -138,8 +138,6 @@ void LightPass::BeginRender()
 
 void LightPass::Render(GlobalData* global)
 {
-	Matrix view = *global->mCamView;
-	Matrix proj = *global->mCamProj;
 	LightData* lightData = global->mLightData;
 	
 	CB_Light lightBuf;
@@ -163,15 +161,11 @@ void LightPass::Render(GlobalData* global)
 	}
 
 	CB_LightSub lightsubBuf;
-	lightsubBuf.gEyePosW = *global->mCamPos;
-	lightsubBuf.gViewProjTex = view * proj * Matrix(
-		0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, -0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f);
+	lightsubBuf.gEyePosW = global->mCamPos;
+	lightsubBuf.gViewProjTex = global->mCamVPT;
 
-	m_LightPS->SetConstantBuffer(lightBuf);
-	m_LightPS->SetConstantBuffer(lightsubBuf);
+	m_LightPS->ConstantBufferCopy(&lightBuf);
+	m_LightPS->ConstantBufferCopy(&lightsubBuf);
 
 	// Vertex Shader Update..
 	m_LightVS->Update();

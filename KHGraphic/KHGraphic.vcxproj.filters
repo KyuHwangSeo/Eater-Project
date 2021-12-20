@@ -175,6 +175,12 @@
     <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Terrain">
       <UniqueIdentifier>{619ed61e-c4dc-440a-a143-26a3d267f75c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\RendererPass\Debug">
+      <UniqueIdentifier>{6b0e5075-5e16-4aab-9f0e-ebdd105834a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\Particle">
+      <UniqueIdentifier>{eaf781cc-43b9-4c96-8419-c31c7d94b6e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -336,6 +342,9 @@
     <ClInclude Include="GraphicView.h">
       <Filter>소스 파일\Resource\Graphic\GraphicView</Filter>
     </ClInclude>
+    <ClInclude Include="DebugPass.h">
+      <Filter>소스 파일\RendererPass\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Graphic.cpp">
@@ -416,6 +425,9 @@
     <ClCompile Include="GraphicView.cpp">
       <Filter>소스 파일\Resource\Graphic\GraphicView</Filter>
     </ClCompile>
+    <ClCompile Include="DebugPass.cpp">
+      <Filter>소스 파일\RendererPass\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
@@ -456,6 +468,12 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\TerrainVS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\ParticlePS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\ParticleVS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\Particle</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

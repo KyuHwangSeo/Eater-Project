@@ -21,8 +21,7 @@ PhysData::PhysData()
 	isDinamic	= true;
 	isGrvity	= true;
 	isKinematic = false;
-
-	ActorObj = nullptr;
+	ActorObj	= nullptr;
 
 	Shape_type = SHAPE_TYPE::BOX;
 	CreateBoxCollider(0.5f);
@@ -38,7 +37,6 @@ void PhysData::SetWorldPosition(float x, float y, float z)
 	WorldPosition.x = x;
 	WorldPosition.y = y;
 	WorldPosition.z = z;
-	WorldPosition.w = 0.0f;
 }
 
 void PhysData::SetLocalPosition(float x, float y, float z)
@@ -46,7 +44,6 @@ void PhysData::SetLocalPosition(float x, float y, float z)
 	LocalPosition.x = x;
 	LocalPosition.y = y;
 	LocalPosition.z = z;
-	LocalPosition.w = 0.0f;
 }
 
 void PhysData::SetTranlate(float x, float y, float z)
@@ -54,7 +51,6 @@ void PhysData::SetTranlate(float x, float y, float z)
 	MovePoint.x = x;
 	MovePoint.y = y;
 	MovePoint.z = z;
-	WorldPosition.w = 0.0f;
 	isMove = true;
 }
 
@@ -63,7 +59,6 @@ void PhysData::SetRotation(float x, float y, float z)
 	Rotation.x	= x;
 	Rotation.y	= y;
 	Rotation.z	= z;
-	Rotation.w	= 0.0f;
 }
 
 void PhysData::SetRotate(float x, float y, float z)
@@ -71,7 +66,6 @@ void PhysData::SetRotate(float x, float y, float z)
 	Rotation.x += x;
 	Rotation.y += y;
 	Rotation.z += z;
-	Rotation.w = 0.0f;
 }
 
 void PhysData::AddForce(float x, float y, float z)
@@ -79,8 +73,20 @@ void PhysData::AddForce(float x, float y, float z)
 	Force.x = x;
 	Force.y = y;
 	Force.z = z;
-	Force.w = 0.0f;
 	isForce = true;
+}
+
+void PhysData::SetVelocity(float x, float y, float z)
+{
+	Velocity.x = x;
+	Velocity.y = y;
+	Velocity.z = z;
+	isVelocity = true;
+}
+
+Vector3 PhysData::GetVelocity()
+{
+	return PhysX_Velocity;
 }
 
 void PhysData::CreateBoxCollider(float x, float y, float z)
@@ -119,6 +125,28 @@ void PhysData::CreateTriangleCollider(TriangleMeshData* Data)
 	isDinamic = false;
 }
 
+void PhysData::SetLockAxis_Position(bool x, bool y, bool z)
+{
+	FreezePositon.x = x;
+	FreezePositon.y = y;
+	FreezePositon.z = z;
+}
+
+void PhysData::SetLockAxis_Rotation(bool x, bool y, bool z)
+{
+	FreezeRotaticon.x = x;
+	FreezeRotaticon.y = y;
+	FreezeRotaticon.z = z;
+}
+
+PhysRayCast::PhysRayCast()
+{
 
 
+}
 
+PhysRayCast::~PhysRayCast()
+{
+
+
+}

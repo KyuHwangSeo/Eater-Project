@@ -11,8 +11,10 @@ public:
 	EATER_ENGINEDLL Rigidbody();
 	EATER_ENGINEDLL ~Rigidbody();
 
+	
 	virtual void Start();
-	virtual void TransformUpdate();
+	virtual void SetUp();
+	virtual void PhysicsUpdate();
 
 	//타입을 정의 한다(static , Dinamic)
 	EATER_ENGINEDLL void SetType(bool Dinamic);
@@ -21,16 +23,24 @@ public:
 	//
 	EATER_ENGINEDLL void SetKinematic(bool kinematic);
 	//무게를 지정한다
-	EATER_ENGINEDLL void SetSetMass(float mass);
+	EATER_ENGINEDLL void SetMass(float mass);
+	//복원력
+	EATER_ENGINEDLL void SetRestitution(float mRestitution);
+
+
 	//원하는 축의 방향이동을 고정 시킨다
 	EATER_ENGINEDLL void SetFreezePosition(bool x,bool y,bool z);
 	//원하는 축의 방향회전을 고정 시킨다 
 	EATER_ENGINEDLL void SetFreezeRotation(bool x,bool y,bool z);
 	//rigdbody를 이용해서 움직임
 	EATER_ENGINEDLL void SetVelocity(float x, float y, float z);
+	
+	EATER_ENGINEDLL Vector3 GetVelocity();
+
 
 	EATER_ENGINEDLL void SetTranlate(float x, float y, float z);
 	EATER_ENGINEDLL void SetAddForce(float x, float y, float z);
+	
 
 	
 	//콜라이더 설정
@@ -52,5 +62,6 @@ public:
 private:
 	Transform* Tr;
 	PhysData* RigidbodyData;
+	std::string ColliderName;
 };
 

@@ -2,7 +2,9 @@
 #include "PxPhysicsAPI.h"
 #include <vector>
 #include <ctype.h>
+
 #include "Factory.h"
+#include "RaycastManager.h"
 
 #pragma comment(lib,"PhysX_64.lib")
 #pragma comment(lib,"PhysXFoundation_64.lib")
@@ -11,7 +13,7 @@
 #pragma comment(lib,"PhysXCommon_64.lib")
 #pragma comment(lib,"PhysXPvdSDK_static_64.lib")
 
-#include "Ps.h"
+
 //#pragma comment(lib,"PhysXVehicle_static_64.lib")				//차량
 //#pragma comment(lib,"PhysXCharacterKinematic_static_64.lib")	//캐릭터
 
@@ -28,10 +30,11 @@ PhysEngine::PhysEngine()
 	m_Physics		= nullptr;
 	m_Dispatcher	= nullptr;
 	m_Scene			= nullptr;
-	m_Material		= nullptr;
 	m_Pvd			= nullptr;
+	m_Cooking		= nullptr;
 
 	m_Factory		= nullptr;
+	m_RayManager	= nullptr;
 }
 
 PhysEngine::~PhysEngine()
@@ -60,6 +63,9 @@ bool PhysEngine::Initialize(int ThreadCount, PhysSceneData* SceneData, bool Debu
 	//펙토리 생성
 	m_Factory = new Factory();
 	m_Factory->Initialize(m_Physics,m_Scene, m_Cooking);
+
+	m_RayManager = new RaycastManager();
+	m_RayManager->Initialize(m_Scene);
 
 	return true;
 }
@@ -105,12 +111,12 @@ void PhysEngine::Create_Actor(PhysData* data)
 
 	///위치,회전을 지정해준다
 	PxTransform P = PxTransform(data->WorldPosition.x, data->WorldPosition.y, data->WorldPosition.z);
-	//
-	//PxTransform Rx = PxTransform(PxQuat((data->Rotation.x)* Pi / 180, PxVec3(1, 0, 0)));
-	//PxTransform Ry = PxTransform(PxQuat(data->Rotation.y * Pi / 180, PxVec3(0, 1, 0)));
-	//PxTransform Rz = PxTransform(PxQuat(data->Rotation.z * Pi / 180, PxVec3(0, 0, 1)));
-	//
-	//PxTransform*  TR = new PxTransform(P * (Rz * Ry* Rx));
+	
+	PxTransform Rx = PxTransform(PxQuat((data->Rotation.x)* Pi / 180, PxVec3(1, 0, 0)));
+	PxTransform Ry = PxTransform(PxQuat(data->Rotation.y * Pi / 180, PxVec3(0, 1, 0)));
+	PxTransform Rz = PxTransform(PxQuat(data->Rotation.z * Pi / 180, PxVec3(0, 0, 1)));
+	
+	PxTransform  TR = PxTransform(P * (Rz * Ry* Rx));
 
 	///재질을 지정해준다
 	PxMaterial* pMaterial	= m_Factory->CreateMaterial(data->MT_StaticFriction, data->MT_DynamicFriction, data->MT_Restitution);
@@ -136,11 +142,11 @@ void PhysEngine::Create_Actor(PhysData* data)
 	///물리 객체 생성
 	if (data->isDinamic == true)
 	{
-		m_Factory->CreateDinamicActor(data, shape, &P);
+		m_Factory->CreateDinamicActor(data, shape,&TR);
 	}
 	else
 	{
-		m_Factory->CreateStaticActor(data, shape, &P);
+		m_Factory->CreateStaticActor(data, shape,&TR);
 	}
 
 	if (shape != nullptr)
@@ -151,8 +157,30 @@ void PhysEngine::Create_Actor(PhysData* data)
 
 void  PhysEngine::Update_Actor(PhysData* data)
 {
+	//받아온 Data를 Actor와 동기화시켜준다
 	PxRigidActor* rig = reinterpret_cast<PxRigidActor*>(data->ActorObj);
+	PxRigidBody* body = reinterpret_cast<PxRigidBody*>(data->ActorObj);
 	PxTransform Tr = rig->getGlobalPose();
+
+
+	//관성이 들어간 힘을 준다
+	if (data->isForce == true)
+	{
+		PxVec3 Force	= PxVec3(data->Force.x, data->Force.y, data->Force.z);
+		PxVec3 Pos		= PxVec3(data->WorldPosition.x, data->WorldPosition.y, data->WorldPosition.z);
+		PxRigidBodyExt::addForceAtPos(*body, Force, Pos);
+		data->isForce = false;
+	}
+
+	
+	if (data->isVelocity == true)
+	{
+		PxVec3 pos = body->getLinearVelocity();
+		PxVec3 Pox = PxVec3(data->Velocity.x,pos.y, data->Velocity.z);
+		body->setLinearVelocity(Pox);
+		data->isVelocity = false;
+	}
+
 
 	data->WorldPosition.x = Tr.p.x;
 	data->WorldPosition.y = Tr.p.y;
@@ -170,6 +198,18 @@ void PhysEngine::Delete_Actor(PhysData* data)
 	PxRigidActor* rig = reinterpret_cast<PxRigidActor*>(data->ActorObj);
 	rig->release();
 }
+
+bool PhysEngine::RayCast(PhysRayCast* ray)
+{
+	return m_RayManager->RayCast(ray);
+}
+
+bool PhysEngine::MultiRayCast(PhysRayCast* ray)
+{
+	return m_RayManager->RayCastMultiple(ray);
+}
+
+
 
 bool PhysEngine::CreateScene(PhysSceneData* SceneData)
 {
@@ -207,9 +247,9 @@ bool PhysEngine::CreateScene(PhysSceneData* SceneData)
 	}
 
 	//바닥생성
-	m_Material = m_Physics->createMaterial(0.5f, 0.5f, 0.6f);
-	PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics, PxPlane(0, 1, 0, 0), *m_Material);
-	m_Scene->addActor(*groundPlane);
+	//PxMaterial* m_Material = m_Physics->createMaterial(0.5f, 0.5f, 0.6f);
+	//PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics, PxPlane(0, 1, 0, 0), *m_Material);
+	//m_Scene->addActor(*groundPlane);
 
 	return false;
 }

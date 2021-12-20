@@ -22,6 +22,7 @@ ShaderResourceHashTable* ShaderResourceHashTable::Get()
 
 bool ShaderResourceHashTable::Push(eResourceType type, std::string name, Hash_Code hash_code)
 {
+	// 해당 Resource Type에 따른 Hash Code 등록..
 	switch (type)
 	{
 	case eResourceType::CB:
@@ -132,6 +133,7 @@ void ShaderResourceHashTable::Destroy()
 
 bool ShaderResourceHashTable::CheckHashCode(std::unordered_map<std::string, Hash_Code>& table, std::string name, Hash_Code hash_code)
 {
+	// 해당 Resource가 등록된 상태가 아니라면 Hash_Code 등록..
 	if (table.find(name) == table.end())
 	{
 		table.insert(std::make_pair(name, hash_code));

@@ -24,9 +24,9 @@ public:
 	void OnReSize(int screenWidth, int screenheight) override;
 	void Delete() override;
 
-	Indexbuffer* CreateIndexBuffer(ParserData::Mesh* mesh) override;
-	Vertexbuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
-	Vertexbuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) override;
+	IndexBuffer* CreateIndexBuffer(ParserData::Mesh* mesh) override;
+	VertexBuffer* CreateVertexBuffer(ParserData::Mesh* mesh) override;
+	VertexBuffer* CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName) override;
 	TextureBuffer* CreateTextureBuffer(std::string path) override;
 
 private:

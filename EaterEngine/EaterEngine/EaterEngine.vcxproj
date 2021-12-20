@@ -227,14 +227,17 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClInclude Include="Export\Light.h" />
     <ClInclude Include="Export\MainHeader.h" />
     <ClInclude Include="Export\MeshFilter.h" />
+    <ClInclude Include="Export\NetworkManager.h" />
     <ClInclude Include="Export\ResourcesData.h" />
     <ClInclude Include="Export\Rigidbody.h" />
     <ClInclude Include="Export\Scene.h" />
     <ClInclude Include="Export\SkinningFilter.h" />
     <ClInclude Include="Export\Terrain.h" />
     <ClInclude Include="Export\Transform.h" />
+    <ClInclude Include="Export\UnitNet.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="NetWorkData.h" />
     <ClInclude Include="GraphicEngineManager.h" />
     <ClInclude Include="KeyinputManager.h" />
     <ClInclude Include="LightManager.h" />
@@ -242,7 +245,9 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="LoadManager.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="PhysManager.h" />
+    <ClInclude Include="RandomNumber.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="TimeManager.h" />
   </ItemGroup>
@@ -258,6 +263,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="GraphicEngineManager.cpp" />
     <ClCompile Include="KeyinputManager.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -268,6 +274,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClCompile Include="MeshFilter.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="LoadManager.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PhysManager.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -276,6 +283,7 @@ copy /Y "$(TargetDir)*.lib" "$(SolutionDir)Library\lib"
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UnitNet.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

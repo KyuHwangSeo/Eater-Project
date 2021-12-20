@@ -15,19 +15,17 @@ public:
 	EATER_ENGINEDLL Camera();
 	virtual ~Camera();
 
-	virtual void Awake();
+	virtual void Start();
 	virtual void Update();
 
 	//현재카메라를 메인카메라로 변경시킨다
 	void ChoiceMainCam();
 	// Camera Position
-	DirectX::XMFLOAT3* GetPos();
-	// Camera View To TexSpace
-	DirectX::XMMATRIX* GetViewTex();
+	DirectX::SimpleMath::Vector3 GetPos();
 	//현재 카메라의 뷰행렬
-	DirectX::XMMATRIX* GetView();
+	DirectX::SimpleMath::Matrix GetView();
 	//프로젝션 행렬을 가져온다
-	DirectX::XMMATRIX* GetProj();
+	DirectX::SimpleMath::Matrix GetProj();
 
 	//카메라의 로컬 좌표를 가져온다
 	//static DirectX::XMFLOAT3  GetLocalPos_Up();
@@ -44,15 +42,10 @@ private:
 	void CreateView();
 
 	//프로젝션
-	DirectX::XMFLOAT4X4 mProj;
-	DirectX::XMMATRIX mProj_M;
+	DirectX::SimpleMath::Matrix mProj;
 
 	//뷰
-	DirectX::XMFLOAT4X4 mView;
-	DirectX::XMMATRIX mView_M;
-
-	//View To TexSpace
-	DirectX::XMMATRIX mViewTex_M;
+	DirectX::SimpleMath::Matrix mView;
 
 	//카메라 리스트에서 나의 인덱스
 	int MyIndex;

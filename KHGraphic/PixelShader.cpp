@@ -8,7 +8,7 @@
 #include <fstream>
 
 PixelShader::PixelShader(const char* fileName, const char* entry_point, const char* shader_model, const D3D_SHADER_MACRO* pDefines)
-	:ShaderBase(eShaderType::PIXEL)
+	:ShaderBase(SHADER_TYPE::PIXEL_SHADER)
 {
 	LoadShader(g_ShaderRoute + fileName, entry_point, shader_model, pDefines);
 }
@@ -53,7 +53,8 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 		if (SUCCEEDED(cBuffer->GetDesc(&bufferDesc)))
 		{
 			ID3D11Buffer* cBuffer = nullptr;
-			CD3D11_BUFFER_DESC cBufferDesc(bufferDesc.Size, D3D11_BIND_CONSTANT_BUFFER);
+			CD3D11_BUFFER_DESC cBufferDesc(bufferDesc.Size, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+			//CD3D11_BUFFER_DESC cBufferDesc(bufferDesc.Size, D3D11_BIND_CONSTANT_BUFFER);
 
 			D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 			pReflector->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);

@@ -47,41 +47,43 @@ float4 Light_PS(VertexIn pin) : SV_TARGET
 	// Gamma Space -> Linear Space
 	// 모든 라이팅 연산은 선형 공간에서 이루어져야 한다..
 #ifdef GAMMA_CORRECTION
-	albedo.rgb = pow(albedo.rgb, 2.2f);
+    albedo.rgb = pow(albedo.rgb, 2.2f);
 #endif
-    float4 litColor = albedo;
-
-	// Start with a sum of zero.
-    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-	// View Direction
-    float3 ViewDirection = gEyePosW - position.xyz;
-    ViewDirection = normalize(ViewDirection);
-
-	// 현재 픽셀의 Shadow 값..
-    float shadows = 1.0f;
-	
-#ifdef SHADOW
-    shadows = CalcShadowFactor(gSamBorderComparisonLinearPoint, gShadowMap, float3(shadow.xyz));
-#endif	
-	
-	// 현재 픽셀의 SSAO 값..
-    float ambientAccess = 1.0f;
-	
-#ifdef SSAO
-    ssao /= ssao.w;
-    ambientAccess = gSsaoMap.SampleLevel(gSamWrapLinear, ssao.xy, 0.0f).r;
-#endif	
     
-	// 현재 픽셀의 Material ID..
-    uint matID = round(position.w);
-
-    float4 A, D, S;
-	
+    float4 litColor = albedo;
+    
     if (shadow.w < 1.0f)
     {
+        // Start with a sum of zero.
+        float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        
+	    // View Direction
+        float3 ViewDirection = gEyePosW - position.xyz;
+        ViewDirection = normalize(ViewDirection);
+
+	    // 현재 픽셀의 Shadow 값..
+        float shadows = 1.0f;
+	
+#ifdef SHADOW
+        shadows = CalcShadowFactor(gSamBorderComparisonLinearPoint, gShadowMap, float3(shadow.xyz));
+#endif	
+	
+	    // 현재 픽셀의 SSAO 값..
+        float ambientAccess = 1.0f;
+	
+#ifdef SSAO
+        ssao /= ssao.w;
+        ambientAccess = gSsaoMap.SampleLevel(gSamWrapLinear, ssao.xy, 0.0f).r;
+#endif	
+    
+	    // 현재 픽셀의 Material ID..
+        uint matID = round(position.w);
+
+        float4 A, D, S;
+	
+
 		// Directional Light
         ComputeDirectionalLight(gMaterials[matID], gDirLights, float3(normal.xyz), ViewDirection,
 			A, D, S);
@@ -122,10 +124,10 @@ float4 Light_PS(VertexIn pin) : SV_TARGET
 		
 		// Modulate with late add.
         litColor = albedo * (ambient + diffuse) + spec;
-    }
 
-	// Common to take alpha from diffuse material and texture.
-    litColor.a = gMaterials[matID].Diffuse.a * albedo.a;
+	    // Common to take alpha from diffuse material and texture.
+        litColor.a = gMaterials[matID].Diffuse.a * albedo.a;
+    }
 
 	// Gamma Correction
 	// Normal Map은 선형공간에서 출력..

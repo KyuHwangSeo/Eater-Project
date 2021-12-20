@@ -295,7 +295,7 @@ void GraphicResourceFactory::CreateMainRenderTarget(Hash_Code hash_Code, UINT wi
 }
 
 
-Vertexbuffer* GraphicResourceFactory::CreateVertexBuffer(ParserData::Mesh* mesh)
+VertexBuffer* GraphicResourceFactory::CreateVertexBuffer(ParserData::Mesh* mesh)
 {
 	switch (mesh->m_MeshType)
 	{
@@ -308,7 +308,7 @@ Vertexbuffer* GraphicResourceFactory::CreateVertexBuffer(ParserData::Mesh* mesh)
 	}
 }
 
-Vertexbuffer* GraphicResourceFactory::CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName)
+VertexBuffer* GraphicResourceFactory::CreateTerrainVertexBuffer(ParserData::Mesh* mesh, std::string maskName)
 {
 	return CreateTerrainVB(mesh, maskName);
 }
@@ -370,10 +370,10 @@ UnorderedAccessView* GraphicResourceFactory::RegisterResource(Hash_Code hash_cod
 }
 
 
-Indexbuffer* GraphicResourceFactory::CreateIndexBuffer(ParserData::Mesh* mesh)
+IndexBuffer* GraphicResourceFactory::CreateIndexBuffer(ParserData::Mesh* mesh)
 {
 	// 새로운 IndexBufferData 생성..
-	Indexbuffer* iBuffer = new Indexbuffer();
+	IndexBuffer* iBuffer = new IndexBuffer();
 
 	ID3D11Buffer* IB = nullptr;
 
@@ -431,10 +431,10 @@ TextureBuffer* GraphicResourceFactory::CreateTextureBuffer(std::string path)
 }
 
 template<>
-Vertexbuffer* GraphicResourceFactory::CreateMeshVB<MeshVertex>(ParserData::Mesh* mesh)
+VertexBuffer* GraphicResourceFactory::CreateMeshVB<MeshVertex>(ParserData::Mesh* mesh)
 {
 	// 새로운 VertexBufferData 생성..
-	Vertexbuffer* vBuffer = new Vertexbuffer();
+	VertexBuffer* vBuffer = new VertexBuffer();
 
 	ID3D11Buffer* VB = nullptr;
 
@@ -465,17 +465,17 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVB<MeshVertex>(ParserData::Mesh*
 
 	// 넘겨줘야할 VertexBufferData 삽입..
 	vBuffer->Count = vCount;
-	vBuffer->VertexbufferPointer = VB;
+	vBuffer->VertexBufferPointer = VB;
 	vBuffer->VertexDataSize = sizeof(MeshVertex);
 	
 	return vBuffer;
 }
 
 template<>
-Vertexbuffer* GraphicResourceFactory::CreateMeshVB<SkinVertex>(ParserData::Mesh* mesh)
+VertexBuffer* GraphicResourceFactory::CreateMeshVB<SkinVertex>(ParserData::Mesh* mesh)
 {
 	// 새로운 VertexBufferData 생성..
-	Vertexbuffer* vBuffer = new Vertexbuffer();
+	VertexBuffer* vBuffer = new VertexBuffer();
 
 	ID3D11Buffer* VB = nullptr;
 
@@ -522,16 +522,16 @@ Vertexbuffer* GraphicResourceFactory::CreateMeshVB<SkinVertex>(ParserData::Mesh*
 
 	// 넘겨줘야할 VertexBufferData 삽입..
 	vBuffer->Count = vCount;
-	vBuffer->VertexbufferPointer = VB;
+	vBuffer->VertexBufferPointer = VB;
 	vBuffer->VertexDataSize = sizeof(SkinVertex);
 
 	return vBuffer;
 }
 
-Vertexbuffer* GraphicResourceFactory::CreateTerrainVB(ParserData::Mesh* mesh, std::string maskName)
+VertexBuffer* GraphicResourceFactory::CreateTerrainVB(ParserData::Mesh* mesh, std::string maskName)
 {
 	// 새로운 VertexBufferData 생성..
-	Vertexbuffer* vBuffer = new Vertexbuffer();
+	VertexBuffer* vBuffer = new VertexBuffer();
 
 	ID3D11Buffer* VB = nullptr;
 
@@ -563,7 +563,7 @@ Vertexbuffer* GraphicResourceFactory::CreateTerrainVB(ParserData::Mesh* mesh, st
 	D3D11_BUFFER_DESC ibd;
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
 	ibd.ByteWidth = sizeof(TerrainVertex) * vCount;
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	ibd.CPUAccessFlags = 0;
 	ibd.MiscFlags = 0;
 	D3D11_SUBRESOURCE_DATA iinitData;
@@ -574,7 +574,7 @@ Vertexbuffer* GraphicResourceFactory::CreateTerrainVB(ParserData::Mesh* mesh, st
 
 	// 넘겨줘야할 VertexBufferData 삽입..
 	vBuffer->Count = vCount;
-	vBuffer->VertexbufferPointer = VB;
+	vBuffer->VertexBufferPointer = VB;
 	vBuffer->VertexDataSize = sizeof(TerrainVertex);
 
 	return vBuffer;
@@ -911,7 +911,7 @@ void GraphicResourceFactory::CreateQuadBuffer()
 	m_Graphic->CreateBuffer(&ibd, &iinitData, &newBuf->IB);
 
 	// Resource 등록..
-	m_ResourceManager->AddResource<BD_FullScreen>(newBuf);
+	m_ResourceManager->AddResource<BD_Quad>(newBuf);
 }
 
 void GraphicResourceFactory::CreateSSAOQuadBuffer()
@@ -974,5 +974,5 @@ void GraphicResourceFactory::CreateSSAOQuadBuffer()
 	m_Graphic->CreateBuffer(&ibd, &iinitData, &newBuf->IB);
 
 	// Resource 등록..
-	m_ResourceManager->AddResource<BD_SSAOScreen>(newBuf);
+	m_ResourceManager->AddResource<BD_SSAO>(newBuf);
 }

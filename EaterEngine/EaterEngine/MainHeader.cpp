@@ -1,5 +1,7 @@
 #include "MainHeader.h"
 #include "GameEngine.h"
+#include "PhysManager.h"
+#include "PhysData.h"
 GameEngine* gGameEngine;
 
 ///엔진 관련
@@ -33,6 +35,11 @@ void EndEngine()
 {
 	return gGameEngine->Instance(ObjName);
 }
+
+ GameObject* InstanceTerrain(std::string ObjName)
+ {
+	 return gGameEngine->InstanceTerrain(ObjName);
+ }
 
  void Destroy(GameObject* obj)
 {
@@ -133,5 +140,10 @@ void EndEngine()
  float GetDeltaTime()
  {
 	 return gGameEngine->GetdeltaTime();
+ }
+
+ bool RayCast(PhysRayCast* ray)
+ {
+	 return PhysManager::RayCast(ray);
  }
 

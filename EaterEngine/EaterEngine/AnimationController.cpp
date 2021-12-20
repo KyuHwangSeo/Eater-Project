@@ -6,12 +6,17 @@
 
 AnimationController::AnimationController()
 {
-
+	ChangeAnimation = false;
 }
 
 AnimationController::~AnimationController()
 {
 
+}
+
+void AnimationController::StartUpdate()
+{
+	ChangeAnime();
 }
 
 void AnimationController::SetBoneList(std::vector<GameObject*>* m_ObjList)
@@ -38,21 +43,32 @@ void AnimationController::SetAnimeList(ModelAnimationData* data)
 	AnimationList = data;
 }
 
+void AnimationController::ChangeAnime()
+{
+	if (ChangeAnimation == true)
+	{
+		std::vector<OneAnimation*>* data = AnimationList->AnimList[NowAnimationName];
+
+		//본의 애니메이션을 넣어준다
+		int Count = (int)AnimatorList.size();
+		for (int i = 0; i < Count; i++)
+		{
+			if (AnimatorList[i] == nullptr) { continue; }
+
+			AnimatorList[i]->SetAnimation((*data)[i]);
+		}
+		ChangeAnimation = false;
+	}
+}
+
 void AnimationController::Choice(std::string Name)
 {
 	//나의 애니메이션 리스트에서 선택한 애니메이션을 본에게 넘겨준다
-	NowAnimationName = Name;
-	std::vector<OneAnimation*>* data = AnimationList->AnimList[Name];
-	
-
-	//본의 애니메이션을 넣어준다
-	int Count = (int)AnimatorList.size();
-	for (int i = 0; i < Count; i++)
+	if (NowAnimationName != Name)
 	{
-		if (AnimatorList[i] == nullptr) { continue; }
-		
-		AnimatorList[i]->SetAnimation((*data)[i]);
+		ChangeAnimation = true;
 	}
+	NowAnimationName = Name;
 }
 
 void AnimationController::Play(float Speed, bool Loop)

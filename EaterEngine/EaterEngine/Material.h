@@ -4,7 +4,7 @@
 #include "EaterEngineDLL.h"
 
 class MeshData;
-class MaterialBuffer;
+class MaterialData;
 class LoadMeshData;
 class TextureBuffer;
 class MaterialManager;
@@ -38,13 +38,13 @@ public:
 
 public:
 	UINT GetMaterialIndex();
-	MaterialBuffer* GetMaterialData();
+	MaterialData* GetMaterialData();
 
 private:
 	static MaterialManager* MAT_Manager;
 
 	MeshData* m_MeshData;
 
-	MaterialBuffer* MaterialBuffers;
+	MaterialData* MaterialDatas;
 };
 

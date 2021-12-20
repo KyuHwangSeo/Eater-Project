@@ -34,7 +34,7 @@ void Player::Awake()
 	Weapon->AddComponent<MeshFilter>()->SetMeshName("Weapon");
 }
 
-void Player::Start()
+void Player::SetUp()
 {
 	//컨퍼넌트 초기화
 	Mf->SetTextureName("Player");
@@ -42,28 +42,30 @@ void Player::Start()
 	Mf->SetMeshName("Player");
 
 	Tr->Position = { 0,0,0 };
-	Tr->Scale = { 1 ,1, 1 };
+	Tr->Scale = { 10 ,10, 10 };
 	Tr->Rotation = { 0 ,0,0 };
-
+}
+void Player::Start()
+{
 	//무기를 넣을 본을 찾아옴
 	RightHand	= gameobject->GetChildBone("mixamorig:RightHand");
 	LeftHand	= gameobject->GetChildBone("mixamorig:LeftHand");
-
+	
 	//무기를 해당 본의 자식으로 넣는다
 	RightHand->ChoiceChild(Gun);
 	LeftHand->ChoiceChild(Weapon);
-
+	
 	//각각의 무기들의 위치값을 조정
 	Gun->transform->Scale = { 1,1 ,1 };
-	Gun->transform->Rotation = { -90, -90,0 };
-
+	Gun->transform->Rotation = { 0, -180, 90 };
+	
 	Weapon->transform->Scale = { 1,1 ,1 };
-	Weapon->transform->Rotation = { -90, 90,0 };
+	Weapon->transform->Rotation = { 0, 180, -90 };
 }
 
 void Player::Update()
 {
-	float Speed = 2.5f * GetDeltaTime();
+	float Speed = 5.0f * GetDeltaTime();
 
 	if (GetKey(VK_RIGHT))
 	{

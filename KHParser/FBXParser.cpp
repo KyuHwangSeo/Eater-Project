@@ -1015,9 +1015,9 @@ void FBXParser::SetTransform(fbxsdk::FbxNode* node)
 	//if (m_OneMesh->m_TopNode)
 	//{
 	//	const auto yaw = -90.0f * DirectX::XM_PI / 180.0f;
-	//	
+	//
 	//	DirectX::SimpleMath::Quaternion q = XMQuaternionRotationRollPitchYaw(yaw, 0.0f, 0.0f);
-	//	
+	//
 	//	world *= XMMatrixRotationQuaternion(q);
 	//	local *= XMMatrixRotationQuaternion(q);
 	//}

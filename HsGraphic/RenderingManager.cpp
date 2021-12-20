@@ -50,8 +50,8 @@ void RenderingManager::CameraUpdate(GlobalData* data)
 	//카메라 버퍼 업데이트
 	ID3D11Buffer* buffer = mShaderManager->GetConstantBuffer("CameraBuffer");
 	CameraBuffer temp;
-	temp.view = DirectX::XMMatrixTranspose(*data->mCamView);
-	temp.proj = DirectX::XMMatrixTranspose(*data->mCamProj);
+	temp.view = DirectX::XMMatrixTranspose(data->mCamView);
+	temp.proj = DirectX::XMMatrixTranspose(data->mCamProj);
 
 	DeviceContext->UpdateSubresource(buffer, 0, nullptr, &temp, 0, 0);
 	DeviceContext->VSSetConstantBuffers(0, 1, &buffer);
@@ -60,7 +60,7 @@ void RenderingManager::CameraUpdate(GlobalData* data)
 
 void RenderingManager::SkinningUpdate(MeshData* data)
 {
-	MaterialBuffer* mat = *data->Material_List.begin();
+	MaterialData* mat = data->Material_Data;
 
 	///오브젝트 버퍼 업데이트
 	if (mat->Albedo != nullptr)
@@ -103,7 +103,7 @@ void RenderingManager::SkinningUpdate(MeshData* data)
 
 void RenderingManager::MeshUpdate(MeshData* data)
 {
-	MaterialBuffer* mat = *data->Material_List.begin();
+	MaterialData* mat = data->Material_Data;
 	
 	///오브젝트 버퍼 업데이트
 	if (mat->Albedo != nullptr)
@@ -242,7 +242,7 @@ void RenderingManager::Rendering(MeshData* data, ShaderType type)
 
 	///void* 를 버퍼로 타입변환
 	ID3D11Buffer* IBuffer = reinterpret_cast<ID3D11Buffer*>(data->IB->IndexBufferPointer);
-	ID3D11Buffer* VBuffer = reinterpret_cast<ID3D11Buffer*>(data->VB->VertexbufferPointer);
+	ID3D11Buffer* VBuffer = reinterpret_cast<ID3D11Buffer*>(data->VB->VertexBufferPointer);
 
 	///데이터 삽입
 	DeviceContext->IASetVertexBuffers(0, 1, &VBuffer, &stride, &offset);

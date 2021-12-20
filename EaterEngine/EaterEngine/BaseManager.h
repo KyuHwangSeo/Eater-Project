@@ -21,6 +21,8 @@ public:
 	static void Initialize();
 	static void Reset();
 
+	static void UpdateGlobalData();
+
 	static GlobalData* GetGlobalData();
 };
 

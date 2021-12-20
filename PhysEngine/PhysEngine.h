@@ -10,16 +10,12 @@ namespace physx
 	class PxPhysics;
 	class PxDefaultCpuDispatcher;
 	class PxScene;
-	class PxMaterial;
-	class PxRigidDynamic;
-	class PxRigidStatic;
 	class PxCooking;
 	class PxPvd;
 	class PxTolerancesScale;
-	class PxTransform;
-	class PxRigidActor;
 }
 
+class RaycastManager;
 class Factory;
 struct PhysSceneData;
 
@@ -44,7 +40,11 @@ public:
 	void Update_Actor(PhysData* data);
 	//엑터 삭제
 	void Delete_Actor(PhysData* data);
-
+	
+	//한개의 Raycast충돌 여부를 반환
+	bool RayCast(PhysRayCast* ray);
+	
+	bool MultiRayCast(PhysRayCast* ray);
 private:
 	bool Initialize_Release(int ThreadCount);
 	bool Initialize_Debug(int ThreadCount);
@@ -62,10 +62,10 @@ private:
 	physx::PxPhysics*				m_Physics;
 	physx::PxDefaultCpuDispatcher*	m_Dispatcher;
 	physx::PxScene*					m_Scene;
-	physx::PxMaterial*				m_Material;
 	physx::PxPvd*					m_Pvd;				//디버깅을 사용하기위해
 
 	bool OnDebug = false;	//디버깅 사용여부
 
-	Factory* m_Factory;
+	Factory*		m_Factory;
+	RaycastManager* m_RayManager;
 };
