@@ -333,15 +333,20 @@ void GameEngine::RenderOptionCheck()
 {
 	if (mKeyManager->GetKeyUp(VK_F1))
 	{
+		// Debug On/Off
+		m_RenderOption |= RENDER_DEBUG;
+	}
+	if (mKeyManager->GetKeyUp(VK_F2))
+	{
 		// Gamma Correction On/Off
 		m_RenderOption |= RENDER_GAMMA_CORRECTION;
 	}
-	if (mKeyManager->GetKeyUp(VK_F2))
+	if (mKeyManager->GetKeyUp(VK_F3))
 	{
 		// Shadow On/Off
 		m_RenderOption |= RENDER_SHADOW;
 	}
-	if (mKeyManager->GetKeyUp(VK_F3))
+	if (mKeyManager->GetKeyUp(VK_F4))
 	{
 		// SSAO On/Off
 		m_RenderOption |= RENDER_SSAO;

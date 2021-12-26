@@ -39,22 +39,15 @@ void InGame::Awake()
 	LoadTexture("tex_vfx-inf_particle_spritesheet_hotCloud-colour.png");
 	LoadTexture("tex_vfx-inf_particle_spritesheet_blast.png");
 
-	///캐릭터
-	//testobj = Instance("Player");
-	//testobj->AddComponent<AnimationController>();
-	//testobj->AddComponent<MeshFilter>();
-	//testobj->AddComponent<Player>();
-
 	///카메라
 	testobj = Instance("Cam");
 	testobj->AddComponent<Camera>();
 	testobj->AddComponent<Keyinput>();
 	testobj->GetTransform()->Position = { 0,5,-25 };
-	
+
 	///라이트
 	testobj = Instance("DirectionLight");
 	testobj->AddComponent<DirectionLight>();
-
 
 	///터레인
 	testobj = InstanceTerrain("Terrain");
@@ -67,23 +60,37 @@ void InGame::Awake()
 	testobj->GetTransform()->Rotation = { 0, 0, 0 };
 
 	/// 바닥
-	testobj = Instance("Field");
-	testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
-	testobj->GetComponent<Transform>()->Rotation = { -90.f, 0.f, 0.f };
-	testobj->GetComponent<Transform>()->Scale = { 0.05f, 0.05f, 0.05f };
+	//testobj = Instance("Field");
+	//testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
+	//testobj->GetComponent<Transform>()->Rotation = { -90.f, 0.f, 0.f };
+	//testobj->GetComponent<Transform>()->Scale = { 0.05f, 0.05f, 0.05f };
 
-    ///캐릭터
+
+	///캐릭터
+	//testobj = Instance("Player");
+	//testobj->AddComponent<AnimationController>();
+	//testobj->AddComponent<MeshFilter>();
+	//testobj->AddComponent<Player>();
+
+
+	///파티클
 	testobj = InstanceParticle("Particle");
 
-	ParticleSystem* particle = testobj->GetComponent<ParticleSystem>();
-	particle->SetMeshName("Quad");
-	particle->SetDiffuseName("tex_vfx-inf_particle_spritesheet_hotCloud-colour");
-	particle->SetMaxParticles(10);
-	particle->SetRangeLifeTime(2.5f, 3.0f);
-	particle->SetRangeSize(3.5f, 4.0f);
-	particle->SetTextureTiling(8, 8);
-	particle->SetRateOverTime(15.0f);
-	particle->SetPlay(10.0f, true);
+	particles = testobj->GetComponent<ParticleSystem>();
+	particles->SetMeshName("Quad");
+	particles->SetDiffuseName("tex_vfx-inf_particle_spritesheet_blast");
+	particles->SetMaxParticles(96);
+	particles->SetForceAxis(0, 10, -1);
+	particles->SetStartColor(Vector4(0, 0, 0, 1), Vector4(1, 1, 1, 1));
+	particles->SetStartRotation(-360, 360);
+	particles->SetStartPosition(0.25f);
+	particles->SetStartLifeTime(3.0f, 3.0f);
+	particles->SetStartSize(2.0f, 3.0f);
+	particles->SetLifeTimeRotation(-180, 180);
+	particles->SetTextureTiling(8, 8);
+	particles->SetRateOverTime(15.0f);
+	particles->SetPlay(10.0f, true);
+
 
 	///캐릭터
 	//testobj = Instance("CHARACTER");
@@ -92,7 +99,7 @@ void InGame::Awake()
 	//testobj->GetComponent<MeshFilter>()->SetMeshName("CHARACTER");
 	//testobj->GetComponent<MeshFilter>()->SetAnimationName("CHARACTER");
 	//testobj->GetComponent<AnimationController>()->Choice("idle");
-
+	//
 	//testobj->GetTransform()->Scale = { 0.5f, 0.5f, 0.5f };
 	//testobj->GetTransform()->Rotation = { -90.0f, 0.0f, 0.0f };
 	//testobj->GetTransform()->Position = { 100.0f, 1.0f, 0.0f };
@@ -100,8 +107,8 @@ void InGame::Awake()
 
 	//testobj = Instance("Field1");
 	//testobj->AddComponent<MeshFilter>()->SetMeshName("Field");
-	//testobj->GetComponent<Transform>()->Rotation = { 90.0f, 0.0f, 0.0f };
-	//testobj->GetComponent<Transform>()->Scale = { 0.5f, 0.5f, 0.5f };
+	//testobj->GetComponent<Transform>()->Rotation = { -90.0f, 90.0f, 0.0f };
+	//testobj->GetComponent<Transform>()->Scale = { 0.05f, 0.05f, 0.05f };
 	//testobj->GetComponent<Transform>()->Position = { 0.0f, 2.5f, 2.5f };
 
 	//testobj = Instance("Table");
@@ -124,7 +131,7 @@ void InGame::Update()
 	{
 		testobj->GetTransform()->Position.x += 10.0f * GetDeltaTime();
 	}
-	
+
 	if (GetKey(VK_UP) == true)
 	{
 		testobj->GetTransform()->Position.z += 10.0f * GetDeltaTime();
@@ -133,6 +140,11 @@ void InGame::Update()
 	{
 		testobj->GetTransform()->Position.z -= 10.0f * GetDeltaTime();
 	}
+
+	//if (GetKeyUp(VK_F5))
+	//{
+	//	particles->SetPlay(10.0f, false);
+	//}
 }
 
 void InGame::End()

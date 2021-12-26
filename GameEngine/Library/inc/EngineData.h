@@ -13,9 +13,10 @@ class Component;
 
 typedef enum RENDER_OPTION : UINT
 {
-	RENDER_GAMMA_CORRECTION	= 0x00000001,
-	RENDER_SHADOW			= 0x00000010,
-	RENDER_SSAO				= 0x00000100,
+	RENDER_DEBUG			= 0x00000001,
+	RENDER_GAMMA_CORRECTION	= 0x00000010,
+	RENDER_SHADOW			= 0x00000100,
+	RENDER_SSAO				= 0x00001000,
 }RENDER_OPTION;
 
 enum class OBJECT_TYPE
@@ -60,12 +61,22 @@ public:
 	std::vector<MaterialData*> Material_List;		// Material List
 };
 
+class OneParticle
+{
+public:
+	bool Playing;
+	Vector4 Color;
+
+	Matrix* Tex;
+	Matrix* World;
+};
+
 class ParticleData
 {
 public:
 	int Particle_Count;
-	std::vector<Matrix*> World_List;
-	std::vector<Matrix*> Tex_List;
+	float Area_Radius;
+	std::vector<OneParticle*> m_Particles;
 };
 
 
@@ -76,6 +87,7 @@ class GlobalData
 {
 public:
 	//카메라 정보들
+	Matrix mCamInvView;	// Camera Inverse XY View Matrix
 	Matrix mCamView;	// Camera View Matrix
 	Matrix mCamProj;	// Camera Proj Matrix
 	Vector3 mCamPos;	// Camera Pos

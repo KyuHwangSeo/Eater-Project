@@ -59,9 +59,10 @@ private:
 	void CreateQuadBuffer();
 	void CreateSSAOQuadBuffer();
 
-	void CreateAxisBuffer();
-	void CreateBoxBuffer();
-	void CreateCircleBuffer();
+	void CreateLineQuadBuffer();
+	void CreateLineAxisBuffer();
+	void CreateLineBoxBuffer();
+	void CreateLineCircleBuffer();
 
 private:
 	ID3D11Graphic* m_Graphic;

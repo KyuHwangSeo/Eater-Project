@@ -109,6 +109,8 @@ void LightPass::Release()
 void LightPass::SetOption(const char* shaderName)
 {
 	m_LightPS = g_Shader->GetShader(shaderName);
+
+	Reset();
 }
 
 void LightPass::Reset()

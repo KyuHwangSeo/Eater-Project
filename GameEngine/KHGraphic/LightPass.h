@@ -1,6 +1,4 @@
 #pragma once
-class BufferData;
-
 class LightPass : public RenderPassBase
 {
 public:

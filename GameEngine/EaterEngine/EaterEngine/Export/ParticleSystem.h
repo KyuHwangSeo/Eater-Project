@@ -1,17 +1,15 @@
 #pragma once
 #include "EaterEngineDLL.h"
-#include "RandomNumber.h"
-#include "Particle.h"
 
-typedef enum PARTICLE_RENDER_TYPE
-{
-	BILLBOARD,
-	QUAD,
-	MESH
-}PARTICLE_RENDER_TYPE;
+struct PARTICLE_DESC;
 
 class MeshFilter;
+class Particle;
 class ParticleData;
+class RandomInt;
+class RandomFloat;
+class RandomVector3;
+class RandomVector4;
 
 class ParticleSystem : public Component
 {
@@ -26,17 +24,21 @@ public:
 	void Update() override;
 
 public:
-	EATER_ENGINEDLL void SetMeshName(std::string meshName);
-	EATER_ENGINEDLL void SetMaxParticles(int maxCount);
-	EATER_ENGINEDLL void SetRangeLifeTime(float minTime, float maxTime);
-	EATER_ENGINEDLL void SetRangeSpeed(float minSpeed, float maxSpeed);
-	EATER_ENGINEDLL void SetRangeSize(float minSize, float maxSize);
-	EATER_ENGINEDLL void SetRangeRotate(int minRot, int maxRot);
-	EATER_ENGINEDLL void SetForceAxis(float x, float y, float z);
+	EATER_ENGINEDLL void SetMeshName(std::string meshName);					// 파티클 출력할 매쉬 타입
+	EATER_ENGINEDLL void SetMaxParticles(int maxCount);						// 최대 파티클 출력 개수
+	EATER_ENGINEDLL void SetStartColor(Vector4 color1, Vector4 color2);		// 파티클 색상
+	EATER_ENGINEDLL void SetStartLifeTime(float minTime, float maxTime);	// 파티클 랜덤 유지시간
+	EATER_ENGINEDLL void SetStartSpeed(float minSpeed, float maxSpeed);		// 파티클 랜덤 속도
+	EATER_ENGINEDLL void SetStartSize(float minSize, float maxSize);		// 파티클 랜덤 크기
+	EATER_ENGINEDLL void SetStartRotation(int minRot, int maxRot);			// 파티클 랜덤 방향
+	EATER_ENGINEDLL void SetStartPosition(float radius);					// 파티클 랜덤 생성 범위
 
-	EATER_ENGINEDLL void SetTextureTiling(float count_x, float count_y);
-	EATER_ENGINEDLL void SetPlay(float playTime, bool loop = false);
-	EATER_ENGINEDLL void SetRateOverTime(float count);
+	EATER_ENGINEDLL void SetLifeTimeRotation(int minRot, int maxRot);		// 파티클 고정 회전 범위
+	EATER_ENGINEDLL void SetForceAxis(float x, float y, float z);			// 파티클 고정 방향
+	EATER_ENGINEDLL void SetRateOverTime(float count);						// 1초에 출력할 파티클 개수
+
+	EATER_ENGINEDLL void SetTextureTiling(int count_x, int count_y);		// 파티클 텍스쳐 나눌 개수
+	EATER_ENGINEDLL void SetPlay(float playTime, bool loop = false);		// 파티클 시스템 플레이 시간 및 반복 여부
 
 	EATER_ENGINEDLL void SetDiffuseName(std::string diffuseName);
 
@@ -53,34 +55,25 @@ private:
 
 private:
 	ParticleData* m_ParticleData;
+	PARTICLE_DESC* m_Particle_Desc;
 
 	std::vector<Particle*> m_Particles;
-
-	PARTICLE_RENDER_TYPE Render_Type;
 
 	std::string m_ParticleMeshName;
 	std::string m_DiffuseName;
 
 	bool m_Looping;				// 반복 재생 여부
-
 	int m_MaxParticle;			// 최대 파티클 개수
 
 	float m_PlayTime;			// 실행 지속 시간
 	float m_NowTime;			// 현재 진행 시간
 	float m_RateOverTime;		// 초당 출력할 파티클 개수
 
-	float m_LifeTime_MinPoint;	// 파티클 유지 최소 시간
-	float m_LifeTime_MaxPoint;	// 파티클 유지 최대 시간
-	float m_Speed_MinPoint;		// 파티클 최소 속도
-	float m_Speed_MaxPoint;		// 파티클 최대 속도
-	float m_Size_MinPoint;		// 파티클 최소 크기
-	float m_Size_MaxPoint;		// 파티클 최대 크기
-
-	int Rotate_MinPoint;		// 파티클 최소 회전값
-	int Rotate_MaxPoint;		// 파티클 최대 회전값
-
-	RandomNumber<float> m_RandomLifeTime;
-	RandomNumber<float> m_RandomSpeed;
-	RandomNumber<float> m_RandomSize;
-	RandomNumber<int> m_RandomRotate;
+	RandomFloat*	m_RandomLifeTime;
+	RandomFloat*	m_RandomSpeed;
+	RandomFloat*	m_RandomStartSize;
+	RandomVector3*	m_RandomStartPosition;
+	RandomVector4*	m_RandomStartColor;
+	RandomInt*		m_RandomStartRotation;
+	RandomInt*		m_RandomLifeTimeRotation;
 };

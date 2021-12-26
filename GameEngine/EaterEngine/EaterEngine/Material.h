@@ -31,7 +31,7 @@ public:
 	void SetNormalMap(std::string noramlName);
 
 	void SetBaseColor(DirectX::SimpleMath::Vector4 color);
-	void SetAddColor(DirectX::SimpleMath::Vector4 color);
+	void SetStartColor(DirectX::SimpleMath::Vector4 color);
 
 public:
 	UINT GetMaterialIndex();

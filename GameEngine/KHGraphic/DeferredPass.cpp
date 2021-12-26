@@ -116,24 +116,23 @@ void DeferredPass::Start(int width, int height)
 	m_SkinVS = g_Shader->GetShader("Skin_VS");
 	m_TerrainVS = g_Shader->GetShader("Terrain_VS");
 	m_ParticleVS = g_Shader->GetShader("Particle_VS");
-	m_DebugVS = g_Shader->GetShader("Debug_VS");
 
 	m_DeferredPS = g_Shader->GetShader("Deferred_PS");
 	m_TerrainPS = g_Shader->GetShader("Terrain_PS");
 	m_ParticlePS = g_Shader->GetShader("Particle_PS");
-	m_DebugPS = g_Shader->GetShader("Debug_PS");
 
 	// Buffer 설정..
 	m_QuadBuffer = g_Resource->GetBuffer<BD_Quad>();
-	m_CircleBuffer = g_Resource->GetBuffer<BD_Axis>();
 
 	// DepthStencilView 설정..
 	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
 
 	// Graphic State 설정..
 	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
+	m_NoDepthStencilState = g_Resource->GetDepthStencilState<DSS_NoDepth>()->Get();
 	m_RasterizerState = g_Resource->GetRasterizerState<RS_Solid>()->Get();
-	m_BlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
+	m_AlphaBlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
+	m_DefaltBlendState = g_Resource->GetBlendState<BS_Defalt>()->Get();
 
 	// ViewPort 설정..
 	m_ScreenViewport = g_Resource->GetViewPort<VP_FullScreen>()->Get();
@@ -192,16 +191,16 @@ void DeferredPass::BeginRender()
 	g_Context->OMSetRenderTargets(5, &m_RTVList[0], m_DepthStencilView);
 
 	// RenderTarget 초기화..
-	g_Context->ClearRenderTargetView(m_RTVList[0], reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->ClearRenderTargetView(m_RTVList[1], reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->ClearRenderTargetView(m_RTVList[2], reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->ClearRenderTargetView(m_RTVList[3], reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->ClearRenderTargetView(m_RTVList[4], reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+	g_Context->ClearRenderTargetView(m_RTVList[0], reinterpret_cast<const float*>(&DXColors::Black));
+	g_Context->ClearRenderTargetView(m_RTVList[1], reinterpret_cast<const float*>(&DXColors::Black));
+	g_Context->ClearRenderTargetView(m_RTVList[2], reinterpret_cast<const float*>(&DXColors::Black));
+	g_Context->ClearRenderTargetView(m_RTVList[3], reinterpret_cast<const float*>(&DXColors::Black));
+	g_Context->ClearRenderTargetView(m_RTVList[4], reinterpret_cast<const float*>(&DXColors::Black));
 
 	g_Context->RSSetViewports(1, m_ScreenViewport);
 	g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	g_Context->OMSetDepthStencilState(m_DepthStencilState, 0);
-	g_Context->OMSetBlendState(m_BlendState, 0, 0xffffffff);
+	g_Context->OMSetBlendState(m_DefaltBlendState, 0, 0xffffffff);
 	g_Context->RSSetState(m_RasterizerState);
 }
 
@@ -221,6 +220,7 @@ void DeferredPass::BufferUpdate(MeshData* mesh)
 void DeferredPass::RenderUpdate(MeshData* mesh, GlobalData* global)
 {
 	Matrix world = mesh->mWorld;
+	Matrix invView = global->mCamInvView;
 	Matrix view = global->mCamView;
 	Matrix proj = global->mCamProj;
 	Matrix viewproj = global->mCamVP;
@@ -342,17 +342,34 @@ void DeferredPass::RenderUpdate(MeshData* mesh, GlobalData* global)
 	break;
 	case OBJECT_TYPE::PARTICLE:
 	{
+		g_Context->OMSetDepthStencilState(m_NoDepthStencilState, 0);
+		g_Context->OMSetBlendState(m_AlphaBlendState, 0, 0xffffffff);
+
 		ParticleData* particles = mesh->Particle_Data;
 		for (int i = 0; i < particles->Particle_Count; i++)
 		{
+			OneParticle* particle = particles->m_Particles[i];
+
+			if (particle->Playing == false) continue;
+
+			Matrix particleWorld = *particle->World * invView;
+			particleWorld._41 = particle->World->_41;
+			particleWorld._42 = particle->World->_42;
+			particleWorld._43 = particle->World->_43;
+
 			// Veretex Shader Update..
 			CB_ParticleObject objectBuf;
-			objectBuf.gWorldViewProj = *particles->World_List[i] * viewproj;
-			objectBuf.gTexTransform = *particles->Tex_List[i];
+			objectBuf.gWorldViewProj = particleWorld * viewproj;
+			objectBuf.gTexTransform = *particle->Tex;
 
 			m_ParticleVS->ConstantBufferCopy(&objectBuf);
 
 			m_ParticleVS->Update();
+
+			CB_ParticleOption optionBuf;
+			optionBuf.gColor = particle->Color;
+
+			m_ParticlePS->ConstantBufferCopy(&optionBuf);
 
 			// Pixel Shader Update..
 			if (mat->Albedo)
@@ -365,6 +382,8 @@ void DeferredPass::RenderUpdate(MeshData* mesh, GlobalData* global)
 			// Draw..
 			g_Context->DrawIndexed(m_IndexCount, 0, 0);
 		}
+		g_Context->OMSetBlendState(m_DefaltBlendState, 0, 0xffffffff);
+		g_Context->OMSetDepthStencilState(m_DepthStencilState, 0);
 	}
 	break;
 	default:

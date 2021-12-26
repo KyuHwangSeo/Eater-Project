@@ -261,10 +261,10 @@
     <ClInclude Include="Export\ParticleSystem.h">
       <Filter>소스 파일\Component\ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Export\Particle.h">
+    <ClInclude Include="Particle.h">
       <Filter>소스 파일\Component\ParticleSystem\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="Export\RandomNumber.h">
+    <ClInclude Include="RandomNumber.h">
       <Filter>소스 파일\Component\ParticleSystem\Random</Filter>
     </ClInclude>
   </ItemGroup>

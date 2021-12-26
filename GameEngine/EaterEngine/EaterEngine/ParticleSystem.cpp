@@ -1,6 +1,7 @@
 #include "EngineData.h"
 #include "Component.h"
 #include "Transform.h"
+#include "Particle.h"
 #include "ParticleSystem.h"
 
 #include "Material.h"
@@ -9,10 +10,21 @@
 #include "LoadManager.h"
 #include "ObjectManager.h"
 #include "MeshFilter.h"
+#include "RandomNumber.h"
 
 ParticleSystem::ParticleSystem()
 {
+	m_Particle_Desc = new PARTICLE_DESC();
+
 	m_ParticleData = new ParticleData();
+
+	m_RandomLifeTime			= new RandomFloat();
+	m_RandomSpeed				= new RandomFloat();
+	m_RandomStartSize			= new RandomFloat();
+	m_RandomStartPosition		= new RandomVector3();
+	m_RandomStartColor			= new RandomVector4();
+	m_RandomStartRotation		= new RandomInt();
+	m_RandomLifeTimeRotation	= new RandomInt();
 }
 
 ParticleSystem::~ParticleSystem()
@@ -49,24 +61,35 @@ void ParticleSystem::Start()
 void ParticleSystem::Update()
 {
 	float dTime = mTimeManager->DeltaTime();
-	m_NowTime += dTime;
 
-	if (m_Looping == false)
+	if (m_PlayTime > 0.0f)
 	{
-		if (m_PlayTime > 0.0f)
+		m_NowTime += dTime;
+		m_PlayTime -= dTime;
+
+		// 현재 파티클 출력할 시간이 지낫다면 실행..
+		if (m_RateOverTime <= m_NowTime)
 		{
-			m_PlayTime -= dTime;
+			CreateParticle();
+		}
+	}
+	else
+	{
+		if (m_Looping)
+		{
+			// 현재 파티클 출력할 시간이 지낫다면 실행..
+			if (m_RateOverTime <= m_NowTime)
+			{
+				CreateParticle();
+			}
+
+			m_PlayTime = 10.0f;
 		}
 		else
 		{
-			return Reset();
+			m_NowTime = 0.0f;
+			m_PlayTime = 0.0f;
 		}
-	}
-
-	// 현재 파티클 출력할 시간이 지낫다면 실행..
-	if (m_RateOverTime <= m_NowTime)
-	{
-		CreateParticle();
 	}
 }
 
@@ -81,59 +104,64 @@ void ParticleSystem::SetMaxParticles(int maxCount)
 	m_ParticleData->Particle_Count = maxCount;
 }
 
-void ParticleSystem::SetRangeLifeTime(float minTime, float maxTime)
+void ParticleSystem::SetStartColor(Vector4 color1, Vector4 color2)
 {
-	m_LifeTime_MinPoint = minTime;
-	m_LifeTime_MaxPoint = maxTime;
-
-	m_RandomLifeTime.SetRange(minTime, maxTime);
+	m_RandomStartColor->SetRange(color1, color2);
 }
 
-void ParticleSystem::SetRangeSpeed(float minSpeed, float maxSpeed)
+void ParticleSystem::SetStartLifeTime(float minTime, float maxTime)
 {
-	m_Speed_MinPoint = minSpeed;
-	m_Speed_MaxPoint = maxSpeed;
-
-	m_RandomSpeed.SetRange(minSpeed, maxSpeed);
+	m_RandomLifeTime->SetRange(minTime, maxTime);
 }
 
-void ParticleSystem::SetRangeSize(float minSize, float maxSize)
+void ParticleSystem::SetStartSpeed(float minSpeed, float maxSpeed)
 {
-	m_Size_MinPoint = minSize;
-	m_Size_MaxPoint = maxSize;
-
-	m_RandomSize.SetRange(minSize, maxSize);
+	m_RandomSpeed->SetRange(minSpeed, maxSpeed);
 }
 
-void ParticleSystem::SetRangeRotate(int minRot, int maxRot)
+void ParticleSystem::SetStartSize(float minSize, float maxSize)
 {
-	Rotate_MinPoint = minRot;
-	Rotate_MaxPoint = maxRot;
+	m_RandomStartSize->SetRange(minSize, maxSize);
+}
 
-	m_RandomRotate.SetRange(minRot, maxRot);
+void ParticleSystem::SetStartRotation(int minRot, int maxRot)
+{
+	m_RandomStartRotation->SetRange(minRot, maxRot);
+}
+
+void ParticleSystem::SetStartPosition(float radius)
+{
+	m_ParticleData->Area_Radius = radius;
+
+	m_RandomStartPosition->SetRange(Vector3(-radius, -radius, -radius), Vector3(radius, radius, radius));
+}
+
+void ParticleSystem::SetLifeTimeRotation(int minRot, int maxRot)
+{
+	m_RandomLifeTimeRotation->SetRange(minRot, maxRot);
 }
 
 void ParticleSystem::SetForceAxis(float x, float y, float z)
 {
-	Particle::g_Force = { x,y,z };
-}
-
-void ParticleSystem::SetTextureTiling(float count_x, float count_y)
-{
-	Particle::g_Tile_WidthCount = count_x;
-	Particle::g_Tile_HeightCount = count_y;
-}
-
-void ParticleSystem::SetPlay(float playTime, bool loop /*= false*/)
-{
-	m_PlayTime = playTime;
-	m_Looping = loop;
+	m_Particle_Desc->Force = { x,y,z };
 }
 
 void ParticleSystem::SetRateOverTime(float count)
 {
 	// 1개의 파티클이 출력되기까지의 시간..
 	m_RateOverTime = 1.0f / count;
+}
+
+void ParticleSystem::SetTextureTiling(int count_x, int count_y)
+{
+	m_Particle_Desc->Tile_Width = count_x;
+	m_Particle_Desc->Tile_Height = count_y;
+}
+
+void ParticleSystem::SetPlay(float playTime, bool loop /*= false*/)
+{
+	m_PlayTime = playTime;
+	m_Looping = loop;
 }
 
 void ParticleSystem::SetDiffuseName(std::string diffuseName)
@@ -143,10 +171,8 @@ void ParticleSystem::SetDiffuseName(std::string diffuseName)
 
 void ParticleSystem::Reset()
 {
-	for (Particle* particle : m_Particles)
-	{
-		particle->Reset();
-	}
+	m_PlayTime = 0.0f;
+	m_NowTime = 0.0f;
 }
 
 void ParticleSystem::SetParticleSystem()
@@ -169,19 +195,24 @@ void ParticleSystem::AddParticle()
 		Particle* newParticle = newObject->AddComponent<Particle>();
 		Transform* particleTransform = newObject->AddComponent<Transform>();
 
+		// 해당 Particle Transform 설정..
 		newObject->transform = particleTransform;
 
-		// 해당 Particle Index 설정..
+		// 해당 Particle Data 설정..
 		newParticle->m_Index = index;
+		newParticle->m_Particle_Desc = m_Particle_Desc;
 
 		// 생성한 Particle을 ParticleSystem 하위 객체로 연결..
 		systemTransform->SetChild(particleTransform);
 		particleTransform->SetParent(systemTransform);
 
+		// Particle Data 설정..
+		OneParticle* newParticleData = new OneParticle();
+		newParticle->m_Particle_Data = newParticleData;
+
 		// Particle List 삽입..
 		m_Particles.push_back(newParticle);
-		m_ParticleData->World_List.push_back(particleTransform->GetWorld());
-		m_ParticleData->Tex_List.push_back(&newParticle->m_Tex);
+		m_ParticleData->m_Particles.push_back(newParticleData);
 	}
 }
 
@@ -192,10 +223,12 @@ void ParticleSystem::CreateParticle()
 		// 실행 상태의 파티클이 아닌경우 출력..
 		if (particle->m_Playing == false)
 		{
-			particle->SetPlay(m_RandomLifeTime.GetRandomNumber(),
-				m_RandomSpeed.GetRandomNumber(),
-				m_RandomSize.GetRandomNumber(),
-				m_RandomRotate.GetRandomNumber());
+			particle->SetPlay(m_RandomLifeTime->GetRandomNumber(),
+							  m_RandomStartColor->GetRandomNumber(),
+							  m_RandomStartPosition->GetRandomNumber(),
+							  m_RandomStartSize->GetRandomNumber(),
+							  m_RandomStartRotation->GetRandomNumber(),
+							  m_RandomLifeTimeRotation->GetRandomNumber());
 			break;
 		}
 	}

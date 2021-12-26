@@ -21,18 +21,18 @@ private:
 	VertexShader* m_SkinVS;
 	VertexShader* m_TerrainVS;
 	VertexShader* m_ParticleVS;
-	VertexShader* m_DebugVS;
 
 	PixelShader* m_DeferredPS;
 	PixelShader* m_TerrainPS;
 	PixelShader* m_ParticlePS;
-	PixelShader* m_DebugPS;
 
 	ID3D11DepthStencilView* m_DepthStencilView;
 	
+	ID3D11DepthStencilState* m_NoDepthStencilState;
 	ID3D11DepthStencilState* m_DepthStencilState;
 	ID3D11RasterizerState* m_RasterizerState;
-	ID3D11BlendState* m_BlendState;
+	ID3D11BlendState* m_AlphaBlendState;
+	ID3D11BlendState* m_DefaltBlendState;
 
 	RenderTarget* m_AlbedoRT;
 	RenderTarget* m_NormalRT;
@@ -48,10 +48,8 @@ private:
 	UINT m_IndexCount;
 	UINT m_Stride;
 	UINT m_Offset;
-	D3D_PRIMITIVE_TOPOLOGY m_Topology;
 
 	BufferData* m_QuadBuffer;
-	BufferData* m_CircleBuffer;
 
 	D3D11_VIEWPORT* m_ScreenViewport;
 };

@@ -6,6 +6,7 @@ class ShadowPass;
 class DeferredPass;
 class LightPass;
 class SSAOPass;
+class DebugPass;
 class RenderManager : public IRenderManager
 {
 public:
@@ -39,4 +40,5 @@ private:
 	LightPass* m_Light;
 	ShadowPass* m_Shadow;
 	SSAOPass* m_SSAO;
+	DebugPass* m_Debug;
 };

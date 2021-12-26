@@ -23,6 +23,7 @@
 #include "DeferredPass.h"
 #include "LightPass.h"
 #include "SSAOPass.h"
+#include "DebugPass.h"
 #include "VertexDefine.h"
 
 RenderManager::RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* factory, IGraphicResourceManager* resource, IShaderManager* shader)
@@ -36,13 +37,15 @@ RenderManager::RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* fa
 	m_Light = new LightPass();
 	m_Shadow = new ShadowPass();
 	m_SSAO = new SSAOPass();
+	m_Debug = new DebugPass();
 
 	m_RenderPassList.push_back(m_Deferred);
 	m_RenderPassList.push_back(m_Light);
 	m_RenderPassList.push_back(m_Shadow);
 	m_RenderPassList.push_back(m_SSAO);
+	m_RenderPassList.push_back(m_Debug);
 
-	m_RenderOption = RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO;
+	m_RenderOption = RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO;
 }
 
 RenderManager::~RenderManager()
@@ -85,6 +88,9 @@ void RenderManager::BeginRender(UINT& renderOption)
 	{
 		switch (renderOption & mask)
 		{
+		case RENDER_DEBUG:
+			m_RenderOption ^= RENDER_DEBUG;
+			break;
 		case RENDER_GAMMA_CORRECTION:
 			m_RenderOption ^= RENDER_GAMMA_CORRECTION;
 			break;
@@ -103,7 +109,10 @@ void RenderManager::BeginRender(UINT& renderOption)
 		mask <<= 4;
 	}
 
-	switch (m_RenderOption)
+	// Debug Option Á¦¿ÜÇÑ Option Check..
+	mask = m_RenderOption & ~RENDER_DEBUG;
+
+	switch (mask)
 	{
 	case RENDER_GAMMA_CORRECTION:
 		m_Light->SetOption("Light_PS_Option4");
@@ -130,8 +139,6 @@ void RenderManager::BeginRender(UINT& renderOption)
 		m_Light->SetOption("Light_PS_Option7");
 		break;
 	}
-
-	m_Light->Reset();
 }
 
 void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -151,6 +158,20 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 		case OBJECT_TYPE::PARTICLE:
 			m_Deferred->RenderUpdate(mesh, global);
 			break;
+		}
+
+		if (m_RenderOption & RENDER_DEBUG)
+		{
+			switch (mesh->ObjType)
+			{
+			case OBJECT_TYPE::BASE:
+			case OBJECT_TYPE::SKINNING:
+			case OBJECT_TYPE::TERRAIN:
+			case OBJECT_TYPE::PARTICLE:
+			case OBJECT_TYPE::BONE:
+				m_Debug->Render(mesh, global);
+			break;
+			}
 		}
 
 		meshList->pop();
@@ -187,7 +208,7 @@ void RenderManager::SSAORender(GlobalData* global)
 	if (m_RenderOption & RENDER_SSAO)
 	{
 		m_SSAO->BeginRender();
-	
+
 		m_SSAO->Render(global);
 		m_SSAO->BlurRender(4);
 	}

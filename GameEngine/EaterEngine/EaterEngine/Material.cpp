@@ -79,7 +79,7 @@ void Material::SetBaseColor(DirectX::SimpleMath::Vector4 color)
 	MaterialDatas->Color_Base = color;
 }
 
-void Material::SetAddColor(DirectX::SimpleMath::Vector4 color)
+void Material::SetStartColor(DirectX::SimpleMath::Vector4 color)
 {
 	MaterialDatas->Color_Add = color;
 }

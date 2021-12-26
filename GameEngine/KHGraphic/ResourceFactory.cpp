@@ -62,9 +62,10 @@ void GraphicResourceFactory::Initialize(int width, int height)
 	CreateSSAOQuadBuffer();
 
 	// Debug Buffer..
-	CreateAxisBuffer();
-	CreateCircleBuffer();
-	CreateBoxBuffer();
+	CreateLineQuadBuffer();
+	CreateLineAxisBuffer();
+	CreateLineCircleBuffer();
+	CreateLineBoxBuffer();
 }
 
 void GraphicResourceFactory::Release()
@@ -811,7 +812,7 @@ void GraphicResourceFactory::CreateBlendStates()
 {
 	D3D11_BLEND_DESC blendDesc;
 	ZeroMemory(&blendDesc, sizeof(blendDesc));
-	blendDesc.AlphaToCoverageEnable = TRUE;
+	blendDesc.AlphaToCoverageEnable = FALSE;
 	blendDesc.IndependentBlendEnable = TRUE;
 	blendDesc.RenderTarget[0].BlendEnable = TRUE;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
@@ -825,9 +826,20 @@ void GraphicResourceFactory::CreateBlendStates()
 	blendDesc.RenderTarget[2].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	blendDesc.RenderTarget[3].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	blendDesc.RenderTarget[4].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
+	
 	// Blending First RenderTarget BlendState 생성..
 	CreateBlendState<BS_AlphaBlend>(&blendDesc);
+
+	ZeroMemory(&blendDesc, sizeof(blendDesc));
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
+	blendDesc.RenderTarget[0].BlendEnable = false;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	// Blending First RenderTarget BlendState 생성..
+	CreateBlendState<BS_Defalt>(&blendDesc);
 }
 
 void GraphicResourceFactory::CreateDepthStencilViews(int width, int height)
@@ -949,7 +961,47 @@ void GraphicResourceFactory::CreateSSAOQuadBuffer()
 	m_ResourceManager->AddResource<BD_SSAO>(newBuf);
 }
 
-void GraphicResourceFactory::CreateAxisBuffer()
+void GraphicResourceFactory::CreateLineQuadBuffer()
+{
+	BufferData* newBuf = new BufferData();
+
+	UINT vCount = 4;
+	UINT iCount = 10;
+	UINT vByteSize = sizeof(PosColorVertex) * vCount;
+	UINT iByteSize = sizeof(UINT) * iCount;
+
+	std::vector<PosColorVertex> vertices(vCount);
+	vertices[0].Pos = Vector3(-1.0f, -1.0f, 0.0f);
+	vertices[1].Pos = Vector3(-1.0f, +1.0f, 0.0f);
+	vertices[2].Pos = Vector3(+1.0f, +1.0f, 0.0f);
+	vertices[3].Pos = Vector3(+1.0f, -1.0f, 0.0f);
+	vertices[0].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+	vertices[1].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+	vertices[2].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+	vertices[3].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+
+	std::vector<UINT> indices(iCount);
+	indices[0] = 0; indices[1] = 1;
+	indices[2] = 1; indices[3] = 2;
+	indices[4] = 2; indices[5] = 0;
+	indices[6] = 0; indices[7] = 3;
+	indices[8] = 3; indices[9] = 2;
+
+	// Vertex Buffer 생성..
+	m_Graphic->CreateBuffer(vByteSize, D3D11_USAGE_IMMUTABLE, D3D11_BIND_VERTEX_BUFFER, &vertices[0], &newBuf->VB);
+
+	// Index Buffer 생성..
+	m_Graphic->CreateBuffer(iByteSize, D3D11_USAGE_IMMUTABLE, D3D11_BIND_INDEX_BUFFER, &indices[0], &newBuf->IB);
+
+	// Buffer Data 삽입..
+	newBuf->Stride = sizeof(PosColorVertex);
+	newBuf->IndexCount = iCount;
+
+	// Resource 등록..
+	m_ResourceManager->AddResource<BD_Line_Quad>(newBuf);
+}
+
+void GraphicResourceFactory::CreateLineAxisBuffer()
 {
 	BufferData* newBuf = new BufferData();
 	
@@ -958,7 +1010,7 @@ void GraphicResourceFactory::CreateAxisBuffer()
 	UINT vByteSize = sizeof(PosColorVertex) * vCount;
 	UINT iByteSize = sizeof(UINT) * iCount;
 
-	float extents = 0.5f;
+	float extents = 0.1f;
 
 	std::vector<PosColorVertex> vertices(vCount);
 	vertices[0].Pos = Vector3(0, 0, 0);
@@ -990,10 +1042,10 @@ void GraphicResourceFactory::CreateAxisBuffer()
 	newBuf->IndexCount = iCount;
 
 	// Resource 등록..
-	m_ResourceManager->AddResource<BD_Axis>(newBuf);
+	m_ResourceManager->AddResource<BD_Line_Axis>(newBuf);
 }
 
-void GraphicResourceFactory::CreateBoxBuffer()
+void GraphicResourceFactory::CreateLineBoxBuffer()
 {
 	BufferData* newBuf = new BufferData();
 
@@ -1002,7 +1054,7 @@ void GraphicResourceFactory::CreateBoxBuffer()
 	UINT vByteSize = sizeof(PosColorVertex) * vCount;
 	UINT iByteSize = sizeof(UINT) * iCount;
 
-	float extents = 0.5f;
+	float extents = 1.0f;
 
 	std::vector<PosColorVertex> vertices(vCount);
 	vertices[0].Pos = Vector3(-extents, -extents, -extents);
@@ -1041,10 +1093,10 @@ void GraphicResourceFactory::CreateBoxBuffer()
 	newBuf->IndexCount = iCount;
 
 	// Resource 등록..
-	m_ResourceManager->AddResource<BD_Box>(newBuf);
+	m_ResourceManager->AddResource<BD_Line_Box>(newBuf);
 }
 
-void GraphicResourceFactory::CreateCircleBuffer()
+void GraphicResourceFactory::CreateLineCircleBuffer()
 {
 	BufferData* newBuf = new BufferData(); 
 	
@@ -1107,5 +1159,5 @@ void GraphicResourceFactory::CreateCircleBuffer()
 	newBuf->IndexCount = iCount;
 
 	// Resource 등록..
-	m_ResourceManager->AddResource<BD_Circle>(newBuf);
+	m_ResourceManager->AddResource<BD_Line_Circle>(newBuf);
 }

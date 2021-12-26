@@ -17,7 +17,9 @@ float4 Particle_PS(ParticleVertexIn pin) : SV_TARGET
 {
     float4 pout = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
     
-    //pout = pout * gColor;
+    pout *= gColor;
+    
+    clip(pout.a - 0.05f);
     
     return pout;
 }

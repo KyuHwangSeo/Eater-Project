@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scene.h"
+class ParticleSystem;
 class InGame : public Scene
 {
 public:
@@ -14,4 +15,5 @@ public:
 
 public:
 	GameObject* testobj;
+	ParticleSystem* particles;
 };

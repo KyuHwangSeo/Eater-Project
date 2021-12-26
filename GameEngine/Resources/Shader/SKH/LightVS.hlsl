@@ -18,6 +18,6 @@ FullScreenVertexOut Light_VS(FullScreenVertexIn vin)
 	vout.PosH = float4(vin.PosL, 1.0f);
 
     vout.Tex = vin.Tex;
-
+	
 	return vout;
 }
