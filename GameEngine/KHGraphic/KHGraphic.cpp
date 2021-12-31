@@ -68,6 +68,11 @@ void KHGraphic::SSAORender(GlobalData* global)
 	m_RenderManager->SSAORender(global);
 }
 
+void KHGraphic::AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global)
+{
+	m_RenderManager->AlphaRender(meshList, global);
+}
+
 void KHGraphic::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 	m_RenderManager->UIRender(meshList, global);

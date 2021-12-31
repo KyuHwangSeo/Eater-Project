@@ -1,7 +1,9 @@
 cbuffer cbParticleObject
 {
-    float4x4 gWorldViewProj : packoffset(c0);
-    float4x4 gTexTransform : packoffset(c4);
+    float4x4 gWorld : packoffset(c0);
+    float4x4 gWorldView : packoffset(c4);
+    float4x4 gWorldViewProj : packoffset(c8);
+    float4x4 gTexTransform : packoffset(c12);
 };
 
 struct ParticleVertexIn
@@ -13,6 +15,7 @@ struct ParticleVertexIn
 struct ParticleVertexOut
 {
     float4 PosH : SV_POSITION;
+    float3 PosW : POSITIONW;
     float2 Tex : TEXCOORD;
 };
 
@@ -21,6 +24,7 @@ ParticleVertexOut Particle_VS(ParticleVertexIn vin)
     ParticleVertexOut vout;
     
     vout.PosH = mul(gWorldViewProj, float4(vin.PosL, 1.0f));
+    vout.PosW = mul(gWorld, float4(vin.PosL, 1.0f)).xyz;
     vout.Tex = mul(gTexTransform, float4(vin.Tex, 0.0f, 1.0f)).xy;
     
     return vout;

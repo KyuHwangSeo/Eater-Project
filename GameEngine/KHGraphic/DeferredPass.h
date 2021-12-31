@@ -49,8 +49,6 @@ private:
 	UINT m_Stride;
 	UINT m_Offset;
 
-	BufferData* m_QuadBuffer;
-
 	D3D11_VIEWPORT* m_ScreenViewport;
 };
 

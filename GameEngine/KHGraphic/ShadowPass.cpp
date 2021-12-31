@@ -13,10 +13,10 @@
 #include "ShadowPass.h"
 
 #include "VertexDefine.h"
-#include "ConstantBufferDefine.h"
 #include "ResourceFactoryBase.h"
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
+#include "ConstantBufferDefine.h"
 #include "ShaderResourceBufferDefine.h"
 #include "DepthStencilViewDefine.h"
 #include "DepthStencilStateDefine.h"
@@ -119,9 +119,8 @@ void ShadowPass::BeginRender()
 void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 {
 	Matrix world = mesh->mWorld;
-	Matrix view = global->mLightView;
-	Matrix proj = global->mLightProj;
-	Matrix viewproj = global->mLightVP;
+	Matrix cameraViewProj = global->mCamVP;
+	Matrix lightViewProj = global->mLightVP;
 
 	switch (mesh->ObjType)
 	{
@@ -129,7 +128,7 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 	case OBJECT_TYPE::TERRAIN:
 	{
 		CB_ShadowMeshObject shadowBuf;
-		shadowBuf.gWorldViewProj = world * viewproj;
+		shadowBuf.gWorldViewProj = world * lightViewProj;
 
 		m_MeshShadowVS->ConstantBufferCopy(&shadowBuf);
 
@@ -139,7 +138,7 @@ void ShadowPass::Update(MeshData* mesh, GlobalData* global)
 	case OBJECT_TYPE::SKINNING:
 	{
 		CB_ShadowSkinObject shadowBuf;
-		shadowBuf.gWorldViewProj = world * viewproj;
+		shadowBuf.gWorldViewProj = world * lightViewProj;
 
 		for (int i = 0; i < mesh->BoneOffsetTM.size(); i++)
 		{

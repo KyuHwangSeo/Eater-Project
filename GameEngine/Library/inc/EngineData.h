@@ -4,6 +4,7 @@
 #include "ResourcesData.h"
 #include "ParserData.h"
 #include "LightHelper.h"
+#include "TypeOptionHeader.h"
 
 using namespace DirectX;
 using namespace SimpleMath;
@@ -11,15 +12,7 @@ using namespace ParserData;
 
 class Component;
 
-typedef enum RENDER_OPTION : UINT
-{
-	RENDER_DEBUG			= 0x00000001,
-	RENDER_GAMMA_CORRECTION	= 0x00000010,
-	RENDER_SHADOW			= 0x00000100,
-	RENDER_SSAO				= 0x00001000,
-}RENDER_OPTION;
-
-enum class OBJECT_TYPE
+typedef enum OBJECT_TYPE
 {
 	///현재 기본형으로 넣어둔 오브젝트 종류
 	///나중에 필요한건 넣고 필요없는건 빼자
@@ -37,7 +30,7 @@ enum class OBJECT_TYPE
 	DEBUGOBJECT,	//디버깅 오브젝트
 	PARTICLE,		//파티클 오브젝트
 	EFFECT			//이펙트 오브젝트
-};
+}OBJECT_TYPE;
 
 class MaterialData
 {
@@ -74,8 +67,11 @@ public:
 class ParticleData
 {
 public:
+	PARTICLE_RENDER_OPTION RenderType;
+
 	int Particle_Count;
 	float Area_Radius;
+
 	std::vector<OneParticle*> m_Particles;
 };
 

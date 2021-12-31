@@ -125,6 +125,8 @@ struct CB_SsaoOption : public cbSsaoOption
 CONSTANT_BUFFER(cbParticleObject)
 struct CB_ParticleObject : public cbParticleObject
 {
+	DirectX::SimpleMath::Matrix  gWorld;
+	DirectX::SimpleMath::Matrix  gWorldView;
 	DirectX::SimpleMath::Matrix  gWorldViewProj;
 	DirectX::SimpleMath::Matrix  gTexTransform;
 };

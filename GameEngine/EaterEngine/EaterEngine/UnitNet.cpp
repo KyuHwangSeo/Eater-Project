@@ -2,9 +2,10 @@
 #include "Rigidbody.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "NetworkManager.h"
 UnitNet::UnitNet()
 {
-	mManger = nullptr;
+	Manager = nullptr;
 }
 
 UnitNet::~UnitNet()
@@ -16,11 +17,16 @@ void UnitNet::Awake()
 {
 	mTransform = gameobject->GetTransform();
 	mRigidbody = gameobject->GetComponent<Rigidbody>();
+	
 }
 
-void UnitNet::SetUp()
+void UnitNet::Update()
 {
-
+	//매니저와 패킷넘버를 받은 오브젝트만 움직일 수 있도록한다
+	if (Manager != nullptr)
+	{
+		//Manager->NETWORK_SEND(mTransform->Position.x, mTransform->Position.y, mTransform->Position.z);
+	}
 }
 
 bool UnitNet::NET_PLATER_CHECK()
@@ -30,22 +36,26 @@ bool UnitNet::NET_PLATER_CHECK()
 
 EATER_ENGINEDLL void UnitNet::NET_MOVE_POS(Vector3 Pos, Vector3 Direction, float Speed)
 {
-	//움직이는 데이터를 서버에 보내줌
-	//mManger->C2S_PLAYER_MOVE_REQ(Pos,Direction,Speed);
-
-
-	//움직일수 있는 객체인지 체크
-	if (NET_PLATER_CHECK() == true)
+	//물리 충돌로 움직일것인지 그냥 움직일 것인지
+	if (mRigidbody == nullptr)
 	{
-		Direction *= Speed;
-		//Rigdbody로 움직일것인지 체크
-		if (mRigidbody == nullptr)
-		{
-			mTransform->SetTranlate(Direction.x, Direction.y, Direction.z);
-		}
-		else
-		{
-			mRigidbody->SetVelocity(Direction.x, Direction.y, Direction.z);
-		}
+		mTransform->SetTranlate(Direction.x, Direction.y, Direction.z);
+	}
+	else
+	{
+		mRigidbody->SetVelocity(Direction.x, Direction.y, Direction.z);
+	}
+
+}
+
+void UnitNet::PushData(Vector3 Pos)
+{
+	if (mRigidbody == nullptr)
+	{
+		mTransform->SetTranlate(Pos.x, Pos.y, Pos.z);
+	}
+	else
+	{
+		mRigidbody->SetVelocity(Pos.x, Pos.y, Pos.z);
 	}
 }

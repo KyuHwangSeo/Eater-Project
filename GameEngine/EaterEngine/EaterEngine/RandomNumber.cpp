@@ -5,6 +5,7 @@ std::default_random_engine RandomBase::g_RandomEngine;
 
 void RandomInt::SetRange(int min, int max)
 {
+	Swap(min, max);
 	m_RandomGenerator = std::uniform_int_distribution<int>(min, max);
 }
 
@@ -20,6 +21,7 @@ int RandomInt::GetRandomNumber()
 
 void RandomFloat::SetRange(float min, float max)
 {
+	Swap(min, max);
 	m_RandomGenerator = std::uniform_real_distribution<float>(min, max);
 }
 
@@ -33,15 +35,13 @@ float RandomFloat::GetRandomNumber()
 	return m_RandomGenerator(g_RandomEngine);
 }
 
-DirectX::SimpleMath::Vector3 RandomFloat::GetRandomVector3()
-{
-	return DirectX::SimpleMath::Vector3(m_RandomGenerator(g_RandomEngine), m_RandomGenerator(g_RandomEngine), m_RandomGenerator(g_RandomEngine));
-}
-
 void RandomVector3::SetRange(DirectX::SimpleMath::Vector3 min, DirectX::SimpleMath::Vector3 max)
 {
+	Swap(min.x, max.x);
 	m_RandomGenerator_X = std::uniform_real_distribution<float>(min.x, max.x);
+	Swap(min.y, max.y);
 	m_RandomGenerator_Y = std::uniform_real_distribution<float>(min.y, max.y);
+	Swap(min.z, max.z);
 	m_RandomGenerator_Z = std::uniform_real_distribution<float>(min.z, max.z);
 }
 
@@ -61,9 +61,16 @@ DirectX::SimpleMath::Vector3 RandomVector3::GetRandomNumber()
 
 void RandomVector4::SetRange(DirectX::SimpleMath::Vector4 min, DirectX::SimpleMath::Vector4 max)
 {
+	Swap(min.x, max.x);
 	m_RandomGenerator_X = std::uniform_real_distribution<float>(min.x, max.x);
+
+	Swap(min.y, max.y);
 	m_RandomGenerator_Y = std::uniform_real_distribution<float>(min.y, max.y);
+
+	Swap(min.z, max.z);
 	m_RandomGenerator_Z = std::uniform_real_distribution<float>(min.z, max.z);
+
+	Swap(min.w, max.w);
 	m_RandomGenerator_W = std::uniform_real_distribution<float>(min.w, max.w);
 }
 

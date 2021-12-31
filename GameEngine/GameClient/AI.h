@@ -25,23 +25,21 @@ public:
 	virtual void SetUp();
 	virtual void Update();
 
-	void GetCamera(GameObject* Cam);
-	void Move();
+	void KeyInputMove();
 private:
 	Transform*				mTransform;
 	Rigidbody*				mRigidbody;
 	MeshFilter*				mMeshFilter;
 	AnimationController*	mAnimationController;
-	PhysRayCast*			mRay;
-	UnitNet*				mNetwork;
-	Camera*					mCam;
+	GameObject*				mObject;
 
 	bool isJump;
 	bool isMove;
 	bool isGround;
 	
-	float Right = 0;
-	float Up = 0;
+	float Keyinput_Right	= 0;
+	float keyinput_Up		= 0;
+	float Keyinput_Angle	= 0;
 	float Speed;
 	float Grvity = 0;
 };

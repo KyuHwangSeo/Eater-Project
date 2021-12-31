@@ -16,8 +16,8 @@ AI::AI()
 	mRigidbody				= nullptr;
 	mMeshFilter				= nullptr;
 	mAnimationController	= nullptr;
-	mNetwork					= nullptr;
 
+	Speed = 2;
 	isJump = false;
 }
 
@@ -30,72 +30,93 @@ void AI::Awake()
 {
 	mTransform	= gameobject->GetComponent<Transform>();
 	mMeshFilter = gameobject->GetComponent<MeshFilter>();
-	mRigidbody	= gameobject->GetComponent<Rigidbody>();
-	//mNetwork		= gameobject->GetComponent<UnitNet>();
-	mRay		= new PhysRayCast();
+	mRigidbody = gameobject->GetComponent<Rigidbody>();
+	mAnimationController = gameobject->GetComponent<AnimationController>();
+	
 }
 
 void AI::SetUp()
 {
-	mTransform->Rotation	= { 90,0,0 };
-	mTransform->Scale		= { 1,1,1 };
+	mTransform->Position = { 0,20,0 };
+	mTransform->Rotation	= { 0,0,0 };
+	mTransform->Scale		= { 0.25f,0.25f,0.25f };
 
-	mMeshFilter->SetMeshName("Sphere");
-	mRigidbody->CreateSphereCollider(1);
+	
 
-	//mRigidbody->SetFreezePosition(true, true, true);
+	mMeshFilter->SetMeshName("MOdNA");
+	mMeshFilter->SetAnimationName("MOdNA");
+	
+	mAnimationController->Choice("Run");
+	mRigidbody->CreateBoxCollider(0.35f, 0.5f, 0.35f);
+	mRigidbody->SetCenterPoint(0, 9.75f, 0);
 	mRigidbody->SetRestitution(0);
+
+	//mRigidbody->SetRestitution(0);
 	mRigidbody->SetFreezeRotation(true, true, true);
 }
 
 void AI::Update()
 {
-	Move();
-
-	Vector3 Pos = mTransform->Position;
-	Vector3 Direction = Vector3(Right, 0, Up);
-	
-	//mNetwork->NET_MOVE_POS(Pos,Direction,Speed);
-	mRigidbody->SetVelocity(Right, 0, Up);
+	KeyInputMove();
+	mObject = gameobject->GetChildBone(0);
+	mObject->GetTransform()->Rotation = { -90,0,Keyinput_Angle};
+	mAnimationController->Play(1, true);
 }
 
-void AI::GetCamera(GameObject* Cam)
+void AI::KeyInputMove()
 {
-	//if (mNetwork->NET_PLATER_CHECK() == true)
-	//{
-	//	mCam = Cam->GetComponent<Camera>();
-	//}
-}
-
-void AI::Move()
-{
-	Speed = 10;
 	if (GetKey(VK_UP))
 	{
-		Up = Speed;
+		Keyinput_Right = 1* Speed;
+		Keyinput_Angle = 180;
 	}
 	else if (GetKey(VK_DOWN))
 	{
-		Up = -Speed;
+		Keyinput_Right = -1* Speed;
+		Keyinput_Angle = 0;
 	}
 	else
 	{
-		Up = 0;
+		Keyinput_Right = 0;
 	}
 
 
 	if (GetKey(VK_RIGHT))
 	{
-		Right = Speed;
+		keyinput_Up = 1* Speed;
+		Keyinput_Angle = -90;
 	}
 	else if (GetKey(VK_LEFT))
 	{
-		Right = -Speed;
+		keyinput_Up = -1* Speed;
+		Keyinput_Angle = 90;
 	}
 	else
 	{
-		Right = 0;
+		keyinput_Up = 0;
 	}
+
+
+	if (GetKeyDown(VK_SPACE))
+	{
+		mRigidbody->SetAddForce(0, 500, 0);
+	}
+
+	//아무것도 누르지않았을 경우
+	if (keyinput_Up == 0 && Keyinput_Right == 0)
+	{
+		mAnimationController->Choice("Idle");
+	}
+	else
+	{
+		mAnimationController->Choice("Run");
+	}
+
+	mRigidbody->SetVelocity(keyinput_Up,0, Keyinput_Right);
+	mTransform->Rotation = {0,Keyinput_Angle,0};
 }
+
+
+
 
 

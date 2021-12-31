@@ -17,6 +17,11 @@ void RenderPassBase::Initialize(Microsoft::WRL::ComPtr<ID3D11DeviceContext> cont
 	g_Shader = shaderManager;
 }
 
+void RenderPassBase::GraphicReset()
+{
+	g_Context->ClearState();
+}
+
 void RenderPassBase::Reset()
 {
 	RESET_COM(g_Context);

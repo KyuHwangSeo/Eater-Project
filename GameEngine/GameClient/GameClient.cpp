@@ -7,6 +7,14 @@
 #include "MainHeader.h"
 
 
+//#define _CRTDBG_MAP_ALLOC
+//#include <cstdlib>
+//#include <crtdbg.h>
+//
+//#ifdef _DEBUG
+//#define new new( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+//#endif
+
 // 윈도 프로시저의 전방선언
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -67,6 +75,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		else
 		{
 			GM->Update();
+
+			//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+			//_CrtDumpMemoryLeaks();
+			//_CrtSetBreakAlloc(321674);
 		}
 	}
 

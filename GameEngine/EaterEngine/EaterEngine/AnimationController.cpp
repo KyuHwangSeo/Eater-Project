@@ -67,8 +67,8 @@ void AnimationController::Choice(std::string Name)
 	if (NowAnimationName != Name)
 	{
 		ChangeAnimation = true;
+		NowAnimationName = Name;
 	}
-	NowAnimationName = Name;
 }
 
 void AnimationController::Play(float Speed, bool Loop)

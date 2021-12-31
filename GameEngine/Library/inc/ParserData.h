@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "SimpleMath.h"
+#include "TypeOptionHeader.h"
 
 typedef enum MESH_TYPE
 {
@@ -20,13 +21,6 @@ typedef enum TEXTURE_TYPE : UINT
 	SPECULAR_TEXTURE	= 0x00000100,
 	SHINE_TEXTURE		= 0x00001000,
 }TEXTURE_TYPE;
-
-typedef enum PARSING_MODE
-{
-	SCALING			= 0x00000001,
-	ANIMATION_ONLY	= 0x00000010,
-	ROTATE_AXIS		= 0x00000100
-}PARSING_MODE;
 
 typedef enum MODEL_TYPE
 {

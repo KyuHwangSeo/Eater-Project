@@ -37,6 +37,12 @@
     <Filter Include="소스 파일\Component\Player">
       <UniqueIdentifier>{a59a5f89-b961-40e7-8282-6208957b9634}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Component\NetworkPlayer">
+      <UniqueIdentifier>{24c57563-bf2e-4f3d-bd85-42bacf800a91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\ClientNetworkManager">
+      <UniqueIdentifier>{52069034-015d-4d9f-a2e9-94fb6c116818}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -69,6 +75,12 @@
     <ClInclude Include="Player.h">
       <Filter>소스 파일\Component\Player</Filter>
     </ClInclude>
+    <ClInclude Include="NetwrokPlayer.h">
+      <Filter>소스 파일\Component\NetworkPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientNetworkManager.h">
+      <Filter>소스 파일\Component\ClientNetworkManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameClient.cpp">
@@ -91,6 +103,12 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>소스 파일\Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="NetwrokPlayer.cpp">
+      <Filter>소스 파일\Component\NetworkPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientNetworkManager.cpp">
+      <Filter>소스 파일\Component\ClientNetworkManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

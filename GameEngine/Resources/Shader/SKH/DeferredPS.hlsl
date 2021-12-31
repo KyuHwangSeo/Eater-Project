@@ -48,6 +48,13 @@ struct PixelOut
     float4 Depth    : SV_Target4;
 };
 
+float2 Voronoi_RandomVector(float2 UV, float offset)
+{
+    float2x2 m = float2x2(15.27, 47.63, 99.41, 89.98);
+    UV = frac(sin(mul(UV, m)) * 46839.32);
+    return float2(sin(UV.y * +offset) * 0.5 + 0.5, cos(UV.x * offset) * 0.5 + 0.5);
+}
+
 PixelOut Deferred_PS(VertexIn pin)
 {
     PixelOut pout;
@@ -57,6 +64,27 @@ PixelOut Deferred_PS(VertexIn pin)
     float3 normalW = pin.NormalW;
     float3 normalV = pin.NormalV;
     float gamma = 0.0f;
+    
+    //float2 g = floor(pin.Tex);
+    //float2 f = frac(pin.Tex);
+    //float t = 8.0f;
+    //float3 res = float3(8.0f, 0.0f, 0.0f);
+    //float2 UV = pin.Tex;
+    //for (int y = -1; y <= 1; y++)
+    //{
+    //    for (int x = -1; x <= 1; x++)
+    //    {
+    //        float2 lattice = float2(x, y);
+    //        float2 offset = Voronoi_RandomVector(lattice + g, 1);
+    //        float d = distance(lattice + offset, f);
+    //        if (d < res.x)
+    //        {
+    //            res = float3(d, offset.x, offset.y);
+    //            UV.x = res.x;
+    //            UV.y = res.y;
+    //        }
+    //    }
+    //}
     
 #ifdef TERRAIN_MESH
     albedo = float4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -84,11 +112,11 @@ PixelOut Deferred_PS(VertexIn pin)
     
     gamma = 1.0f;
 #else
-    if (gTexID & ALBEDO_MAP)
-    {
-        albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
-        gamma = 0.0f;
-    }
+        if (gTexID & ALBEDO_MAP)
+        {
+            albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
+            gamma = 0.0f;
+        }
     
     if (gTexID & NORMAL_MAP)
     {

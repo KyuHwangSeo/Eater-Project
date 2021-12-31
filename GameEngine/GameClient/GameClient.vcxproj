@@ -125,7 +125,7 @@
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(SolutionDir)Library\inc\Component;$(SolutionDir)Library\inc\DHEngineHelper;$(SolutionDir)Library\inc\PhysX</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(SolutionDir)Library\inc\Component;$(SolutionDir)Library\inc\DHEngineHelper;$(SolutionDir)Library\inc\PhysX;$(SolutionDir)Library\inc\Network</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(SolutionDir)Library\inc\Component;$(SolutionDir)Library\inc\DHEngineHelper;$(SolutionDir)Library\inc\PhysX</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\inc;$(SolutionDir)Library\inc\Component;$(SolutionDir)Library\inc\PhysX;$(SolutionDir)Library\inc\Network</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,6 +168,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="ClientNetworkManager.h" />
+    <ClInclude Include="NetwrokPlayer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="GameManager.h" />
@@ -197,6 +199,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="ClientNetworkManager.cpp" />
+    <ClCompile Include="NetwrokPlayer.cpp" />
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="inGame.cpp">

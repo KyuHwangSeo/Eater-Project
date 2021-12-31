@@ -13,21 +13,28 @@ public:
 	intro() {};
 	~intro() {};
 
-	// SceneA¡í(¢¬|) AeC¨ª ¡ío¨ùO¥ìE
+	
 	virtual void Awake();
 	virtual void Start() override;
 	virtual void Update() override;
 	virtual void End() override;
 	
 
-	GameObject* CreatePlayer(float x, float y, float z);
+	void CreatePlayer();
+	void CreatePlayerNetwork();
 	void CreateTerrain();
-	void CreateBox(float x,float y,float z);
+	void CreateObject(float x,float y,float z,int type);
+	void CreateMap();
 private:
 	GameObject* testobj;
-	Transform* Tr;
-	Rigidbody* Rig;
-	MeshFilter* Mf;
-	AnimationController* Ac;
+
+	GameObject* BossA;
+	GameObject* BossB;
+
+
+	//Transform* Tr;
+	//Rigidbody* Rig;
+	//MeshFilter* Mf;
+	//AnimationController* Ac;
 };
 

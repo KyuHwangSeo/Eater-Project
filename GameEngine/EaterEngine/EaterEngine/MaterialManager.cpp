@@ -29,7 +29,11 @@ void MaterialManager::Initialize()
 
 void MaterialManager::Release()
 {
+	// Material List 삭제..
 	g_MaterialList.clear();
+
+	// Global Data Material Data 삭제..
+	Global->mMatData.clear();
 }
 
 void MaterialManager::PushMaterial(Material* mat)
@@ -60,4 +64,13 @@ void MaterialManager::PushMaterial(Material* mat)
 
 	// Material List 추가..
 	g_MaterialList.insert(std::make_pair(material_Index, matBuf->Material_Option));
+}
+
+void MaterialManager::DeleteMaterial(UINT index)
+{
+	// 해당 Material Data 삭제..
+	g_MaterialList.erase(index);
+
+	// Global Data Material Data 삭제..
+	Global->mMatData.erase(std::next(Global->mMatData.begin(), index));
 }

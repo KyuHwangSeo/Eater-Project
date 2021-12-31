@@ -4,17 +4,17 @@
 #include <string>
 #include <windows.h>
 #include "EaterEngineDLL.h"
+#include "TypeOptionHeader.h"
+
+namespace flatbuffers 
+{
+	class FlatBufferBuilder;
+}
 
 class GameObject;
 class Scene;
 class PhysRayCast;
-
-typedef enum PARSING_MODE
-{
-	SCALING			= 0x00000001,
-	ANIMATION_ONLY	= 0x00000010,
-	ROTATE_AXIS		= 0x00000100
-}PARSING_MODE;
+class NetworkManagerComponent;
 
 extern "C" EATER_ENGINEDLL void EngineInitialize(HWND _g_hWnd);		//GameEngine 시작
 extern "C" EATER_ENGINEDLL void EndEngine();						//GameEngine 종료
@@ -51,18 +51,23 @@ extern "C" EATER_ENGINEDLL float GetMousePosX();			//마우스 위치 X
 extern "C" EATER_ENGINEDLL float GetMousePosY();			//마우스 위치 Y
 
 ///카메라 관련
-EATER_ENGINEDLL Vector3 GetCameraLocalPosition_UP();
-EATER_ENGINEDLL Vector3 GetCameraLocalPosition_Right();
-EATER_ENGINEDLL Vector3 GetCameraLocalPosition_Look();
+//EATER_ENGINEDLL Vector3 GetCameraLocalPosition_UP();
+//EATER_ENGINEDLL Vector3 GetCameraLocalPosition_Right();
+//EATER_ENGINEDLL Vector3 GetCameraLocalPosition_Look();
 
 ///시간 관련
 extern "C" EATER_ENGINEDLL float GetDeltaTime();
 
-
 ///물리 관련
 extern "C" EATER_ENGINEDLL bool RayCast(PhysRayCast* ray);
 
-
+///네트워크 관련
+//엔진쪽에서 통신한 모든데이터를 여기에서 받은 매니저로 클라와 통신한다
+extern "C" EATER_ENGINEDLL void Network_SetManager(NetworkManagerComponent * Manager);
+//클라이언트 에서 메세지를 보낼때 이것을 사용
+extern "C" EATER_ENGINEDLL void Network_Send(flatbuffers::FlatBufferBuilder * Builder,int Type);
+//로딩이 완료되었을때 보내는 메세지
+extern "C" EATER_ENGINEDLL void Network_Loading_Send();
 
 
 template<typename T>

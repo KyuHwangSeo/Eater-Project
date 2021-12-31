@@ -34,15 +34,16 @@ void Animator::SetAnimation(ParserData::OneAnimation* data)
 
 void Animator::Play(float time, bool Loop)
 {
-	PlayTime = time;
-	mLoop = Loop;
-	mPlay = true;
+	PlayTime	= time;
+	mLoop		= Loop;
+	mPlay		= true;
 
 
 	if (NowAnimationData != nullptr && mPlay == true)
 	{
 		transfrom = gameobject->transform;
 		AnimeFrameIndex();
+
 
 		DirectX::SimpleMath::Vector3	pos = NowAnimationData->m_AniData[AnimeIndex]->m_Pos;
 		DirectX::SimpleMath::Quaternion rot = NowAnimationData->m_AniData[AnimeIndex]->m_RotQt;

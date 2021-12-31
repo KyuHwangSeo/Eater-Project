@@ -45,6 +45,7 @@ public:
 	virtual GRAPHIC_DLL void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) { return; }
 	virtual GRAPHIC_DLL void Render(std::queue<MeshData*>* meshList, GlobalData* global) = 0;
 	virtual GRAPHIC_DLL void SSAORender(GlobalData* global) { return; }
+	virtual GRAPHIC_DLL void AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global) { return; }
 	virtual GRAPHIC_DLL void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) { return; }
 	virtual GRAPHIC_DLL void LightRender(GlobalData* global) { return; }
 	virtual GRAPHIC_DLL void EndRender() { return; }

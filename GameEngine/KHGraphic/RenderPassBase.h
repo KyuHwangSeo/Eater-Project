@@ -30,6 +30,7 @@ public:
 
 public:
 	static void Initialize(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context, IGraphicResourceFactory* factory, IGraphicResourceManager* resourceManager, IShaderManager* shaderManager);
+	static void GraphicReset();
 	static void Reset();
 
 public:

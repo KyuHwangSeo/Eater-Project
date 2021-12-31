@@ -12,29 +12,8 @@
 #include "Light.h"
 #include "Terrain.h"
 #include "Rigidbody.h"
-#include "NetworkManager.h"
-#include "UnitNet.h"
-
-/// <summary>
-/// 실행순서
-///  
-/// 씬에서 컨퍼넌트를 AddComponent
-///
-/// -초기화-----------------------------------------------------
-/// 컨퍼넌트 안에 Awack		함수에서 사용할 컨퍼넌트를 가져옴
-/// 컨퍼넌트 안에 SetUp		실행 함수에서 사용할 컨퍼넌트를 초기화값 넣어주기
-/// 컨퍼넌트 안에 Start		초기화된 값으로 컨퍼넌트를 초기화
-/// 
-/// -Updata----------------------------------------------
-/// StartUpdate			시작단계 업데이트
-/// TransformUpdate		이동관련 업데이트 
-/// PhysicsUpdate		물리관련 업데이트
-/// Update				클라이언트에서 사용할 기본 업데이트
-/// EndUpdate			마지막 실행 업데이트
-/// 
-/// 오브젝트 삭제 여부 체크후 삭제
-/// 그래픽랜더큐 생성
-/// </summary>
+#include "NetwrokPlayer.h"
+#include "ClientNetworkManager.h"
 
 void intro::Awake()
 {
@@ -42,20 +21,31 @@ void intro::Awake()
 	LoadMeshPath("../Resources/Mesh/");
 	LoadTexturePath("../Resources/Texture/");
 
-	
 
-	LoadTerrainMesh("Terrain", "Terrain_RGB.png", SCALING);
+	LoadTerrainMesh("Terrain","Terrain_RGB.png", SCALING);
+	//LoadMesh("box", SCALING);
+	//LoadMesh("Player_Run", ANIMATION_ONLY);
 	LoadMesh("TerrainDecimate",SCALING);
-	LoadMesh("Sphere",SCALING);
-	LoadMesh("box",SCALING);
+	//LoadMesh("Sphere",SCALING);
+	//LoadMesh("MOdNA_Idle", SCALING);
+	//LoadMesh("MOdNA_Run", SCALING | ANIMATION_ONLY);
+	//LoadMesh("Dome", SCALING);
+	//LoadMesh("Inside", SCALING);
+	//LoadMesh("outside", SCALING);
+	//LoadMesh("outsiderock", SCALING);
+	//LoadMesh("BossA", SCALING);
+	//LoadMesh("BossB", SCALING);
 
 	
-	LoadTexture("Player.dds");
+	//LoadTexture("Player.dds");
 	LoadTexture("Dump.png");
+	//LoadTexture("ColorMap_1.png");
 	LoadTexture("ground01_Albedo.png");
 	LoadTexture("ground02_Albedo.png");
 	LoadTexture("ground01_Normal.png");
 	LoadTexture("ground02_Normal.png");
+
+	//Network_Loading_Send();
 
 	///라이트
 	testobj = Instance("DirectionLight");
@@ -68,35 +58,23 @@ void intro::Awake()
 	testobj->GetTransform()->Position = { 0,0,-25 };
 
 
-	///네트워크 매니저
-	//GameObject* Net = Instance("Network");
-	//NetworkManager* NM = Net->AddComponent<NetworkManager>();
-	//NM->Initialize();
 
+	//네트워크 매니저 생성후 Engine쪽으로 넘겨준다
 
-	///캐릭터
-	//GameObject* obj02 = CreatePlayer(10,1,0);
-	GameObject* obj01 = CreatePlayer(0,5,0);
-	//NM->AddPlayer(obj01, obj02);
+	GameObject*		obj = nullptr;
+	MeshFilter*		MF	= nullptr;
+	NetwrokPlayer*	NP	= nullptr;
 
+	//네트워크 테스트용
+	//CreatePlayerNetwork();
 
+	//그냥 일반 테스트용
+	//CreatePlayer();
+	//CreateObject(0, 2, 0, 0);
+	//CreateMap();
 
 	///터레인
 	CreateTerrain();
-
-	///박스
-	for (int i = 0; i < 10; i++)
-	{
-		testobj = Instance("box");
-		MeshFilter* Mf = testobj->AddComponent<MeshFilter>();
-		Rigidbody* Rig = testobj->AddComponent<Rigidbody>();
-		Transform* Tr = testobj->GetComponent<Transform>();
-
-		Tr->Position = { (float)i * 2,10, (float)i * 2 };
-		Tr->Rotation = { (float)i*20,0,0 };
-		Mf->SetMeshName("box");
-		Rig->CreateBoxCollider(1.0f);
-	}
 }
 
 void intro::Start()
@@ -106,7 +84,29 @@ void intro::Start()
 
 void intro::Update()
 {
-	
+	if (GetKey(VK_RIGHT))
+	{
+		BossA->transform->SetRotate(0,0,1);
+		BossB->transform->SetRotate(0,0,1);
+	}
+	if (GetKey(VK_LEFT))
+	{
+		BossA->transform->SetRotate(0, 0, -1);
+		BossB->transform->SetRotate(0, 0, -1);
+	}
+
+	if (GetKey(VK_UP))
+	{
+		BossA->transform->SetRotate(-1, 0, 0);
+		BossB->transform->SetRotate(-1, 0, 0);
+	}
+
+	if (GetKey(VK_DOWN))
+	{
+		BossA->transform->SetRotate(1, 0, 0);
+		BossB->transform->SetRotate(1, 0, 0);
+	}
+
 }
 
 void intro::End()
@@ -114,16 +114,51 @@ void intro::End()
 
 }
 
-GameObject* intro::CreatePlayer(float x,float y, float z)
+void intro::CreatePlayer()
 {
+	//GameObject* obj = Instance("Player");
+	//MeshFilter* mf = obj->AddComponent<MeshFilter>();
+	//Transform* Tr = obj->GetComponent<Transform>();
+	//mf->SetMeshName("Dome");
+	//Tr->Position = { 0,0,0 };
+
+
 	GameObject* obj = Instance("Player");
 	obj->AddComponent<MeshFilter>();
 	obj->AddComponent<Rigidbody>();
+	obj->AddComponent<AnimationController>();
 	obj->AddComponent<AI>();
-	//obj->AddComponent<UnitNet>();
-	obj->GetComponent<Transform>()->Position = { x,y,z };
+}
 
-	return obj;
+void intro::CreatePlayerNetwork()
+{
+	Network_Loading_Send();
+
+
+	ClientNetworkManager* Manager = testobj->AddComponent<ClientNetworkManager>();
+	Network_SetManager(Manager);
+
+	///캐릭터
+	GameObject* obj = Instance("Player01");
+	MeshFilter* MF = obj->AddComponent<MeshFilter>();
+	NetwrokPlayer* NP = obj->AddComponent<NetwrokPlayer>();
+	AnimationController* AC	= obj->AddComponent<AnimationController>();
+
+	obj->GetTransform()->Position = { 0,0,0 };
+	MF->SetMeshName("MOdNA");
+	MF->SetAnimationName("MOdNA");
+	NP->PlayerNumber = 20000;
+
+
+	obj = Instance("Player02");
+	MF = obj->AddComponent<MeshFilter>();
+	NP	= obj->AddComponent<NetwrokPlayer>();
+	obj->AddComponent<AnimationController>();
+	obj->GetTransform()->Position = { 10,0,0 };
+	MF->SetMeshName("MOdNA");
+	MF->SetAnimationName("MOdNA");
+	MF->SetTextureName("Player");
+	NP->PlayerNumber = 20001;
 }
 
 void intro::CreateTerrain()
@@ -138,11 +173,73 @@ void intro::CreateTerrain()
 	mTerrain->SetTextureTiling(1.0f / 31.0f);
 }
 
-void intro::CreateBox(float x, float y, float z)
+void intro::CreateObject(float x, float y, float z, int type)
 {
-	
+	if(type == 0)
+	{
+		GameObject* obj = Instance("box");
+		MeshFilter* mMeshFilter = obj->AddComponent<MeshFilter>();
+		Rigidbody* mRigdbody = obj->AddComponent<Rigidbody>();
+		Transform* mTransform = obj->GetComponent<Transform>();
+
+		mMeshFilter->SetMeshName("box");
+		mRigdbody->CreateBoxCollider(0.5f);
+		mTransform->Position = { x,y,z };
+		mTransform->Scale = { 0.5f,0.5f,0.5f };
+	}
+	else
+	{
+		GameObject* obj = Instance("box");
+		MeshFilter* mMeshFilter = obj->AddComponent<MeshFilter>();
+		Rigidbody* mRigdbody = obj->AddComponent<Rigidbody>();
+		Transform* mTransform = obj->GetComponent<Transform>();
+
+		mMeshFilter->SetMeshName("Sphere");
+		mRigdbody->CreateSphereCollider(1);
+		mTransform->Position = { x,y,z };
+	}
+}
+
+void intro::CreateMap()
+{
+	Transform*	Tr;
+	MeshFilter* filter;
+	//GameObject* Object = Instance();
+	//filter = Object->AddComponent<MeshFilter>();
+	//filter->SetMeshName("Dome");
+
+	//Object = Instance();
+	//filter = Object->AddComponent<MeshFilter>();
+	//filter->SetMeshName("Inside");
+	//
+	//Object = Instance();
+	//filter = Object->AddComponent<MeshFilter>();
+	//filter->SetMeshName("outside");
+	//Transform* Tr = Object->GetTransform();
+	//Tr->Rotation = { -90,0, 180 };
+	//
+	//
+	//Object = Instance();
+	//filter = Object->AddComponent<MeshFilter>();
+	//filter->SetMeshName("outsiderock");
+	//Tr = Object->GetTransform();
+	//Tr->Rotation = { -90,0, 0 };
 
 
+	BossA = Instance();
+	filter = BossA->AddComponent<MeshFilter>();
+	filter->SetMeshName("BossA");
+	Tr = BossA->GetTransform();
+	Tr->Rotation = { -90,0, 0 };
+	Tr->Scale = { 1,1,1 };
+	Tr->Position = { 0,0,0 };
 
 
+	BossB = Instance();
+	filter = BossB->AddComponent<MeshFilter>();
+	filter->SetMeshName("BossB");
+	Tr = BossB->GetTransform();
+	Tr->Rotation = { -90,0, 0 };
+	Tr->Position = { 5,2.5f,0 };
+	Tr->Scale = { 0.25f,0.25f ,0.25f };
 }

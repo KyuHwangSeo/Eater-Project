@@ -153,3 +153,18 @@ void EndEngine()
 	 return PhysManager::RayCast(ray);
  }
 
+ void Network_SetManager(NetworkManagerComponent* Manager)
+ {
+	 gGameEngine->SetNetworkManager(Manager);
+ }
+
+ void Network_Send(flatbuffers::FlatBufferBuilder* Builder , int Type)
+ {
+	 gGameEngine->NETWORK_SEND(Builder, Type);
+ }
+
+ void Network_Loading_Send()
+ {
+	 gGameEngine->NETWORK_LOADING_SEND();
+ }
+

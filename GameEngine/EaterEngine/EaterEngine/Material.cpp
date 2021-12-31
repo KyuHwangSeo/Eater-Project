@@ -84,6 +84,16 @@ void Material::SetStartColor(DirectX::SimpleMath::Vector4 color)
 	MaterialDatas->Color_Add = color;
 }
 
+void Material::Release()
+{
+	// Manager 내부에 있는 해당 Material Data 삭제..
+	MaterialManager::DeleteMaterial(MaterialDatas->Material_Index);
+	
+	// 해당 Material Data 해제..
+	delete MaterialDatas->Material_Option;
+	delete MaterialDatas;
+}
+
 MaterialData* Material::GetMaterialData()
 {
 	return MaterialDatas;

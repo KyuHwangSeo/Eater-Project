@@ -41,6 +41,7 @@ SHADER_RESOURCE_VIEW(gAlbedoRT)
 SHADER_RESOURCE_VIEW(gNormalRT)
 SHADER_RESOURCE_VIEW(gPositionRT)
 SHADER_RESOURCE_VIEW(gShadowRT)
+SHADER_RESOURCE_VIEW(gDepthRT)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Terrain ShaderResourceView Resource

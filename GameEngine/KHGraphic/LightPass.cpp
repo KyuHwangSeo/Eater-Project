@@ -134,6 +134,7 @@ void LightPass::Reset()
 void LightPass::BeginRender()
 {
 	g_Context->OMSetRenderTargets(1, &m_BackBufferRTV, m_DepthStencilView);
+	g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	g_Context->ClearRenderTargetView(m_BackBufferRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
 	g_Context->RSSetViewports(1, m_ScreenViewport);
 }
@@ -180,4 +181,5 @@ void LightPass::Render(GlobalData* global)
 	g_Context->IASetIndexBuffer(m_ScreenBuffer->IB.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	g_Context->DrawIndexed(m_ScreenBuffer->IndexCount, 0, 0);
+	g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

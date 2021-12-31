@@ -8,6 +8,12 @@
 /// 커다란 게임엔진 틀
 /// </summary>
 
+namespace flatbuffers
+{
+	class FlatBufferBuilder;
+}
+
+
 //각종 매니저들
 class DebugManager;
 class LoadManager;
@@ -21,6 +27,7 @@ class LightManager;
 class PhysManager;
 class NetworkManager;
 class Scene;
+class NetworkManagerComponent;
 //게임 오브젝트
 class GameObject;
 
@@ -43,6 +50,7 @@ public:
 	GameObject* Instance(std::string ObjName = "GameObject");			//obj 생성 (빈 게임오브젝트)
 	GameObject* InstanceTerrain(std::string ObjName = "Terrain");
 	GameObject* InstanceParticle(std::string ObjName = "Particle");
+
 	void		Destroy(GameObject* obj);								//obj 삭제
 public:
 	///스크린 관련
@@ -71,7 +79,11 @@ public:
 public:
 	///시간 관련
 	float GetdeltaTime();
-
+public:
+	///네트워크 관련
+	void SetNetworkManager(NetworkManagerComponent* Manager);
+	void NETWORK_SEND(flatbuffers::FlatBufferBuilder* Builder, int Type);
+	void NETWORK_LOADING_SEND();
 private:
 	void CreateObject();			//기본 생성 오브젝트
 	void RenderOptionCheck();
@@ -94,7 +106,6 @@ private:
 	int WinSizeWidth;	//윈도우 사이즈 가로
 	int WinSizeHeight;	//윈도우 사이즈 세로
 	bool ConsoleDebug;
-
 private:
 	UINT m_RenderOption;
 };

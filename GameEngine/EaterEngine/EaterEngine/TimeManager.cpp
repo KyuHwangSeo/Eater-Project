@@ -34,7 +34,7 @@ void TimeManager::Update()
 	float deltaTime = DeltaTime();
 
 	// 갱신주기는 0.2초
-	if (0.2f < _addedTime)
+	if (0.1f < _addedTime)
 	{
 		_FPS = (1.0f / deltaTime);
 		_deltaTimeMS = deltaTime * 1000.0f;
@@ -52,7 +52,7 @@ void TimeManager::Update()
 	if (debugTime >= 5) 
 	{
 		std::string temp = "FPS :" + std::to_string(_FPS);
-		//DebugManager::Print(DebugManager::MSG_TYPE::MSG_SYSTEM,"Time",temp,false);
+		DebugManager::Print(DebugManager::MSG_TYPE::MSG_SYSTEM,"Time",temp,false);
 		debugTime = 0;
 	}
 }

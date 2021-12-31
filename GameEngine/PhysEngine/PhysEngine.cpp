@@ -140,6 +140,8 @@ void PhysEngine::Create_Actor(PhysData* data)
 		break;
 	}
 
+	shape->setLocalPose(PxTransform(data->CenterPoint.x, data->CenterPoint.y, data->CenterPoint.z));
+
 	///拱府 按眉 积己
 	if (data->isDinamic == true)
 	{

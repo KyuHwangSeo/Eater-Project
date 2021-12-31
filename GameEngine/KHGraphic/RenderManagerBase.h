@@ -27,6 +27,8 @@ public:
 	virtual void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) abstract;
 	// SSAO Render Pass..
 	virtual void SSAORender(GlobalData* global) abstract;
+	// Alpha Render Pass..
+	virtual void AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global) abstract;
 	// UI Render Pass..
 	virtual void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) abstract;
 	// Light Render Pass..

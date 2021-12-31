@@ -6,6 +6,7 @@ class ShadowPass;
 class DeferredPass;
 class LightPass;
 class SSAOPass;
+class AlphaPass;
 class DebugPass;
 class RenderManager : public IRenderManager
 {
@@ -21,6 +22,7 @@ public:
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) override; 
 	void SSAORender(GlobalData* global) override;
+	void AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void LightRender(GlobalData* global) override;
 	void EndRender() override;
@@ -40,5 +42,6 @@ private:
 	LightPass* m_Light;
 	ShadowPass* m_Shadow;
 	SSAOPass* m_SSAO;
+	AlphaPass* m_Alpha;
 	DebugPass* m_Debug;
 };

@@ -184,6 +184,7 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlphaPass.h" />
     <ClInclude Include="BlendStateDefine.h" />
     <ClInclude Include="BufferData.h" />
     <ClInclude Include="BufferDataDefine.h" />
@@ -240,6 +241,7 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     <ClInclude Include="ViewPortDefine.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlphaPass.cpp" />
     <ClCompile Include="BufferData.cpp" />
     <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="D3D11Graphic.cpp" />

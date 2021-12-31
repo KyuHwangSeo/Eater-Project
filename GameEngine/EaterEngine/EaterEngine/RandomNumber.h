@@ -5,7 +5,24 @@ class RandomBase
 {
 protected:
 	static std::default_random_engine g_RandomEngine;
+
+	template<typename T>
+	static void Swap(T& minNum, T& maxNum);
 };
+
+template<typename T>
+void RandomBase::Swap(T& minNum, T& maxNum)
+{
+	if (minNum != maxNum)
+	{
+		if (minNum > maxNum)
+		{
+			T temp = minNum;
+			minNum = maxNum;
+			maxNum = temp;
+		}
+	}
+}
 
 class RandomInt : public RandomBase
 {
@@ -34,7 +51,6 @@ public:
 
 	// 해당 범위 내의 난수 추출..
 	float GetRandomNumber();
-	DirectX::SimpleMath::Vector3 GetRandomVector3();
 
 private:
 	std::uniform_real_distribution<float> m_RandomGenerator;

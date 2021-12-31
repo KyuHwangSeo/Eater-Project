@@ -121,9 +121,6 @@ void DeferredPass::Start(int width, int height)
 	m_TerrainPS = g_Shader->GetShader("Terrain_PS");
 	m_ParticlePS = g_Shader->GetShader("Particle_PS");
 
-	// Buffer 설정..
-	m_QuadBuffer = g_Resource->GetBuffer<BD_Quad>();
-
 	// DepthStencilView 설정..
 	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
 
@@ -342,48 +339,49 @@ void DeferredPass::RenderUpdate(MeshData* mesh, GlobalData* global)
 	break;
 	case OBJECT_TYPE::PARTICLE:
 	{
-		g_Context->OMSetDepthStencilState(m_NoDepthStencilState, 0);
-		g_Context->OMSetBlendState(m_AlphaBlendState, 0, 0xffffffff);
-
-		ParticleData* particles = mesh->Particle_Data;
-		for (int i = 0; i < particles->Particle_Count; i++)
-		{
-			OneParticle* particle = particles->m_Particles[i];
-
-			if (particle->Playing == false) continue;
-
-			Matrix particleWorld = *particle->World * invView;
-			particleWorld._41 = particle->World->_41;
-			particleWorld._42 = particle->World->_42;
-			particleWorld._43 = particle->World->_43;
-
-			// Veretex Shader Update..
-			CB_ParticleObject objectBuf;
-			objectBuf.gWorldViewProj = particleWorld * viewproj;
-			objectBuf.gTexTransform = *particle->Tex;
-
-			m_ParticleVS->ConstantBufferCopy(&objectBuf);
-
-			m_ParticleVS->Update();
-
-			CB_ParticleOption optionBuf;
-			optionBuf.gColor = particle->Color;
-
-			m_ParticlePS->ConstantBufferCopy(&optionBuf);
-
-			// Pixel Shader Update..
-			if (mat->Albedo)
-			{
-				m_ParticlePS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mat->Albedo->TextureBufferPointer);
-			}
-
-			m_ParticlePS->Update();
-
-			// Draw..
-			g_Context->DrawIndexed(m_IndexCount, 0, 0);
-		}
-		g_Context->OMSetBlendState(m_DefaltBlendState, 0, 0xffffffff);
-		g_Context->OMSetDepthStencilState(m_DepthStencilState, 0);
+		//g_Context->OMSetDepthStencilState(m_NoDepthStencilState, 0);
+		//g_Context->OMSetBlendState(m_AlphaBlendState, 0, 0xffffffff);
+		//
+		//
+		//ParticleData* particles = mesh->Particle_Data;
+		//for (int i = 0; i < particles->Particle_Count; i++)
+		//{
+		//	OneParticle* particle = particles->m_Particles[i];
+		//
+		//	if (particle->Playing == false) continue;
+		//
+		//	Matrix particleWorld = *particle->World * invView;
+		//	particleWorld._41 = particle->World->_41;
+		//	particleWorld._42 = particle->World->_42;
+		//	particleWorld._43 = particle->World->_43;
+		//
+		//	// Veretex Shader Update..
+		//	CB_ParticleObject objectBuf;
+		//	objectBuf.gWorldViewProj = particleWorld * viewproj;
+		//	objectBuf.gTexTransform = *particle->Tex;
+		//
+		//	m_ParticleVS->ConstantBufferCopy(&objectBuf);
+		//
+		//	m_ParticleVS->Update();
+		//
+		//	CB_ParticleOption optionBuf;
+		//	optionBuf.gColor = particle->Color;
+		//
+		//	m_ParticlePS->ConstantBufferCopy(&optionBuf);
+		//
+		//	// Pixel Shader Update..
+		//	if (mat->Albedo)
+		//	{
+		//		m_ParticlePS->SetShaderResourceView<gDiffuseMap>((ID3D11ShaderResourceView*)mat->Albedo->TextureBufferPointer);
+		//	}
+		//
+		//	m_ParticlePS->Update();
+		//
+		//	// Draw..
+		//	g_Context->DrawIndexed(m_IndexCount, 0, 0);
+		//}
+		//g_Context->OMSetBlendState(m_DefaltBlendState, 0, 0xffffffff);
+		//g_Context->OMSetDepthStencilState(m_DepthStencilState, 0);
 	}
 	break;
 	default:

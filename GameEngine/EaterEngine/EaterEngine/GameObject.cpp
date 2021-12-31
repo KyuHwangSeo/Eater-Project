@@ -56,6 +56,18 @@ GameObject* GameObject::GetChildBone(std::string FindName)
 	return temp;
 }
 
+ GameObject* GameObject::GetChildBone(int num)
+{
+	 GameObject* obj = nullptr;
+	 int size = (int)ChildBoneList.size();
+	 if (size > num)
+	 {
+		 obj = ChildBoneList[num];
+	 }
+
+	 return obj;
+}
+
 GameObject* GameObject::GetChildMesh(std::string FindName)
 {
 	if (Name == FindName)
@@ -68,6 +80,18 @@ GameObject* GameObject::GetChildMesh(std::string FindName)
 	{
 		 (*it)->GetChildMesh(FindName);
 	}
+}
+
+GameObject* GameObject::GetChildMesh(int num)
+{
+	GameObject* obj = nullptr;
+	int size = (int)ChildMeshList.size();
+	if (size > num)
+	{
+		obj = ChildMeshList[num];
+	}
+
+	return obj;
 }
 
 Transform* GameObject::GetTransform()

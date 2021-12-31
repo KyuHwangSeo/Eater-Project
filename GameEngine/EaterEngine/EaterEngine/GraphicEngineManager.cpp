@@ -59,6 +59,15 @@ void GraphicEngineManager::SSAORender(GlobalData* global)
 	GEngine->SSAORender(global);
 }
 
+void GraphicEngineManager::AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global)
+{
+	//하나의 엔진이 끝날때마다 ReQueue는 사라짐 계속 넣어준다
+	ObjManager->CreateRenderQueue();
+
+	//해당 엔진을 랜더링
+	GEngine->AlphaRender(ObjManager->GetRenderQueue(), global);
+}
+
 void GraphicEngineManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 	//if (NowEngine != nullptr)

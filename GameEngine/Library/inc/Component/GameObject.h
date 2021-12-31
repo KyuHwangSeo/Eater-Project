@@ -38,7 +38,9 @@ public:
 	EATER_ENGINEDLL void SetActive(bool active);			//모든 컨퍼넌트 기능중지 여부
 
 	EATER_ENGINEDLL GameObject* GetChildBone(std::string Name);	//자식객체를 가져옴
+	EATER_ENGINEDLL GameObject* GetChildBone(int num);	//자식객체를 가져옴
 	EATER_ENGINEDLL GameObject* GetChildMesh(std::string Name);	//자식객체를 가져옴
+	EATER_ENGINEDLL GameObject* GetChildMesh(int num);
 	EATER_ENGINEDLL	Transform* GetTransform();				//기본 컨퍼넌트인 Transform을 가져옴
 
 	EATER_ENGINEDLL void ChoiceParent(GameObject* obj);		//나자신을 선택한 오브젝트의 자식으로 넣는다

@@ -27,11 +27,11 @@ public:
 	//매니저 넣어주기
 	static void SetManager(TimeManager* time, KeyinputManager* key);
 
+	//이컨퍼넌트를 가지고 있는 게임오브젝트
+	GameObject* gameobject;
 protected:
 	int OrderCount  = FUNCTION_ORDER_CENTER;
 
-	//이컨퍼넌트를 가지고 있는 게임오브젝트
-	GameObject* gameobject;
 
 	//Dll안에서만 사용될 매니저들
 	static TimeManager*		mTimeManager;

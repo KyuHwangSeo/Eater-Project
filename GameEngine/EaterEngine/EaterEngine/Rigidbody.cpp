@@ -120,6 +120,11 @@ Vector3 Rigidbody::GetVelocity()
 	 RigidbodyData->AddForce(x, y, z);
  }
 
+ void Rigidbody::SetCenterPoint(float x, float y, float z)
+ {
+	 RigidbodyData->CenterPoint = {x,y,z};
+ }
+
  void Rigidbody::CreateBoxCollider(float x, float y, float z)
 {
 	 RigidbodyData->CreateBoxCollider(x, y, z);

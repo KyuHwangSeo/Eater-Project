@@ -38,6 +38,8 @@ public:
 	EATER_ENGINEDLL Vector3 GetVelocity();
 
 	EATER_ENGINEDLL void SetAddForce(float x, float y, float z);
+
+	EATER_ENGINEDLL void SetCenterPoint(float x, float y, float z);
 		
 	//콜라이더 설정
 	//가로 세로 높이

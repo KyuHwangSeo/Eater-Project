@@ -29,6 +29,7 @@
 #include "Terrain.h"
 #include "ParticleSystem.h"
 
+
 GameEngine::GameEngine()
 {
 	mDebugManager	= nullptr;
@@ -75,7 +76,7 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mMaterialManager	= new MaterialManager();
 	mLightManager		= new LightManager();
 	mPhysManager		= new PhysManager();
-	//mNetworkManager		= new NetworkManager();
+	mNetworkManager		= new NetworkManager();
 
 	//매니저들 초기화
 	BaseManager::Initialize();
@@ -89,7 +90,7 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mLightManager->Initialize();
 	mMaterialManager->Initialize();
 	mPhysManager->Initialize();
-	//mNetworkManager->Initialize();
+	mNetworkManager->Initialize();
 
 	Component::SetManager(mTimeManager, mKeyManager);
 }
@@ -110,23 +111,21 @@ void GameEngine::Update()
 {
 	//매니저들 업데이트 (컨퍼넌트 업데이트후 변경된 사항을 각각의 게임오브젝트 OneMeshData에 전달)
 	//타임매니저는 먼저실행되어야함
+	mNetworkManager->Update();
 	mTimeManager->Update();
 	mKeyManager->Update();
 	mSceneManager->Update();
 	mDebugManager->Update();
 	mObjectManager->PlayUpdate();
 	mPhysManager->Update(mTimeManager->DeltaTime());
-	//mNetworkManager->Update();
-	
 	// 모든 업데이트가 일어난 후 데이터 세팅..
 	BaseManager::UpdateGlobalData();
 
 	//컨퍼넌트 업데이트 끝
 	
-
-
 	// 현재 랜더링 옵션 설정..
 	RenderOptionCheck();
+	
 
 	//랜더큐 넘겨줌
 	mGraphicManager->BeginRender(m_RenderOption);
@@ -135,7 +134,10 @@ void GameEngine::Update()
 	mGraphicManager->SSAORender(mObjectManager->GetGlobalData());
 	mGraphicManager->UIRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->LightRender(mObjectManager->GetGlobalData());
+	mGraphicManager->AlphaRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->EndRender();
+
+
 
 	//랜더링이 끝나고 오브젝트 Delete
 	mObjectManager->DeleteObject();
@@ -323,6 +325,21 @@ float GameEngine::GetdeltaTime()
 	return mTimeManager->DeltaTime();
 }
 
+void GameEngine::SetNetworkManager(NetworkManagerComponent* Manager)
+{
+	mNetworkManager->SetClientNetworkManager(Manager);
+}
+
+void GameEngine::NETWORK_SEND(flatbuffers::FlatBufferBuilder* Builder, int Type)
+{
+	mNetworkManager->NETWORK_SEND(Builder, Type);
+}
+
+void GameEngine::NETWORK_LOADING_SEND()
+{
+	mNetworkManager->C2S_LOADING_COMPLETE_SEND();
+}
+
 void GameEngine::CreateObject()
 {
 	GameObject* light = Instance();
@@ -331,24 +348,24 @@ void GameEngine::CreateObject()
 
 void GameEngine::RenderOptionCheck()
 {
-	if (mKeyManager->GetKeyUp(VK_F1))
+	if (mKeyManager->GetKeyUp(VK_F9))
 	{
 		// Debug On/Off
 		m_RenderOption |= RENDER_DEBUG;
 	}
-	if (mKeyManager->GetKeyUp(VK_F2))
-	{
-		// Gamma Correction On/Off
-		m_RenderOption |= RENDER_GAMMA_CORRECTION;
-	}
-	if (mKeyManager->GetKeyUp(VK_F3))
-	{
-		// Shadow On/Off
-		m_RenderOption |= RENDER_SHADOW;
-	}
-	if (mKeyManager->GetKeyUp(VK_F4))
-	{
-		// SSAO On/Off
-		m_RenderOption |= RENDER_SSAO;
-	}
+	//if (mKeyManager->GetKeyUp(VK_F2))
+	//{
+	//	// Gamma Correction On/Off
+	//	m_RenderOption |= RENDER_GAMMA_CORRECTION;
+	//}
+	//if (mKeyManager->GetKeyUp(VK_F3))
+	//{
+	//	// Shadow On/Off
+	//	m_RenderOption |= RENDER_SHADOW;
+	//}
+	//if (mKeyManager->GetKeyUp(VK_F4))
+	//{
+	//	// SSAO On/Off
+	//	m_RenderOption |= RENDER_SSAO;
+	//}
 }

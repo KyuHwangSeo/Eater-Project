@@ -37,6 +37,7 @@ public:
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global);
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void SSAORender(GlobalData* global);
+	void AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void LightRender(GlobalData* global);
 	void EndRender();

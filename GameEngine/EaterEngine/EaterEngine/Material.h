@@ -34,6 +34,9 @@ public:
 	void SetStartColor(DirectX::SimpleMath::Vector4 color);
 
 public:
+	void Release();
+
+public:
 	UINT GetMaterialIndex();
 	MaterialData* GetMaterialData();
 

@@ -1,6 +1,7 @@
 #include "NetworkManager.h"
 
-#define CONNECT_IP "127.0.0.1"
+//#define CONNECT_IP "127.0.0.1"
+#define CONNECT_IP "221.163.91.100"
 #define CONNET_PORT 729
 
 #include <iostream>
@@ -8,152 +9,130 @@
 #include "SharedDataStruct.h"
 #include "GameClientGameServerPacketDefine.h"
 #include "PlayerData_generated.h"
-#include "SimpleMath.h"
-
 
 
 #include "GameObject.h"
-#include "UnitNet.h"
-#include "Transform.h"
-#include "MeshFilter.h"
-
+#include "NetworkComponent.h"
+#include "DebugManager.h"
+#include "NetWorkData.h"
+#include "NetworkManagerComponent.h"
 
 std::vector<Network_Message> Msg_Vec;
-
-UnitNet* NetworkManager::URES_01 = nullptr;
-UnitNet* NetworkManager::URES_02 = nullptr;
-
 NetworkManager::NetworkManager()
 {
 	Recv_Packet = nullptr;
-	my_NetWork = nullptr;
-
-	TestData = nullptr;
+	Send_Packet = nullptr;
+	DHNetWork	= nullptr;
+	mBuilder	= nullptr;
+	StartNework = false;
+	mClientNetworkManager = nullptr;
 }
 
 NetworkManager::~NetworkManager()
 {
-
-
+	//종료할때 사용한 페킷은 삭제주자
+	delete Send_Packet;
+	delete mBuilder;
+	
+	Send_Packet = nullptr;
+	mBuilder	= nullptr;
 }
 
 void NetworkManager::Initialize()
 {
 	// Recv 데이터 받아오기
 	std::vector<Network_Message> Msg_Vec;
+	
+	//네트워크 엔진 생성
+	DHNetWork = new DHNetWorkAPI();
+	DHNetWork->Initialize(DHNetWork_Name::DHNet, DHDEBUG_DETAIL);
 
-	S2C_Packet* Recv_Packet = nullptr;
+	//보낼페킷 데이터 생성
+	Send_Packet = new C2S_Packet();
 
-	my_NetWork = new DHNetWorkAPI();
-	my_NetWork->Initialize(DHNetWork_Name::DHNet, DHDEBUG_DETAIL);
-
-	while (!my_NetWork->Connect(CONNET_PORT, CONNECT_IP));
-
-
+	mBuilder = new flatbuffers::FlatBufferBuilder();
 }
 
 void NetworkManager::Update()
 {
+	//메인 루프 부분 데이터를 계속 받는다
 	NETWORK_RECV();
-	NETWORK_SAND();
 }
 
-void NetworkManager::Add_USER_OBJ(int SocketNumber)
+void NetworkManager::SetClientNetworkManager(NetworkManagerComponent* mManager)
 {
-	GameObject* obj = new GameObject();
-	obj->AddComponent<Transform>();
-	obj->AddComponent<MeshFilter>();
-	obj->AddComponent<UnitNet>();
+	//클라이언트쪽 매니저 등록
+	mClientNetworkManager = mManager;
+	mClientNetworkManager->_Builder = mBuilder;
 }
 
 void NetworkManager::NETWORK_RECV()
 {
+	if (StartNework == false) { return; }
+
 	///서버-->-->-->-->-->클라
-	if (my_NetWork->Recv(Msg_Vec))
+	if (DHNetWork->Recv(Msg_Vec))
 	{
 		for (auto& S2C_Msg : Msg_Vec)
 		{
+			//받은 데이터를 패킷으로 변경
 			Recv_Packet = static_cast<S2C_Packet*>(S2C_Msg.Packet);
-			switch (Recv_Packet->Packet_Type)
-			{
-				case S2C_PLAYER_MOVE_RES:
-				{
-					///플레이어가 움직였을때
-					GetPlayerData(Recv_Packet, S2C_Msg.Socket);
-					break;
-				}
-
-				case C2S_KEEP_ALIVE_CHECK_REQ:
-				{
-					///연결이 끊켰을때
-					break;
-				}
-			}
-
-			delete S2C_Msg.Packet;
-			S2C_Msg.Packet = nullptr;
+			
+			//데이터를 클라이언트 네트워크 매니저로 보내준다
+			uint8_t* Recv_Data_Ptr = (unsigned char*)Recv_Packet->Packet_Buffer;
+			mClientNetworkManager->RECV(Recv_Data_Ptr, Recv_Packet->Packet_Type);
 		}
-
 		Msg_Vec.clear();
 	}
 }
 
-void NetworkManager::NETWORK_SAND()
+void NetworkManager::NETWORK_SEND(flatbuffers::FlatBufferBuilder* Builder, int Type)
 {
-	///클라-->-->-->-->-->서버
+	if (StartNework == false) { return; }
 
+	///클라-->-->-->-->-->서버	
+	//채운 값으로 패킷을 만들고
+	Send_Packet->Packet_Type = Type;
+	Send_Packet->Packet_Size = Builder->GetSize();
 
-
-
-
-}
-
-bool NetworkManager::CHECK_USER(int SocketNumber)
-{
-	int Size = (int)UresList.size();
-	for (int i = 0; i < Size; i++)
+	int Size = (int)Builder->GetSize();
+	if (Size != 0)
 	{
-		if (UresList[i] == SocketNumber)
-		{
-			return true;
-		}
+		memcpy_s
+		(
+			Send_Packet->Packet_Buffer,
+			Builder->GetSize(),
+			Builder->GetBufferPointer(),
+			Builder->GetSize()
+		);
 	}
 
-	//없는 유저가 들어왔다면 유저 리스트에 넣는다
-	Add_USER_OBJ(SocketNumber);
-	UresList.push_back(SocketNumber);
+	//서버 쪽으로 보낸다
+	DHNetWork->Send(Send_Packet);
 
-	return false;
+	//초기화
+	Builder->Clear();
 }
 
-void NetworkManager::GetPlayerData(S2C_Packet* Packet, int SocketNumber)
+void NetworkManager::C2S_LOADING_COMPLETE_SEND()
 {
-	const uint8_t* Recv_Data_Ptr = (unsigned char*)Packet->Packet_Buffer;
-	const Eater::PlayerData::Player* Recv_Player_Data = Eater::PlayerData::GetPlayer(Recv_Data_Ptr);
-
-	if (CHECK_USER(SocketNumber) == true)
+	///연결 체크
+	while (!DHNetWork->Connect(CONNET_PORT, CONNECT_IP))
 	{
-		//기존 유저의 대한 데이터
-	}
-	else
-	{
-		//새로 들어온 유저의 데이터
+		DebugManager::Print("연결 준비중");
 	}
 
-}
+	DebugManager::Print("연결 완료");
 
-void NetworkManager::PushData(const Eater::PlayerData::Player* data)
-{
-	//체력
-	//float hp = data->hp();
-	////마나
-	//float Mana = data->mana();
-	//
-	////위치
-	//float X = data->pos()->x();
-	//float y = data->pos()->y();
-	//float z = data->pos()->z();
-	//
-	////이름
-	//std::string name = data->name()->c_str();
+	//네트워크를 사용한다
+	StartNework = true;
+
+	DebugManager::Print("로딩 완료");
+	C2S_Packet* Send_Packet = nullptr;
+	Send_Packet = new C2S_Packet();
+	Send_Packet->Packet_Type = C2S_LOADING_COMPLETE;
+	Send_Packet->Packet_Size = 0;
+
+	// 로딩이 끝났음을 알림.
+	DHNetWork->Send(Send_Packet);
 }

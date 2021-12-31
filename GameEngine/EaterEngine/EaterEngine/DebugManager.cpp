@@ -1,5 +1,7 @@
 #include "DebugManager.h"
 #include "KeyinputManager.h"
+
+
 HANDLE DebugManager::hConsole;
 bool DebugManager::DebugON = true;
 DebugManager::DebugManager()
@@ -86,8 +88,7 @@ void DebugManager::Line(std::string ObjType)
 
 void DebugManager::Update()
 {
-
-
+	
 }
 
 void DebugManager::Delete()

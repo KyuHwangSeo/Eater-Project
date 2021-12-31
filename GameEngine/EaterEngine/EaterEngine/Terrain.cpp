@@ -72,12 +72,12 @@ void Terrain::AddLayer(std::string diffuseName, std::string normalName)
 	m_MaterialLayer.push_back(newMaterial);
 }
 
-EATER_ENGINEDLL void Terrain::SetTextureTiling(float scale_x, float scale_y)
+void Terrain::SetTextureTiling(float scale_x, float scale_y)
 {
 	gameobject->OneMeshData->mTexTM = DirectX::SimpleMath::Matrix::CreateScale(scale_x, scale_y, 1.0f);
 }
 
-EATER_ENGINEDLL void Terrain::SetTextureTiling(float scale)
+void Terrain::SetTextureTiling(float scale)
 {
 	gameobject->OneMeshData->mTexTM = DirectX::SimpleMath::Matrix::CreateScale(scale, scale, 1.0f);
 }
@@ -96,4 +96,21 @@ void Terrain::SetColliderName(std::string _TerrainColliderName)
 void Terrain::SetMeshName(std::string _TerrainMeshName)
 {
 	TerrainMeshName = _TerrainMeshName;
+}
+
+void Terrain::Release()
+{
+	// Terrain Material 해제..
+	for (Material* mat : m_MaterialLayer)
+	{
+		mat->Release();
+
+		delete mat;
+	}
+	m_MaterialLayer.clear();
+
+	// Terrain Data 해제..
+	m_TerrainData->Material_List.clear();
+
+	delete m_TerrainData;
 }

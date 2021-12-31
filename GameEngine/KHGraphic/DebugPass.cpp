@@ -118,13 +118,33 @@ void DebugPass::Render(MeshData* mesh, GlobalData* global)
 		Matrix invView = global->mCamInvView;
 		Matrix viewproj = global->mCamVP;
 
+		Matrix converseTM = Matrix::Identity;
+		switch (particles->RenderType)
+		{
+		case PARTICLE_RENDER_OPTION::BILLBOARD:
+			converseTM = invView;
+			break;
+		case PARTICLE_RENDER_OPTION::VERTICAL_BILLBOARD:
+			converseTM = invView;
+			converseTM._21 = 0; converseTM._22 = 1; converseTM._23 = 0;
+			break;
+		case PARTICLE_RENDER_OPTION::HORIZONTAL_BILLBOARD:
+			converseTM = Matrix::CreateRotationX(3.1415926535f / 2.0f);
+			break;
+		case PARTICLE_RENDER_OPTION::MESH:
+			break;
+		default:
+			break;
+		}
+
+
 		for (int i = 0; i < particles->Particle_Count; i++)
 		{
 			OneParticle* particle = particles->m_Particles[i];
 
 			if (particle->Playing == false) continue;
 
-			Matrix particleWorld = *particle->World * invView;
+			Matrix particleWorld = *particle->World * converseTM;
 			particleWorld._41 = particle->World->_41;
 			particleWorld._42 = particle->World->_42;
 			particleWorld._43 = particle->World->_43;

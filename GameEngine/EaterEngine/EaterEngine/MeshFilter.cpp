@@ -164,7 +164,7 @@ void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelDa
 		///오브젝트를 새로 만들었으니 새롭게 컨퍼넌트를 생성
 		Tr		= OBJ->AddComponent<Transform>();
 		Filter	= OBJ->AddComponent<MeshFilter>();
-		//LinkHierarchy(Tr, parent);
+		gameobject->PushChildList(OBJ);
 	}
 	else
 	{
@@ -184,7 +184,7 @@ void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelDa
 			SF->PushBoneList(&BoneList);
 			SF->PushBone_OffsetList(&BoneOffsetList);
 			OBJ->OneMeshData->ObjType = OBJECT_TYPE::SKINNING;
-			Tr->Rotation = { 90,0,0 };
+			Tr->Rotation = { -90,0,90 };
 			break;
 		}
 		case MESH_TYPE::TERRAIN_MESH:

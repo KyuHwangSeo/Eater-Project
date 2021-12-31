@@ -121,9 +121,6 @@
     <Filter Include="소스 파일\Component\Network\UnitNet">
       <UniqueIdentifier>{fa75dc7a-30ce-4123-8b02-1c4a08f79f1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Component\Network\NetworkManager">
-      <UniqueIdentifier>{21382329-920c-44e6-a4eb-9eee869ac160}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Component\Network\NetworkData">
       <UniqueIdentifier>{f5e1efd4-37a1-44d8-9fb3-128eaf2a974e}</UniqueIdentifier>
     </Filter>
@@ -138,6 +135,9 @@
     </Filter>
     <Filter Include="소스 파일\Component\ParticleSystem\Particle">
       <UniqueIdentifier>{b91230dd-71d3-4603-8dfd-b7303e033f0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\Network\NetworkComponent">
+      <UniqueIdentifier>{c847a445-5725-492d-8c8f-b6fc2fdcf4fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -252,20 +252,29 @@
     <ClInclude Include="Export\UnitNet.h">
       <Filter>소스 파일\Component\Network\UnitNet</Filter>
     </ClInclude>
-    <ClInclude Include="NetWorkData.h">
-      <Filter>소스 파일\Component\Network\NetworkData</Filter>
-    </ClInclude>
-    <ClInclude Include="Export\NetworkManager.h">
-      <Filter>소스 파일\Manager\NetworkManager</Filter>
-    </ClInclude>
     <ClInclude Include="Export\ParticleSystem.h">
       <Filter>소스 파일\Component\ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Particle.h">
+    <ClInclude Include="Export\Particle.h">
       <Filter>소스 파일\Component\ParticleSystem\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="RandomNumber.h">
+    <ClInclude Include="Export\RandomNumber.h">
       <Filter>소스 파일\Component\ParticleSystem\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkManager.h">
+      <Filter>소스 파일\Manager\NetworkManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\NetworkComponent.h">
+      <Filter>소스 파일\Component\Network\NetworkComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\NetworkData\NetWorkData.h">
+      <Filter>소스 파일\Component\Network\NetworkData</Filter>
+    </ClInclude>
+    <ClInclude Include="Export\NetworkManagerComponent.h">
+      <Filter>소스 파일\Component\Network\NetworkComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\inc\TypeOptionHeader.h">
+      <Filter>소스 파일\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -367,6 +376,12 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>소스 파일\Component\ParticleSystem\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkComponent.cpp">
+      <Filter>소스 파일\Component\Network\NetworkComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkManagerComponent.cpp">
+      <Filter>소스 파일\Component\Network\NetworkComponent</Filter>
     </ClCompile>
     <ClCompile Include="RandomNumber.cpp">
       <Filter>소스 파일\Component\ParticleSystem\Random</Filter>

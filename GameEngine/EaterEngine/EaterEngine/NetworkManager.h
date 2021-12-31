@@ -9,10 +9,18 @@ namespace Eater
 	}
 }
 
-class S2C_Packet;
+namespace flatbuffers
+{
+	class FlatBufferBuilder;
+}
+
+
+struct S2C_Packet;
+struct C2S_Packet;
 class DHNetWorkAPI;
 class GameObject;
-class UnitNet;
+class NetworkManagerComponent;
+class NetworkComponent;
 
 class NetworkManager
 {
@@ -21,30 +29,22 @@ public:
 	~NetworkManager();
 	void Initialize();
 	void Update();
-	
-	///유저가 연결이 되었을떄
-	void Add_USER_OBJ(int SocketNumber);
+public:
+	///클라이언트와 소통할 매니저 받기
+	void SetClientNetworkManager(NetworkManagerComponent* mManager);
+public:
+	///Sand
+	void NETWORK_SEND(flatbuffers::FlatBufferBuilder* Builder, int Type);
+	void C2S_LOADING_COMPLETE_SEND();
 private:
-	///데이터 받기
+	///Recv
 	void NETWORK_RECV();
-	///데이터 보내기
-	void NETWORK_SAND();
-	//유저 체크
-	bool CHECK_USER(int SocketNumber);
-
-
-	//플레이어 데이터를 받는다
-	void GetPlayerData(S2C_Packet* data,int SocketNumber);
-
-	void PushData(const Eater::PlayerData::Player* data);
-
-	S2C_Packet*		Recv_Packet;
-	DHNetWorkAPI*	my_NetWork;
-
-	Eater::PlayerData::Player* TestData;
 private:
-	std::vector<int> UresList;
-
-	static UnitNet* URES_01;
-	static UnitNet* URES_02;
+	S2C_Packet*		Recv_Packet;	//받을 데이터
+	C2S_Packet*		Send_Packet;	//보내줄 데이터
+	DHNetWorkAPI*	DHNetWork;		//통신을 위한 네트워크 Engine
+private:
+	NetworkManagerComponent* mClientNetworkManager;	//클라에서 받은 네트워크 매니저
+	flatbuffers::FlatBufferBuilder* mBuilder;		//클라쪽으로 보내줄 데이터
+	bool StartNework;
 };

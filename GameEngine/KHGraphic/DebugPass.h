@@ -33,5 +33,7 @@ private:
 	BufferData* m_CircleBuffer;
 
 	BufferData* m_DebugBuffer;
+
+
 };
 

@@ -23,6 +23,7 @@
 #include "DeferredPass.h"
 #include "LightPass.h"
 #include "SSAOPass.h"
+#include "AlphaPass.h"
 #include "DebugPass.h"
 #include "VertexDefine.h"
 
@@ -37,12 +38,14 @@ RenderManager::RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* fa
 	m_Light = new LightPass();
 	m_Shadow = new ShadowPass();
 	m_SSAO = new SSAOPass();
+	m_Alpha = new AlphaPass();
 	m_Debug = new DebugPass();
 
 	m_RenderPassList.push_back(m_Deferred);
 	m_RenderPassList.push_back(m_Light);
 	m_RenderPassList.push_back(m_Shadow);
 	m_RenderPassList.push_back(m_SSAO);
+	m_RenderPassList.push_back(m_Alpha);
 	m_RenderPassList.push_back(m_Debug);
 
 	m_RenderOption = RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO;
@@ -167,7 +170,6 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 			case OBJECT_TYPE::BASE:
 			case OBJECT_TYPE::SKINNING:
 			case OBJECT_TYPE::TERRAIN:
-			case OBJECT_TYPE::PARTICLE:
 			case OBJECT_TYPE::BONE:
 				m_Debug->Render(mesh, global);
 			break;
@@ -214,6 +216,35 @@ void RenderManager::SSAORender(GlobalData* global)
 	}
 }
 
+void RenderManager::AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global)
+{
+	m_Alpha->BeginRender();
+
+	while (meshList->size() != 0)
+	{
+		MeshData* mesh = meshList->front();
+
+		switch (mesh->ObjType)
+		{
+		case OBJECT_TYPE::PARTICLE:
+			m_Alpha->RenderUpdate(mesh, global);
+			break;
+		}
+
+		if (m_RenderOption & RENDER_DEBUG)
+		{
+			switch (mesh->ObjType)
+			{
+			case OBJECT_TYPE::PARTICLE:
+				m_Debug->Render(mesh, global);
+				break;
+			}
+		}
+
+		meshList->pop();
+	}
+}
+
 void RenderManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
 
@@ -227,6 +258,9 @@ void RenderManager::LightRender(GlobalData* global)
 
 void RenderManager::EndRender()
 {
+	// Graphic State Reset..
+	RenderPassBase::GraphicReset();
+
 	// 최종 출력..
 	m_SwapChain->Present(0, 0);
 }

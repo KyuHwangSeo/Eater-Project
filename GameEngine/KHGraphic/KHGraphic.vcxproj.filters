@@ -184,6 +184,9 @@
     <Filter Include="소스 파일\Shader\HLSL\Debug">
       <UniqueIdentifier>{2c6e4a0a-fc2e-4eb1-8ee4-021dd2a2137d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\RendererPass\Alpha">
+      <UniqueIdentifier>{4ebbe0d4-e8b4-49b0-83c5-aa4de10fa241}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -348,6 +351,9 @@
     <ClInclude Include="DebugPass.h">
       <Filter>소스 파일\RendererPass\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="AlphaPass.h">
+      <Filter>소스 파일\RendererPass\Alpha</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Graphic.cpp">
@@ -430,6 +436,9 @@
     </ClCompile>
     <ClCompile Include="DebugPass.cpp">
       <Filter>소스 파일\RendererPass\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaPass.cpp">
+      <Filter>소스 파일\RendererPass\Alpha</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
