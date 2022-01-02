@@ -95,3 +95,5 @@
  - Resource는 Bulk Memory로 할당하고 그 안에서 쪼개서 사용해야 메모리를 적게 사용할 수 있음
 
 # CUDA Programming
+
+
