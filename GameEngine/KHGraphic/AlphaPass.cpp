@@ -46,6 +46,8 @@ void AlphaPass::Start(int width, int height)
 	m_ParticlePS = g_Shader->GetShader("Particle_PS");
 
 	// Graphic State ¼³Á¤..
+	m_BackBuffer = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
 	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
 	m_NoDepthStencilState = g_Resource->GetDepthStencilState<DSS_NoDepth>()->Get();
 	m_AlphaBlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
@@ -64,9 +66,10 @@ void AlphaPass::Release()
 
 void AlphaPass::BeginRender()
 {
+	g_Context->OMSetRenderTargets(1, &m_BackBuffer, m_DepthStencilView);
 	g_Context->RSSetState(m_NoCullRasterizerState);
 	g_Context->OMSetBlendState(m_AlphaBlendState, 0, 0xffffffff);
-	g_Context->OMSetDepthStencilState(m_NoDepthStencilState, 0);
+	//g_Context->OMSetDepthStencilState(m_NoDepthStencilState, 0);
 }
 
 void AlphaPass::BufferUpdate(MeshData* mesh)

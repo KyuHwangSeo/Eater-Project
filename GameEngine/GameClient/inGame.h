@@ -16,14 +16,8 @@ public:
 public:
 	GameObject* testobj;
 	GameObject* ParticleObj;
-	GameObject* ParticleObj_1;
-	GameObject* ParticleObj_2;
-	GameObject* ParticleObj_3;
 
 	std::vector<ParticleSystem*> ParticleList;
-	std::vector<ParticleSystem*> ParticleList_1;
-	std::vector<ParticleSystem*> ParticleList_2;
-	std::vector<ParticleSystem*> ParticleList_3;
 
 	ParticleSystem* particles;
 };

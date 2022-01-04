@@ -51,7 +51,7 @@ void D3D11Graphic::Initialize(HWND hwnd, int screenWidth, int screenHeight)
 	swapChainDesc.SampleDesc.Quality = 0;
 	swapChainDesc.Windowed = true;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
+	
 	// 추가 플래그 설정 안 함..
 	swapChainDesc.Flags = createDeviceFlags;
 

@@ -95,7 +95,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int SizeY = HIWORD(lParam);
 		OnReSize(SizeX, SizeY);
 		break;
-
 	}
 	case WM_DESTROY:
 		PostQuitMessage(0);

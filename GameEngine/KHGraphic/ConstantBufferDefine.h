@@ -115,7 +115,7 @@ struct CB_SsaoOption : public cbSsaoOption
 	float    gOcclusionRadius = 0.1f;
 	float    gOcclusionFadeStart = 0.01f;
 	float    gOcclusionFadeEnd = 1.0f;
-	float    gSurfaceEpsilon = 0.1f;
+	float    gSurfaceEpsilon = 0.000001f;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////

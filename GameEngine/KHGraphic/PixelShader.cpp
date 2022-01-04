@@ -58,7 +58,7 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 
 			D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 			pReflector->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
-
+			
 			// 해당 Constant Buffer 생성..
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
@@ -106,6 +106,9 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 			// Sampler 추가..
 			m_SamplerList.insert(std::make_pair(hash_key, new SamplerBuffer(bindDesc.Name, sampler_register_slot)));
 		}
+			break;
+		case D3D_SIT_UAV_RWSTRUCTURED:
+
 			break;
 		default:
 			break;

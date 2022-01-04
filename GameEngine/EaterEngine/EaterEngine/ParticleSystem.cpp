@@ -19,20 +19,20 @@ ParticleSystem::ParticleSystem()
 
 	m_ParticleData = new ParticleData();
 
-	m_RandomLifeTime			= new RandomFloat();
-	m_RandomStartColor			= new RandomVector4();
-	m_RandomStartForce			= new RandomVector3();
-	m_RandomStartPosition		= new RandomVector3();
-	m_RandomStartSize			= new RandomFloat();
-	m_RandomStartRotation		= new RandomFloat();
+	m_RandomLifeTime = new RandomFloat();
+	m_RandomStartColor = new RandomVector4();
+	m_RandomStartForce = new RandomVector3();
+	m_RandomStartPosition = new RandomVector3();
+	m_RandomStartSize = new RandomFloat();
+	m_RandomStartRotation = new RandomFloat();
 
-	m_RandomLifeTimeForce		= new RandomVector3();
-	m_RandomLifeTimeRotation	= new RandomFloat();
+	m_RandomLifeTimeForce = new RandomVector3();
+	m_RandomLifeTimeRotation = new RandomFloat();
 }
 
 ParticleSystem::~ParticleSystem()
 {
-
+	Release();
 }
 
 void ParticleSystem::Awake()
@@ -107,6 +107,11 @@ void ParticleSystem::Update()
 		}
 		else
 		{
+			// 후 실행 파티클 실행..
+			StartNextParticle();
+
+			// 초기화..
+			m_Playing = false;
 			m_TickTime = 0.0f;
 			m_NowPlayTime = 0.0f;
 		}
@@ -141,9 +146,16 @@ void ParticleSystem::SetRateOverTime(float count)
 
 void ParticleSystem::SetShapeRadius(float radius)
 {
-	m_ParticleData->Area_Radius = radius;
+	m_ParticleData->Area_Radius = Vector3(radius);
 
 	m_RandomStartPosition->SetRange(Vector3(-radius, -radius, -radius), Vector3(radius, radius, radius));
+}
+
+void ParticleSystem::SetShapeRadius(float x, float y, float z)
+{
+	m_ParticleData->Area_Radius = Vector3(x, y, z);
+
+	m_RandomStartPosition->SetRange(Vector3(-x, -y, -z), Vector3(x, y, z));
 }
 
 void ParticleSystem::SetStartForce(Vector3 force)
@@ -176,14 +188,14 @@ void ParticleSystem::SetStartLifeTime(float minTime, float maxTime)
 	m_RandomLifeTime->SetRange(minTime, maxTime);
 }
 
-void ParticleSystem::SetStartSize(float size)
+void ParticleSystem::SetStartScale(float scale)
 {
-	m_RandomStartSize->SetRange(size, size);
+	m_RandomStartSize->SetRange(scale, scale);
 }
 
-void ParticleSystem::SetStartSize(float minSize, float maxSize)
+void ParticleSystem::SetStartScale(float minScale, float maxScale)
 {
-	m_RandomStartSize->SetRange(minSize, maxSize);
+	m_RandomStartSize->SetRange(minScale, maxScale);
 }
 
 void ParticleSystem::SetStartRotation(float rot)
@@ -194,6 +206,11 @@ void ParticleSystem::SetStartRotation(float rot)
 void ParticleSystem::SetStartRotation(float minRot, float maxRot)
 {
 	m_RandomStartRotation->SetRange(minRot, maxRot);
+}
+
+void ParticleSystem::SetLifeTimeForce(Vector3 force)
+{
+	m_RandomLifeTimeForce->SetRange(force, force);
 }
 
 void ParticleSystem::SetLifeTimeForce(Vector3 minForce, Vector3 maxForce)
@@ -209,19 +226,19 @@ void ParticleSystem::SetLifeTimeColor(Vector4 minColor, Vector4 maxColor, PARTIC
 	m_SystemDesc->LifeTimeMaxColor = maxColor / 255.0f;
 }
 
-void ParticleSystem::SetLifeTimeSize(float minSize, float maxSize, PARTICLE_LIFETIME_OPTION option)
+void ParticleSystem::SetLifeTimeScale(float minScale, float maxScale, PARTICLE_LIFETIME_OPTION option)
 {
-	m_SystemDesc->SizeType = option;
+	m_SystemDesc->ScaleType = option;
 
-	if (minSize <= maxSize)
+	if (minScale <= maxScale)
 	{
-		m_SystemDesc->LifeTimeMinScale = minSize;
-		m_SystemDesc->LifeTimeMaxScale = maxSize;
+		m_SystemDesc->LifeTimeMinScale = minScale;
+		m_SystemDesc->LifeTimeMaxScale = maxScale;
 	}
 	else
 	{
-		m_SystemDesc->LifeTimeMinScale = maxSize;
-		m_SystemDesc->LifeTimeMaxScale = minSize;
+		m_SystemDesc->LifeTimeMinScale = maxScale;
+		m_SystemDesc->LifeTimeMaxScale = minScale;
 	}
 }
 
@@ -268,11 +285,17 @@ void ParticleSystem::Play(bool loop)
 	if (m_DelayTime == 0.0f) StartPlay();
 }
 
-void ParticleSystem::Reset()
+void ParticleSystem::Stop()
 {
 	m_Playing = false;
-	m_NowPlayTime = 0.0f;
 	m_TickTime = 0.0f;
+	m_NowPlayTime = 0.0f;
+	m_NowDelayTime = 0.0f;
+}
+
+void ParticleSystem::SetNextParticle(ParticleSystem* particle)
+{
+	m_NextParticles.push_back(particle);
 }
 
 void ParticleSystem::StartPlay()
@@ -353,10 +376,19 @@ void ParticleSystem::CreateParticle()
 	m_TickTime = 0.0f;
 }
 
+void ParticleSystem::StartNextParticle()
+{
+	for (ParticleSystem* particle : m_NextParticles)
+	{
+		particle->Play();
+	}
+}
+
 void ParticleSystem::Release()
 {
 	// Particle List 삭제..
 	m_Particles.clear();
+	m_NextParticles.clear();
 
 	// Particle Descriptor 해제..
 	delete m_SystemDesc;

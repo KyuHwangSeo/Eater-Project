@@ -9,7 +9,7 @@ cbuffer cbSsaoOption : register(b1)
 	
 	// Coordinates given in view space.
     float gOcclusionRadius = 0.1f;
-    float gOcclusionFadeStart = 0.01f;
+    float gOcclusionFadeStart = 0.1f;
     float gOcclusionFadeEnd = 1.0f;
     float gSurfaceEpsilon = 0.1f;
 }
@@ -84,9 +84,6 @@ float4 SSAO_PS(VertexIn pin) : SV_Target
 	//
     float3 p = (pz / pin.ToFarPlane.z) * pin.ToFarPlane;
 
-	// Extract random vector and map from [0,1] --> [-1, +1].
-    float3 randVec = 2.0f * gRandomVecMap.SampleLevel(gSamWrapLinerPoint, 4.0f * pin.Tex, 0.0f).rgb - 1.0f;
-
     float occlusionSum = 0.0f;
 
 	// Sample neighboring points about p in the hemisphere oriented by n.
@@ -96,17 +93,16 @@ float4 SSAO_PS(VertexIn pin) : SV_Target
 		// Are offset vectors are fixed and uniformly distributed (so that our offset vectors
 		// do not clump in the same direction).  If we reflect them about a random vector
 		// then we get a random uniform distribution of offset vectors.
-        float3 offset = reflect(gOffsetVectors[i].xyz, randVec);
-
-		// Flip offset vector if it is behind the plane defined by (p, n).
-        float flip = sign(dot(offset, n));
+        //float3 offset = reflect(gOffsetVectors[i].xyz, randVec);
+        float3 offset = reflect(gOffsetVectors[i].xyz, n);
 
 		// Sample a point near p within the occlusion radius.
-        float3 q = p + flip * gOcclusionRadius * offset;
+        //float3 q = p + gOcclusionRadius * offset;
+        float3 q = p + offset;
 
 		// Project q and generate projective tex-coords.  
         float4 projQ = mul(gViewToTexSpace, float4(q, 1.0f));
-        projQ /= projQ.w;
+        projQ.xy /= projQ.w;
 
 		// Find the nearest depth value along the ray from the eye to q (this is not
 		// the depth of q, as q is just an arbitrary point near p and might
@@ -133,7 +129,7 @@ float4 SSAO_PS(VertexIn pin) : SV_Target
 		// 
 
         float distZ = p.z - r.z;
-        float dp = max(dot(n, normalize(r - p)), 0.0f);
+        float dp = saturate(dot(n, normalize(r - p)));
         float occlusion = dp * OcclusionFunction(distZ);
 
         occlusionSum += occlusion;
@@ -142,7 +138,9 @@ float4 SSAO_PS(VertexIn pin) : SV_Target
     occlusionSum /= 14;
 
     float access = 1.0f - occlusionSum;
-
+	
 	// Sharpen the contrast of the SSAO map to make the SSAO affect more dramatic.
-    return saturate(pow(access, 4.0f));
+    //access = saturate(pow(access, 2.0f));
+	
+    return float4(access.xxx, 1.0f);
 }

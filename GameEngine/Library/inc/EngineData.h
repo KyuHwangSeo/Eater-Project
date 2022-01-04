@@ -70,7 +70,7 @@ public:
 	PARTICLE_RENDER_OPTION RenderType;
 
 	int Particle_Count;
-	float Area_Radius;
+	Vector3 Area_Radius;
 
 	std::vector<OneParticle*> m_Particles;
 };

@@ -184,7 +184,8 @@ void MeshFilter::CreateChild_Mesh(LoadMeshData* data, Transform* parent, ModelDa
 			SF->PushBoneList(&BoneList);
 			SF->PushBone_OffsetList(&BoneOffsetList);
 			OBJ->OneMeshData->ObjType = OBJECT_TYPE::SKINNING;
-			Tr->Rotation = { -90,0,90 };
+			//Tr->Rotation = { -90,0,90 };
+			Tr->Rotation = { 90,0,0 };
 			break;
 		}
 		case MESH_TYPE::TERRAIN_MESH:

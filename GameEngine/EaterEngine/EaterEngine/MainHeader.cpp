@@ -2,10 +2,11 @@
 #include "GameEngine.h"
 #include "PhysManager.h"
 #include "PhysData.h"
-GameEngine* gGameEngine;
+
+GameEngine* gGameEngine = nullptr;
 
 ///엔진 관련
- void EngineInitialize(HWND _g_hWnd)
+void EngineInitialize(HWND _g_hWnd)
 {
 	gGameEngine = new GameEngine();
 	gGameEngine->Initialize(_g_hWnd);
@@ -17,12 +18,12 @@ void EndEngine()
 	//gDebugManger->Delete();
 }
 
- void UpdateEngine()
+void UpdateEngine()
 {
 	gGameEngine->Update();
 }
 
- void OnReSize(int X, int Y)
+void OnReSize(int X, int Y)
 {
 	//처음 시작 상태가 아닐때
 	if (gGameEngine != nullptr)

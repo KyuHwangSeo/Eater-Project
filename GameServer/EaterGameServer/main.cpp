@@ -4,8 +4,5 @@ int main()
 {
 	GameManager m_GameManager;
 
-	while (true)
-	{
-		Sleep(0);
-	}
+	m_GameManager.GameLogic();
 }

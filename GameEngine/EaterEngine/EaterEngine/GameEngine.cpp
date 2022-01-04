@@ -158,11 +158,14 @@ void GameEngine::OnResize(int Change_Width, int Change_Height)
 {
 	// 창 최소화시는 제외
 	if (Change_Width == 0 || Change_Height == 0) return;
+	if (mGraphicManager == nullptr) return;
 
 	//윈도우 크기 재설정
 	WinSizeWidth	= Change_Width;
 	WinSizeHeight	= Change_Height;
-		
+
+	DebugManager::Print(std::to_string(Change_Width).c_str());
+	DebugManager::Print(std::to_string(Change_Height).c_str());
 
 	//카메라의 변화할 사이즈를 넣어준다
 	Camera::g_MainCam->SetSize(Change_Width, Change_Height);
@@ -363,9 +366,9 @@ void GameEngine::RenderOptionCheck()
 	//	// Shadow On/Off
 	//	m_RenderOption |= RENDER_SHADOW;
 	//}
-	//if (mKeyManager->GetKeyUp(VK_F4))
-	//{
-	//	// SSAO On/Off
-	//	m_RenderOption |= RENDER_SSAO;
-	//}
+	if (mKeyManager->GetKeyUp(VK_F4))
+	{
+		// SSAO On/Off
+		m_RenderOption |= RENDER_SSAO;
+	}
 }

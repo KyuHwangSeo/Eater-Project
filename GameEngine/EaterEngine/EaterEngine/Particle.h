@@ -3,7 +3,8 @@
 // Particle Render Data
 typedef struct PARTICLE_SHARE_DESC
 {
-	PARTICLE_LIFETIME_OPTION SizeType;
+	UINT AniType;
+	PARTICLE_LIFETIME_OPTION ScaleType;
 	PARTICLE_LIFETIME_OPTION ColorType;
 
 	int Total_Frame = 1;
@@ -59,6 +60,8 @@ private:
 	OneParticle* m_ParticleData;
 	PARTICLE_SHARE_DESC* m_SystemDesc;
 
+	UINT m_AniType;
+
 	bool m_Playing;
 
 	int m_Index;
@@ -69,35 +72,44 @@ private:
 	int m_WidthCount;
 	int m_HeightCount;
 
-	int m_TotalFrame;
-	int m_TurningFrame;
-	int m_NowFrame;
-	int m_AddFrame;
+	int m_NextFrame;
 
-	float m_OneFrame;
-	float m_NowTime;
+	int m_TexTotalFrame;
+	int m_TexNowFrame;
+	int m_TexFrame;
 
-	float m_MaxScale;
-	float m_MinScale;
+	int m_AniTotalFrame;
+	int m_AniPrevFrame;
+	int m_AniNextFrame;
+	int m_AniFrame;
+
+	int m_ColorTurningFrame;
+	int m_ScaleTurningFrame;
+
+	float m_TexOneFrame;
+	float m_TexNowTime;
+	float m_AniOneFrame;
+	float m_AniNowTime;
+
+	float m_StartScale;
 	float m_OneScale;
 	float m_PrevScale;
 	float m_NowScale;
 	float m_NextScale;
 
+	float m_StartRot;
 	float m_OneRot;
 	float m_PrevRot;
 	float m_NowRot;
 	float m_NextRot;
 
-	UINT m_AniType;
-
+	DirectX::SimpleMath::Vector3 m_StartPos;
 	DirectX::SimpleMath::Vector3 m_OnePos;
 	DirectX::SimpleMath::Vector3 m_PrevPos;
 	DirectX::SimpleMath::Vector3 m_NowPos;
 	DirectX::SimpleMath::Vector3 m_NextPos;
 
-	DirectX::SimpleMath::Vector4 m_MinColor;
-	DirectX::SimpleMath::Vector4 m_MaxColor;
+	DirectX::SimpleMath::Vector4 m_StartColor;
 	DirectX::SimpleMath::Vector4 m_OneColor;
 	DirectX::SimpleMath::Vector4 m_PrevColor;
 	DirectX::SimpleMath::Vector4 m_NowColor;

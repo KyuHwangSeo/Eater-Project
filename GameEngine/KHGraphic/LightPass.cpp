@@ -56,7 +56,7 @@ void LightPass::Start(int width, int height)
 	m_ScreenViewport = g_Resource->GetViewPort<VP_FullScreen>()->Get();
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Light>()->GetDSV()->Get();
 
 	// Multi RenderTarget 설정..
 	m_AlbedoRT = g_Resource->GetRenderTarget<RT_Deffered_Albedo>();
@@ -85,7 +85,7 @@ void LightPass::OnResize(int width, int height)
 	m_BackBufferRTV = m_BackBuffer->GetRTV()->Get();
 	
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
+	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Light>()->GetDSV()->Get();
 	
 	// ShaderResource 재설정..
 	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());

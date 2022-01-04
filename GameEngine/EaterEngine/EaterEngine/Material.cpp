@@ -18,7 +18,7 @@ Material::Material()
 
 Material::~Material()
 {
-
+	Release();
 }
 
 void Material::SetMeshData(MeshData* meshData)

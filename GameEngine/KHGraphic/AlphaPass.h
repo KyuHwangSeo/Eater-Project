@@ -20,6 +20,8 @@ private:
 	VertexShader* m_ParticleVS;
 	PixelShader* m_ParticlePS;
 
+	ID3D11RenderTargetView* m_BackBuffer;
+	ID3D11DepthStencilView* m_DepthStencilView;
 	ID3D11DepthStencilState* m_DepthStencilState;
 	ID3D11DepthStencilState* m_NoDepthStencilState;
 	ID3D11RasterizerState* m_NoCullRasterizerState;

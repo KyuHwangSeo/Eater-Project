@@ -31,6 +31,7 @@ public:
 	EATER_ENGINEDLL void SetDelayTime(float delay);										// 파티클 실행 전 지연 시간
 	EATER_ENGINEDLL void SetRateOverTime(float count);									// 1초에 출력할 파티클 개수
 	EATER_ENGINEDLL void SetShapeRadius(float radius);									// 파티클 랜덤 생성 범위
+	EATER_ENGINEDLL void SetShapeRadius(float x, float y, float z);						// 파티클 랜덤 생성 범위
 
 	EATER_ENGINEDLL void SetStartForce(Vector3 force);									// 파티클 고정 속력
 	EATER_ENGINEDLL void SetStartForce(Vector3 minForce, Vector3 maxForce);				// 파티클 랜덤 속력
@@ -38,25 +39,27 @@ public:
 	EATER_ENGINEDLL void SetStartColor(Vector4 minColor, Vector4 maxColor);				// 파티클 랜덤 색상
 	EATER_ENGINEDLL void SetStartLifeTime(float time);									// 파티클 고정 유지시간
 	EATER_ENGINEDLL void SetStartLifeTime(float minTime, float maxTime);				// 파티클 랜덤 유지시간
-	EATER_ENGINEDLL void SetStartSize(float size);										// 파티클 고정 크기
-	EATER_ENGINEDLL void SetStartSize(float minSize, float maxSize);					// 파티클 랜덤 크기
+	EATER_ENGINEDLL void SetStartScale(float scale);										// 파티클 고정 크기
+	EATER_ENGINEDLL void SetStartScale(float minScale, float maxScale);					// 파티클 랜덤 크기
 	EATER_ENGINEDLL void SetStartRotation(float rot);									// 파티클 고정 회전
 	EATER_ENGINEDLL void SetStartRotation(float minRot, float maxRot);					// 파티클 랜덤 회전
 
+	EATER_ENGINEDLL void SetLifeTimeForce(Vector3 force);								// 파티클 생성 후 고정 속력 범위
 	EATER_ENGINEDLL void SetLifeTimeForce(Vector3 minForce, Vector3 maxForce);			// 파티클 생성 후 랜덤 속력 범위
 	EATER_ENGINEDLL void SetLifeTimeColor(Vector4 minColor, Vector4 maxColor, PARTICLE_LIFETIME_OPTION option);			// 파티클 생성 후 색상 범위
-	EATER_ENGINEDLL void SetLifeTimeSize(float minSize, float maxSize, PARTICLE_LIFETIME_OPTION option);	// 파티클 생성 후 크기 범위
+	EATER_ENGINEDLL void SetLifeTimeScale(float minScale, float maxScale, PARTICLE_LIFETIME_OPTION option);				// 파티클 생성 후 크기 범위
 	EATER_ENGINEDLL void SetLifeTimeRotation(float rot);								// 파티클 생성 후 고정 회전 범위
 	EATER_ENGINEDLL void SetLifeTimeRotation(float minRot, float maxRot);				// 파티클 생성 후 랜덤 회전 범위
 
 	EATER_ENGINEDLL void SetTextureTiling(int count_x, int count_y);					// 파티클 텍스쳐 나눌 개수
-	EATER_ENGINEDLL void SetPlayTime(float playTime, bool loop = false);					// 파티클 시스템 플레이 시간 및 반복 여부
+	EATER_ENGINEDLL void SetPlayTime(float playTime, bool loop = false);				// 파티클 시스템 플레이 시간 및 반복 여부
 	
 	EATER_ENGINEDLL void SetDiffuseName(std::string diffuseName);
 
-	EATER_ENGINEDLL void Play(bool loop = false);														// 파티클 시스템 플레이 시간 및 반복 여부
+	EATER_ENGINEDLL void Play(bool loop = false);										// 파티클 시스템 플레이 시간 및 반복 여부
+	EATER_ENGINEDLL void Stop();														// 파티클 시스템 중지
 
-	void Reset();
+	EATER_ENGINEDLL void SetNextParticle(ParticleSystem* particle);
 
 public:
 	void Release();
@@ -67,6 +70,7 @@ private:
 	void AddParticle();
 
 	void CreateParticle();
+	void StartNextParticle();
 
 private:
 	MeshFilter* m_MeshFilter;
@@ -77,6 +81,7 @@ private:
 	PARTICLE_DESC* m_ParticleDesc;
 
 	std::vector<Particle*> m_Particles;
+	std::vector<ParticleSystem*> m_NextParticles;
 
 	std::string m_ParticleMeshName;
 	std::string m_DiffuseName;

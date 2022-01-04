@@ -17,6 +17,9 @@
     <Filter Include="Timer">
       <UniqueIdentifier>{aa5e7d31-5163-4ff5-99ca-c3d42b663455}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameProtocol">
+      <UniqueIdentifier>{3a719d39-ba84-4c12-89f4-dd7c26a83331}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,14 +42,17 @@
     <ClInclude Include="GameManager.h">
       <Filter>GameManager</Filter>
     </ClInclude>
-    <ClInclude Include="GameServerLobbyPacketDefine.h">
-      <Filter>GS-LobbyPacket</Filter>
-    </ClInclude>
-    <ClInclude Include="GameClientGameServerPacketDefine.h">
-      <Filter>GS-LobbyPacket</Filter>
-    </ClInclude>
     <ClInclude Include="DHTimer.h">
       <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImportLibrary\Inc\GameClientGameServerPacketDefine.h">
+      <Filter>GS-LobbyPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImportLibrary\Inc\GameServerLobbyPacketDefine.h">
+      <Filter>GS-LobbyPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImportLibrary\Inc\GameProtocol\PlayerData_generated.h">
+      <Filter>GameProtocol</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

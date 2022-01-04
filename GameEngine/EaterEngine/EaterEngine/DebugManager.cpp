@@ -15,16 +15,19 @@ DebugManager::~DebugManager()
 
 void DebugManager::Initialize(KeyinputManager* mkeyManager, bool mDebugOn)
 {
+#ifdef _DEBUG
 	DebugON = mDebugOn;
 	if (DebugON == true)
 	{
 		AllocConsole();
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
+#endif
 }
 
 void DebugManager::Print(MSG_TYPE type, std::string typeData, std::string msg, bool Error = false)
 {
+#ifdef _DEBUG
 	if (DebugON == false) { return; }
 
 	std::string MSG;
@@ -65,17 +68,21 @@ void DebugManager::Print(MSG_TYPE type, std::string typeData, std::string msg, b
 
 	DWORD dwByte(0);
 	WriteFile(hConsole, MSG.c_str(), (DWORD)MSG.size(), &dwByte, NULL);
+#endif
 }
 
 void DebugManager::Print(std::string str)
 {
+#ifdef _DEBUG
 	str += "\n";
 	DWORD dwByte(0);
 	WriteFile(hConsole, str.c_str(), str.size(), &dwByte, NULL);
+#endif
 }
 
 void DebugManager::Line(std::string ObjType)
 {
+#ifdef _DEBUG
 	DWORD dwByte(0);
 	std::string temp01 = "-----------------------------------------";
 	std::string temp02 = ObjType;
@@ -84,6 +91,7 @@ void DebugManager::Line(std::string ObjType)
 	temp01 += temp02;
 	temp01 += temp03;
 	WriteFile(hConsole, temp01.c_str(), (DWORD)temp01.size(), &dwByte, NULL);
+#endif
 }
 
 void DebugManager::Update()

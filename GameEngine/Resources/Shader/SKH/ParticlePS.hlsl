@@ -20,10 +20,10 @@ float4 Particle_PS(ParticleVertexIn pin) : SV_TARGET
     
     clip(pout.a - 0.05f);
     
-    //pout.a *= 1.5f;
-    pout = 2.0f * pout * gColor;
+    // 두 픽셀을 곱하고 감마(2.2f)를 곱해준다..
+    pout = pout * gColor * 2.2f;
     
-    pout.a = saturate(pout.a);
+    pout = saturate(pout);
     
     return pout;
 }

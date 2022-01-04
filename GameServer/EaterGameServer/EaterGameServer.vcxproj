@@ -136,6 +136,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)ImportLibrary\Inc</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,10 +156,11 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ImportLibrary\Inc\GameClientGameServerPacketDefine.h" />
+    <ClInclude Include="..\ImportLibrary\Inc\GameProtocol\PlayerData_generated.h" />
+    <ClInclude Include="..\ImportLibrary\Inc\GameServerLobbyPacketDefine.h" />
     <ClInclude Include="DHTimer.h" />
-    <ClInclude Include="GameClientGameServerPacketDefine.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GameServerLobbyPacketDefine.h" />
     <ClInclude Include="LobbyManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

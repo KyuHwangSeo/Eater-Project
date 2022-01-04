@@ -43,7 +43,7 @@ void Player::SetUp()
 
 	Tr->Position = { 0,0,0 };
 	Tr->Scale = { 10 ,10, 10 };
-	Tr->Rotation = { 0 ,0,0 };
+	Tr->Rotation = { 0 , 0, 0 };
 }
 void Player::Start()
 {

@@ -11,6 +11,7 @@ Texture2D gDepthMap	: register(t0);
 Texture2D gInputMap	: register(t1);
 
 SamplerState gSamClampLinearPoint : register(s0);
+SamplerState gSamBorderLinearPoint : register(s1);
 
 struct VertexIn
 {
@@ -35,7 +36,7 @@ float4 SSAOBlur_PS(VertexIn pin) : SV_Target
     float4 color = gWeights[gBlurRadius] * gInputMap.SampleLevel(gSamClampLinearPoint, pin.Tex, 0.0);
     float totalWeight = gWeights[gBlurRadius];
 
-    float4 centerNormalDepth = gDepthMap.SampleLevel(gSamClampLinearPoint, pin.Tex, 0.0f);
+    float4 centerNormalDepth = gDepthMap.SampleLevel(gSamBorderLinearPoint, pin.Tex, 0.0f);
 
 	for (float i = -gBlurRadius; i <= gBlurRadius; ++i)
 	{
@@ -45,7 +46,7 @@ float4 SSAOBlur_PS(VertexIn pin) : SV_Target
 
 		float2 tex = pin.Tex + i * texOffset;
 
-        float4 neighborNormalDepth = gDepthMap.SampleLevel(gSamClampLinearPoint, tex, 0.0f);
+        float4 neighborNormalDepth = gDepthMap.SampleLevel(gSamBorderLinearPoint, tex, 0.0f);
 
 		//
 		// If the center value and neighbor values differ too much (either in 
@@ -53,8 +54,8 @@ float4 SSAOBlur_PS(VertexIn pin) : SV_Target
 		// We discard such samples from the blur.
 		//
 
-		if (dot(neighborNormalDepth.xyz, centerNormalDepth.xyz) >= 0.5f &&
-			abs(neighborNormalDepth.a - centerNormalDepth.a) <= 0.01f)
+		if (dot(neighborNormalDepth.xyz, centerNormalDepth.xyz) >= 0.8f &&
+			abs(neighborNormalDepth.a - centerNormalDepth.a) <= 0.2f)
 		{
 			float weight = gWeights[i + gBlurRadius];
 

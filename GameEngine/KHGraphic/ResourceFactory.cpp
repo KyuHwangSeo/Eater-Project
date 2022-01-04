@@ -870,6 +870,7 @@ void GraphicResourceFactory::CreateDepthStencilViews(int width, int height)
 
 	// Defalt DepthStencilView »ý¼º..
 	CreateDepthStencil<DS_Defalt>(&texDesc, nullptr, &descDSV);
+	CreateDepthStencil<DS_Light>(&texDesc, nullptr, &descDSV);
 
 	RESET_COM(tex2D);
 }

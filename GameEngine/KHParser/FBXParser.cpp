@@ -1012,7 +1012,7 @@ void FBXParser::SetTransform(fbxsdk::FbxNode* node)
 	DirectX::SimpleMath::Matrix world = ConvertMatrix(worldpos);
 	DirectX::SimpleMath::Matrix local = ConvertMatrix(localpos);
 
-	//if (m_OneMesh->m_TopNode)
+	//if (m_ParsingMode & ROTATE_AXIS)
 	//{
 	//	const auto yaw = -90.0f * DirectX::XM_PI / 180.0f;
 	//
@@ -1184,7 +1184,7 @@ void FBXParser::CreateVertex(fbxsdk::FbxMesh* mesh, std::vector<BoneWeights>& bo
 
 		// 해당 Vertex의 Position..
 		fbxPos = mesh->GetControlPointAt(vertexIndex);
-
+		
 		// 변환한 Vertex의 Position..
 		nowVertex->m_Pos = ConvertVector3(fbxPos);
 

@@ -97,9 +97,9 @@ void DebugPass::Render(MeshData* mesh, GlobalData* global)
 	{
 		ParticleData* particles = mesh->Particle_Data;
 
-		float radius = particles->Area_Radius;
+		Vector3 radius = particles->Area_Radius;
 		Matrix world = mesh->mWorld;
-		world._11 = radius; world._22 = radius; world._33 = radius;
+		world._11 = radius.x; world._22 = radius.y; world._33 = radius.z;
 
 		object.gWorldViewProj = world * global->mCamVP;
 
