@@ -40,3 +40,18 @@
 
 #define SAFE_DELETE(x) { if(x != nullptr) {delete x; x = nullptr;} }
 #define RESET_COM(x) { if(x != nullptr) {x.Reset();} }
+
+#if defined(_DEBUG) || defined(DEBUG)
+inline void GRAPHIC_DEBUG_NAME(ID3D11Device * pObj, const CHAR * pstrName)
+{
+	if (pObj)
+		pObj->SetPrivateData(WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName);
+}
+inline void GRAPHIC_DEBUG_NAME(ID3D11DeviceChild * pObj, const CHAR * pstrName)
+{
+	if (pObj)
+		pObj->SetPrivateData(WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName);
+}
+#else
+#define GRAPHIC_DEBUG_NAME( pObj, pstrName )
+#endif

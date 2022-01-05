@@ -1,8 +1,9 @@
+#include <windows.h>
 #include "ShaderResourceHashTable.h"
 #include "ConstantBufferDefine.h"
-#include "SamplerBufferDefine.h"
-#include "ShaderResourceBufferDefine.h"
-#include "UnorderedAccessBufferDefine.h"
+#include "SamplerStateDefine.h"
+#include "ShaderResourceViewDefine.h"
+#include "UnorderedAccessViewDefine.h"
 #include "DepthStencilViewDefine.h"
 #include "DepthStencilStateDefine.h"
 #include "RasterizerStateDefine.h"
@@ -20,33 +21,33 @@ ShaderResourceHashTable* ShaderResourceHashTable::Get()
 	return instance;
 }
 
-bool ShaderResourceHashTable::Push(eResourceType type, std::string name, Hash_Code hash_code)
+bool ShaderResourceHashTable::Push(RESOURCE_TYPE type, std::string name, Hash_Code hash_code)
 {
 	// 해당 Resource Type에 따른 Hash Code 등록..
 	switch (type)
 	{
-	case eResourceType::CB:
+	case RESOURCE_TYPE::CB:
 	{
 		if (DEFINE_MASK & DEFINE_CB)
 			return false;
 		else
 			return CheckHashCode(g_CBuffer_HashTable, name, hash_code);
 	}
-	case eResourceType::SS:
+	case RESOURCE_TYPE::SS:
 	{
 		if (DEFINE_MASK & DEFINE_SS)
 			return false;
 		else
 			return CheckHashCode(g_Sampler_HashTable, name, hash_code);
 	}
-	case eResourceType::SRV:
+	case RESOURCE_TYPE::SRV:
 	{
 		if (DEFINE_MASK & DEFINE_SRV)
 			return false;
 		else
 			return CheckHashCode(g_SRV_HashTable, name, hash_code);
 	}
-	case eResourceType::UAV:
+	case RESOURCE_TYPE::UAV:
 	{
 		if (DEFINE_MASK & DEFINE_UAV)
 			return false;
@@ -60,14 +61,14 @@ bool ShaderResourceHashTable::Push(eResourceType type, std::string name, Hash_Co
 	return true;
 }
 
-size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBufName)
+size_t ShaderResourceHashTable::FindHashCode(RESOURCE_TYPE type, std::string cBufName)
 {
 	std::unordered_map<std::string, Hash_Code>::iterator cHash;
 	
 	// Resource Type에 따른 Hash Code 반환..
 	switch (type)
 	{
-	case eResourceType::CB:
+	case RESOURCE_TYPE::CB:
 	{
 		cHash = g_CBuffer_HashTable.find(cBufName);
 	
@@ -77,7 +78,7 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 		}
 	}
 	break;
-	case eResourceType::SS:
+	case RESOURCE_TYPE::SS:
 	{
 		cHash = g_Sampler_HashTable.find(cBufName);
 	
@@ -87,7 +88,7 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 		}
 	}
 	break;
-	case eResourceType::SRV:
+	case RESOURCE_TYPE::SRV:
 	{
 		cHash = g_SRV_HashTable.find(cBufName);
 	
@@ -97,7 +98,7 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 		}
 	}
 	break;
-	case eResourceType::UAV:
+	case RESOURCE_TYPE::UAV:
 	{
 		cHash = g_UAV_HashTable.find(cBufName);
 	
@@ -114,7 +115,7 @@ size_t ShaderResourceHashTable::FindHashCode(eResourceType type, std::string cBu
 	return cHash->second;
 }
 
-bool ShaderResourceHashTable::DefineCheck(Define_Mask nowDefine)
+bool ShaderResourceHashTable::DefineCheck(UINT nowDefine)
 {
 	DEFINE_MASK |= nowDefine;
 

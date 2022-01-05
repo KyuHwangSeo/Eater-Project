@@ -6,18 +6,18 @@
 /* 
 # HashClass Create Define
 * ClassName		-> Struct Name
-* ResourceType	-> Struct Resource Type (eResourceType)
+* ResourceType	-> Struct Resource Type (RESOURCE_TYPE)
 */
 #define CREATE_HASH_CLASS(ClassName, ResourceType)	\
 struct ClassName : public HashClass<ClassName>	\
 {	\
-	static eResourceType GetType() { return ResourceType; }	\
+	static RESOURCE_TYPE GetType() { return ResourceType; }	\
 };
 
 /* 
 # Resource Push HashTable Define
 * ClassName		-> Struct Name
-* ResourceType	-> Struct Resource Type (eResourceType)
+* ResourceType	-> Struct Resource Type (RESOURCE_TYPE)
 */
 #define RESOURCE_PUSH(ClassName, ResourceType) static bool push_##ClassName = ShaderResourceHashTable::Get()->Push(ResourceType, #ClassName, typeid(ClassName).hash_code());
 

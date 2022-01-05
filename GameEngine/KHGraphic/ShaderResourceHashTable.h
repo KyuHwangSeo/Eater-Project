@@ -7,7 +7,6 @@
 #define DEFINE_SRV				0x00000100
 #define DEFINE_UAV				0x00001000
 
-typedef unsigned int	Define_Mask;
 typedef size_t			Hash_Code;
 
 ///
@@ -40,12 +39,12 @@ public:
 
 public:
 	// Hash Code Push 함수..
-	bool Push(eResourceType type, std::string name, Hash_Code hash_code);
+	bool Push(RESOURCE_TYPE type, std::string name, Hash_Code hash_code);
 
 	// 해당 Hash Code 반환 함수..
-	size_t FindHashCode(eResourceType type, std::string cBufName);
+	size_t FindHashCode(RESOURCE_TYPE type, std::string cBufName);
 
-	bool DefineCheck(Define_Mask nowDefine);
+	bool DefineCheck(UINT nowDefine);
 
 	// Hash Table Reset 함수..
 	void Destroy();
@@ -54,5 +53,5 @@ private:
 	// Hash Code Push Check 함수..
 	bool CheckHashCode(std::unordered_map<std::string, Hash_Code>& table, std::string name, Hash_Code hash_code);
 
-	Define_Mask DEFINE_MASK = 0x00000000;
+	UINT DEFINE_MASK = 0x00000000;
 };

@@ -186,8 +186,9 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
   <ItemGroup>
     <ClInclude Include="AlphaPass.h" />
     <ClInclude Include="BlendStateDefine.h" />
-    <ClInclude Include="BufferData.h" />
-    <ClInclude Include="BufferDataDefine.h" />
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="DrawBuffer.h" />
+    <ClInclude Include="DrawBufferDefine.h" />
     <ClInclude Include="DebugPass.h" />
     <ClInclude Include="DepthStencilStateDefine.h" />
     <ClInclude Include="DepthStencilViewDefine.h" />
@@ -205,9 +206,12 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     <ClInclude Include="ForwardPass.h" />
     <ClInclude Include="LightPass.h" />
     <ClInclude Include="MathDefine.h" />
+    <ClInclude Include="OITPass.h" />
     <ClInclude Include="RasterizerStateDefine.h" />
     <ClInclude Include="RenderTargetDefine.h" />
     <ClInclude Include="ResourceBase.h" />
+    <ClInclude Include="RenderBuffer.h" />
+    <ClInclude Include="RenderBufferDefine.h" />
     <ClInclude Include="ResourceFactoryBase.h" />
     <ClInclude Include="RenderManagerBase.h" />
     <ClInclude Include="ResourceManagerBase.h" />
@@ -223,26 +227,27 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="ResourceFactory.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="SamplerBufferDefine.h" />
+    <ClInclude Include="SamplerStateDefine.h" />
     <ClInclude Include="ShaderBase.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShaderManagerBase.h" />
     <ClInclude Include="ShaderResourceBase.h" />
     <ClInclude Include="ShaderResourceHashTable.h" />
-    <ClInclude Include="ShaderResourceBufferDefine.h" />
+    <ClInclude Include="ShaderResourceViewDefine.h" />
     <ClInclude Include="ShaderTypes.h" />
     <ClInclude Include="ShadowPass.h" />
     <ClInclude Include="SSAOPass.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="ToolKitDefine.h" />
-    <ClInclude Include="UnorderedAccessBufferDefine.h" />
+    <ClInclude Include="UnorderedAccessViewDefine.h" />
     <ClInclude Include="VertexDefine.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="ViewPortDefine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlphaPass.cpp" />
-    <ClCompile Include="BufferData.cpp" />
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="DrawBuffer.cpp" />
     <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="D3D11Graphic.cpp" />
     <ClCompile Include="DebugPass.cpp" />
@@ -255,10 +260,12 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
     <ClCompile Include="KHGraphic.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="LightPass.cpp" />
+    <ClCompile Include="OITPass.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RenderPassBase.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="ResourceFactory.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
@@ -344,6 +351,18 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Resources\Shader\SKH\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Resources\Shader\SKH\%(Filename).cso</ObjectFileOutput>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Render_PS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Render_VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Particle_PS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
@@ -437,6 +456,12 @@ copy/Y "$(ProjectDir)Export\*.h"   "$(SolutionDir)Library\inc\Graphic"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\Shader\SKH\OIT.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

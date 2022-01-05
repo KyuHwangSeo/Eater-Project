@@ -37,7 +37,10 @@ void ComputeShader::LoadShader(std::string fileName, const char* entry_point, co
 
 	// Create Compute Shader..
 	HR(g_Device->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &m_CS));
-
+	
+	// Debug Name..
+	GRAPHIC_DEBUG_NAME(m_CS.Get(), entry_point);
+	
 	// Create Reflector..
 	D3DReflect(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&pReflector);
 
@@ -64,8 +67,11 @@ void ComputeShader::LoadShader(std::string fileName, const char* entry_point, co
 			// 해당 Constant Buffer 생성..
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
+			// Debug Name..
+			GRAPHIC_DEBUG_NAME(cBuffer, bindDesc.Name);
+
 			// Constant Buffer Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::CB, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::CB, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
@@ -88,7 +94,7 @@ void ComputeShader::LoadShader(std::string fileName, const char* entry_point, co
 		case D3D_SIT_TEXTURE:
 		{
 			// SRV Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SRV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SRV, bindDesc.Name);
 
 			// SRV Register Slot Number..
 			srv_register_slot = bindDesc.BindPoint;
@@ -100,7 +106,7 @@ void ComputeShader::LoadShader(std::string fileName, const char* entry_point, co
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SS, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SS, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;
@@ -112,7 +118,7 @@ void ComputeShader::LoadShader(std::string fileName, const char* entry_point, co
 		case D3D_SIT_UAV_RWTYPED:
 		{
 			// UAV Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::UAV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::UAV, bindDesc.Name);
 
 			// UAV Register Slot Number..
 			uav_register_slot = bindDesc.BindPoint;

@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include "EnumDefine.h"
 #include "ShaderResourceBase.h"
 
 /// Shader Reflection MSDN
@@ -7,13 +8,6 @@
 /// Shader Desc MSDN
 /// https://docs.microsoft.com/ko-kr/windows/win32/api/d3d11shader/ns-d3d11shader-d3d11_shader_desc?f1url=%3FappId%3DDev16IDEF1%26l%3DKO-KR%26k%3Dk(D3D11SHADER%252FD3D11_SHADER_DESC);k(D3D11_SHADER_DESC);k(DevLang-C%252B%252B);k(TargetOS-Windows)%26rd%3Dtrue
 
-// Shader Type Enum Class..
-typedef enum SHADER_TYPE
-{
-	VERTEX_SHADER,
-	PIXEL_SHADER,
-	COMPUTE_SHADER
-}SHADER_TYPE;
 
 /// <summary>
 /// IShader Class

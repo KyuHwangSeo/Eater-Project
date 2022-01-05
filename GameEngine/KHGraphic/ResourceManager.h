@@ -21,8 +21,12 @@ public:
 	void AddMainRenderTarget(RenderTarget* rtv) override;
 
 public:
-	RenderTarget* GetRenderTarget(Hash_Code hash_code) override;
 	DepthStencil* GetDepthStencil(Hash_Code hash_code) override;
+	RenderTarget* GetRenderTarget(Hash_Code hash_code) override;
+	RenderBuffer* GetRenderBuffer(Hash_Code hash_code) override;
+	DrawBuffer* GetDrawBuffer(Hash_Code hash_code) override;
+
+public:
 	RenderTargetView* GetRenderTargetView(Hash_Code hash_code) override;
 	DepthStencilView* GetDepthStencilView(Hash_Code hash_code) override;
 	ShaderResourceView* GetShaderResourceView(Hash_Code hash_code) override;
@@ -33,7 +37,6 @@ public:
 	RasterizerState* GetRasterizerState(Hash_Code hash_code) override;
 	DepthStencilState* GetDepthStencilState(Hash_Code hash_code) override;
 	ViewPort* GetViewPort(Hash_Code hash_code) override;
-	BufferData* GetBuffer(Hash_Code hash_code) override;
 
 public:
 	void AddResource(Hash_Code hash_code, ResourceBase* resource) override;
@@ -46,12 +49,19 @@ private:
 	IShaderManager* m_ShaderManager;
 
 	/////////////////////////////////////////////////////////////////////////////////////////
-	// Graphic View Resource List
+	// Graphic Struct Resource List
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	RenderTarget* m_BackBuffer;
-	std::unordered_map<Hash_Code, RenderTarget*> m_RenderTargetList;
 	std::unordered_map<Hash_Code, DepthStencil*> m_DepthStencilList;
+	std::unordered_map<Hash_Code, RenderTarget*> m_RenderTargetList;
+	std::unordered_map<Hash_Code, RenderBuffer*> m_RenderBufferList;
+	std::unordered_map<Hash_Code, DrawBuffer*> m_DrawBufferList;
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	// Graphic View Resource List
+	/////////////////////////////////////////////////////////////////////////////////////////
+
 	std::unordered_map<Hash_Code, RenderTargetView*> m_RenderTargetViewList;
 	std::unordered_map<Hash_Code, DepthStencilView*> m_DepthStencilViewList;
 	std::unordered_map<Hash_Code, ShaderResourceView*> m_ShaderResourceViewList;
@@ -67,10 +77,4 @@ private:
 	std::unordered_map<Hash_Code, BlendState*> m_BlendStateList;
 	std::unordered_map<Hash_Code, SamplerState*> m_SamplerStateList;
 	std::unordered_map<Hash_Code, ViewPort*> m_ViewPortList;
-
-	/////////////////////////////////////////////////////////////////////////////////////////
-	// Buffer Resource List
-	/////////////////////////////////////////////////////////////////////////////////////////
-	
-	std::unordered_map<Hash_Code, BufferData*> m_BufferList;
 };

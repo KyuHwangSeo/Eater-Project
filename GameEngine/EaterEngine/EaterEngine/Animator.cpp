@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "TimeManager.h"
 #include "KeyinputManager.h"
+#include "DebugManager.h"
 
 Animator::Animator()
 {
@@ -90,26 +91,29 @@ float Animator::GetOnePlayTime(float mPlayTime, int EndFrameCount)
 
 void Animator::AnimeFrameIndex()
 {
-	if (mStop == false) 
+	if (mStop == false)
 	{
 		mTime += (mTimeManager->DeltaTime() * PlayTime);
-		if (mTime >= NowAnimationData->m_TicksPerFrame)
+
+		int NextIndex = (int)(mTime / NowAnimationData->m_TicksPerFrame);
+
+		if (NextIndex != AnimeIndex)
 		{
-			mTime = 0;
-			AnimeIndex++;
+			AnimeIndex = NextIndex;
 		}
 	}
-
 
 	if (AnimeIndex >= NowAnimationData->m_EndFrame)
 	{
 		if (mLoop == false)
 		{
-			AnimeIndex = NowAnimationData->m_EndFrame-1;
+			AnimeIndex = NowAnimationData->m_EndFrame;
+			mTime = 0.0f;
 		}
 		else
 		{
 			AnimeIndex = 0;
+			mTime = 0.0f;
 		}
 	}
 }

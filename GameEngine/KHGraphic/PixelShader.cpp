@@ -37,6 +37,9 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 	// Create Pixel Shader..
 	HR(g_Device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &m_PS));
 
+	// Debug Name..
+	GRAPHIC_DEBUG_NAME(m_PS.Get(), entry_point);
+
 	// Create Reflector..
 	D3DReflect(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&pReflector);
 
@@ -52,6 +55,11 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 
 		if (SUCCEEDED(cBuffer->GetDesc(&bufferDesc)))
 		{
+			if (bufferDesc.Type != D3D11_CT_CBUFFER)
+			{
+				continue;
+			}
+
 			ID3D11Buffer* cBuffer = nullptr;
 			CD3D11_BUFFER_DESC cBufferDesc(bufferDesc.Size, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 			//CD3D11_BUFFER_DESC cBufferDesc(bufferDesc.Size, D3D11_BIND_CONSTANT_BUFFER);
@@ -62,8 +70,11 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 			// 해당 Constant Buffer 생성..
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
+			// Debug Name..
+			GRAPHIC_DEBUG_NAME(cBuffer, bindDesc.Name);
+
 			// Constant Buffer Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::CB, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::CB, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
@@ -79,14 +90,14 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 	{
 		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 		pReflector->GetResourceBindingDesc(rsindex, &bindDesc);
-
+		
 		// Resource Type에 맞는 해당 List에 삽입..
 		switch (bindDesc.Type)
 		{
 		case D3D_SIT_TEXTURE:
 		{
 			// SRV Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SRV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SRV, bindDesc.Name);
 
 			// SRV Register Slot Number..
 			srv_register_slot = bindDesc.BindPoint;
@@ -98,7 +109,7 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SS, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SS, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;
@@ -107,8 +118,46 @@ void PixelShader::LoadShader(std::string fileName, const char* entry_point, cons
 			m_SamplerList.insert(std::make_pair(hash_key, new SamplerBuffer(bindDesc.Name, sampler_register_slot)));
 		}
 			break;
-		case D3D_SIT_UAV_RWSTRUCTURED:
+		case D3D_SIT_BYTEADDRESS:
+		{
+			if (bindDesc.Dimension == D3D_SRV_DIMENSION_BUFFER)
+			{
+				// SRV Hash Code..
+				hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SRV, bindDesc.Name);
 
+				// SRV Register Slot Number..
+				srv_register_slot = bindDesc.BindPoint;
+
+				// SRV 추가..
+				m_SRVList.insert(std::make_pair(hash_key, new ShaderResourceBuffer(bindDesc.Name, srv_register_slot)));
+			}
+		}
+			break;
+		case D3D_SIT_STRUCTURED:
+		{
+			if (bindDesc.Dimension == D3D_SRV_DIMENSION_BUFFER)
+			{
+				// SRV Hash Code..
+				hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SRV, bindDesc.Name);
+
+				// SRV Register Slot Number..
+				srv_register_slot = bindDesc.BindPoint;
+
+				// SRV 추가..
+				m_SRVList.insert(std::make_pair(hash_key, new ShaderResourceBuffer(bindDesc.Name, srv_register_slot)));
+			}
+		}
+			break;
+		case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
+		{
+		}
+			break;
+		case D3D_SIT_UAV_RWBYTEADDRESS:
+		{
+			int a = 0;
+		}
+			break;
+		case D3D_SIT_UAV_RWSTRUCTURED:
 			break;
 		default:
 			break;

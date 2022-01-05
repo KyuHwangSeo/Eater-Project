@@ -37,12 +37,15 @@ void VertexShader::LoadShader(std::string fileName, const char* entry_point, con
 	// Create Vertex Shader..
 	HR(g_Device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &m_VS));
 
+	// Debug Name..
+	GRAPHIC_DEBUG_NAME(m_VS.Get(), entry_point);
+
 	// Create Reflector..
 	D3DReflect(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&pReflector);
 
 	D3D11_SHADER_DESC shaderDesc;
 	pReflector->GetDesc(&shaderDesc);
-
+	
 	/// Input Layout Reflection
 	// Shader Input Layout..
 	std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
@@ -85,13 +88,16 @@ void VertexShader::LoadShader(std::string fileName, const char* entry_point, con
 			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
 			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
-
+		
 		// 현 InputLayout 데이터 삽입..
 		inputLayoutDesc.push_back(elementDesc);
 	}
 	
 	// Shader InputLayout 생성..
 	HR(g_Device->CreateInputLayout(&inputLayoutDesc[0], (UINT)inputLayoutDesc.size(), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &m_InputLayout));
+	
+	// Debug Name..
+	GRAPHIC_DEBUG_NAME(m_InputLayout.Get(), (std::string(entry_point) + "_InputLayout").c_str());
 
 	/// ConstantBuffer Reflection
 	// Vertex Shader ConstantBuffer..
@@ -114,8 +120,11 @@ void VertexShader::LoadShader(std::string fileName, const char* entry_point, con
 			// 해당 Constant Buffer 생성..
 			HR(g_Device->CreateBuffer(&cBufferDesc, nullptr, &cBuffer));
 
+			// Debug Name..
+			GRAPHIC_DEBUG_NAME(cBuffer, bindDesc.Name);
+
 			// Constant Buffer Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::CB, bufferDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::CB, bufferDesc.Name);
 
 			// Constant Buffer Register Slot Number..
 			cbuffer_register_slot = bindDesc.BindPoint;
@@ -138,7 +147,7 @@ void VertexShader::LoadShader(std::string fileName, const char* entry_point, con
 		case D3D_SIT_TEXTURE:
 		{
 			// SRV Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SRV, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SRV, bindDesc.Name);
 
 			// SRV Register Slot Number..
 			srv_register_slot = bindDesc.BindPoint;
@@ -150,7 +159,7 @@ void VertexShader::LoadShader(std::string fileName, const char* entry_point, con
 		case D3D_SIT_SAMPLER:
 		{
 			// Sampler Hash Code..
-			hash_key = resource_table->FindHashCode(eResourceType::SS, bindDesc.Name);
+			hash_key = resource_table->FindHashCode(RESOURCE_TYPE::SS, bindDesc.Name);
 
 			// Sampler Register Slot Number..
 			sampler_register_slot = bindDesc.BindPoint;

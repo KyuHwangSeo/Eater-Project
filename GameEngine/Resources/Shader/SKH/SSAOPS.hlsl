@@ -15,10 +15,8 @@ cbuffer cbSsaoOption : register(b1)
 }
 
 Texture2D gDepthMap		: register(t0);
-Texture2D gRandomVecMap	: register(t1);
 
 SamplerState gSamBorderLinearPoint : register(s0);
-SamplerState gSamWrapLinerPoint : register(s1);
 
 struct VertexIn
 {
@@ -140,7 +138,7 @@ float4 SSAO_PS(VertexIn pin) : SV_Target
     float access = 1.0f - occlusionSum;
 	
 	// Sharpen the contrast of the SSAO map to make the SSAO affect more dramatic.
-    //access = saturate(pow(access, 2.0f));
+    access = saturate(pow(access, 2.0f));
 	
     return float4(access.xxx, 1.0f);
 }

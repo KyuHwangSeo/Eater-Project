@@ -158,8 +158,6 @@ void Particle::Update()
 					m_PrevColor = m_StartColor + m_OneColor * (m_AniTotalFrame - m_AniPrevFrame);
 					m_NextColor = m_StartColor + m_OneColor * (m_AniTotalFrame - m_AniNextFrame);
 				}
-
-				DebugManager::Print(std::to_string(m_NextColor.x) + " " + std::to_string(m_NextColor.y) + " " + std::to_string(m_NextColor.z) + " " + std::to_string(m_NextColor.w));
 			}
 		}
 

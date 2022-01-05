@@ -5,11 +5,12 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
+#include "Buffer.h"
+#include "DrawBuffer.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "VertexDefine.h"
-#include "BufferData.h"
 #include "EngineData.h"
 #include "LightPass.h"
 
@@ -18,12 +19,12 @@
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
-#include "ShaderResourceBufferDefine.h"
+#include "ShaderResourceViewDefine.h"
 #include "DepthStencilStateDefine.h"
 #include "DepthStencilViewDefine.h"
 #include "RenderTargetDefine.h"
 #include "ViewPortDefine.h"
-#include "BufferDataDefine.h"
+#include "DrawBufferDefine.h"
 
 LightPass::LightPass()
 {
@@ -43,20 +44,21 @@ void LightPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_LightVS = g_Shader->GetShader("Light_VS");
-	m_LightPS = g_Shader->GetShader("Light_PS_Option0");
+	//m_LightPS = g_Shader->GetShader("Light_PS_Option0");
+	m_LightPS = g_Shader->GetShader("Light_PS_Option4");
 
 	// Buffer 설정..
-	m_ScreenBuffer = g_Resource->GetBuffer<BD_Quad>();
+	m_QuadBD = g_Resource->GetDrawBuffer<DB_Quad>();
 
 	// BackBuffer 설정..
-	m_BackBuffer = g_Resource->GetMainRenderTarget();
-	m_BackBufferRTV = m_BackBuffer->GetRTV()->Get();
+	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
+	m_OitRTV = g_Resource->GetRenderTarget<RT_OIT>()->GetRTV()->Get();
 
 	// ViewPort 설정..
-	m_ScreenViewport = g_Resource->GetViewPort<VP_FullScreen>()->Get();
+	m_ScreenVP = g_Resource->GetViewPort<VP_FullScreen>()->Get();
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Light>()->GetDSV()->Get();
+	m_LightDSV = g_Resource->GetDepthStencilView<DS_Light>()->Get();
 
 	// Multi RenderTarget 설정..
 	m_AlbedoRT = g_Resource->GetRenderTarget<RT_Deffered_Albedo>();
@@ -82,10 +84,11 @@ void LightPass::Start(int width, int height)
 void LightPass::OnResize(int width, int height)
 {
 	// BackBuffer RenderTargetView 재설정..
-	m_BackBufferRTV = m_BackBuffer->GetRTV()->Get();
-	
+	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
+	m_OitRTV = g_Resource->GetRenderTarget<RT_OIT>()->GetRTV()->Get();
+
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Light>()->GetDSV()->Get();
+	m_LightDSV = g_Resource->GetDepthStencilView<DS_Light>()->Get();
 	
 	// ShaderResource 재설정..
 	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
@@ -115,7 +118,7 @@ void LightPass::SetOption(const char* shaderName)
 
 void LightPass::Reset()
 {
-	g_Context->ClearRenderTargetView(m_BackBufferRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+	g_Context->ClearRenderTargetView(m_MainRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
 
 	// ShaderResource 재설정..
 	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
@@ -133,10 +136,12 @@ void LightPass::Reset()
 
 void LightPass::BeginRender()
 {
-	g_Context->OMSetRenderTargets(1, &m_BackBufferRTV, m_DepthStencilView);
-	g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	g_Context->ClearRenderTargetView(m_BackBufferRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->RSSetViewports(1, m_ScreenViewport);
+	//g_Context->OMSetRenderTargets(1, &m_MainRTV, m_LightDSV);
+	g_Context->OMSetRenderTargets(1, &m_OitRTV, m_LightDSV);
+	g_Context->ClearDepthStencilView(m_LightDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//g_Context->ClearRenderTargetView(m_MainRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+	g_Context->ClearRenderTargetView(m_OitRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+	g_Context->RSSetViewports(1, m_ScreenVP);
 }
 
 void LightPass::Render(GlobalData* global)
@@ -177,9 +182,9 @@ void LightPass::Render(GlobalData* global)
 	m_LightPS->Update();
 
 	g_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_Context->IASetVertexBuffers(0, 1, m_ScreenBuffer->VB.GetAddressOf(), &m_ScreenBuffer->Stride, &m_ScreenBuffer->Offset);
-	g_Context->IASetIndexBuffer(m_ScreenBuffer->IB.Get(), DXGI_FORMAT_R32_UINT, 0);
+	g_Context->IASetVertexBuffers(0, 1, m_QuadBD->VB->GetAddress(), &m_QuadBD->Stride, &m_QuadBD->Offset);
+	g_Context->IASetIndexBuffer(m_QuadBD->IB->Get(), DXGI_FORMAT_R32_UINT, 0);
 
-	g_Context->DrawIndexed(m_ScreenBuffer->IndexCount, 0, 0);
-	g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	g_Context->DrawIndexed(m_QuadBD->IndexCount, 0, 0);
+	g_Context->ClearDepthStencilView(m_LightDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

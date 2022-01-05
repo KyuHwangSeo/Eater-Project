@@ -10,7 +10,6 @@ SamplerState gSamWrapLinear : register(s1);
 struct ParticleVertexIn
 {
     float4 PosH : SV_POSITION;
-    float4 PosW : POSITIONW;
     float2 Tex : TEXCOORD;
 };
 
@@ -18,7 +17,7 @@ float4 Particle_PS(ParticleVertexIn pin) : SV_TARGET
 {
     float4 pout = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
     
-    clip(pout.a - 0.05f);
+    clip(pout.a - 0.1f);
     
     // 두 픽셀을 곱하고 감마(2.2f)를 곱해준다..
     pout = pout * gColor * 2.2f;

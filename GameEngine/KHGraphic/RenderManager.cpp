@@ -2,7 +2,8 @@
 #include "D3D11GraphicBase.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
-#include "BufferData.h"
+#include "Buffer.h"
+#include "DrawBuffer.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "ShaderManagerBase.h"
@@ -24,6 +25,7 @@
 #include "LightPass.h"
 #include "SSAOPass.h"
 #include "AlphaPass.h"
+#include "OITPass.h"
 #include "DebugPass.h"
 #include "VertexDefine.h"
 
@@ -39,6 +41,7 @@ RenderManager::RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* fa
 	m_Shadow = new ShadowPass();
 	m_SSAO = new SSAOPass();
 	m_Alpha = new AlphaPass();
+	m_OIT = new OITPass();
 	m_Debug = new DebugPass();
 
 	m_RenderPassList.push_back(m_Deferred);
@@ -46,9 +49,11 @@ RenderManager::RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* fa
 	m_RenderPassList.push_back(m_Shadow);
 	m_RenderPassList.push_back(m_SSAO);
 	m_RenderPassList.push_back(m_Alpha);
+	m_RenderPassList.push_back(m_OIT);
 	m_RenderPassList.push_back(m_Debug);
 
-	m_RenderOption = RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO;
+	//m_RenderOption = RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO;
+	m_RenderOption = RENDER_GAMMA_CORRECTION;
 }
 
 RenderManager::~RenderManager()
@@ -207,18 +212,19 @@ void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* gl
 
 void RenderManager::SSAORender(GlobalData* global)
 {
-	if (m_RenderOption & RENDER_SSAO)
-	{
-		m_SSAO->BeginRender();
-
-		m_SSAO->Render(global);
-		m_SSAO->BlurRender(4);
-	}
+	//if (m_RenderOption & RENDER_SSAO)
+	//{
+	//	m_SSAO->BeginRender();
+	//
+	//	m_SSAO->Render(global);
+	//	m_SSAO->BlurRender(4);
+	//}
 }
 
 void RenderManager::AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
-	m_Alpha->BeginRender();
+	//m_Alpha->BeginRender();
+	m_OIT->BeginRender();
 
 	while (meshList->size() != 0)
 	{
@@ -231,18 +237,20 @@ void RenderManager::AlphaRender(std::queue<MeshData*>* meshList, GlobalData* glo
 			break;
 		}
 
-		if (m_RenderOption & RENDER_DEBUG)
-		{
-			switch (mesh->ObjType)
-			{
-			case OBJECT_TYPE::PARTICLE:
-				m_Debug->Render(mesh, global);
-				break;
-			}
-		}
+		//if (m_RenderOption & RENDER_DEBUG)
+		//{
+		//	switch (mesh->ObjType)
+		//	{
+		//	case OBJECT_TYPE::PARTICLE:
+		//		m_Debug->Render(mesh, global);
+		//		break;
+		//	}
+		//}
 
 		meshList->pop();
 	}
+
+	m_OIT->RenderUpdate();
 }
 
 void RenderManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -269,6 +277,11 @@ void RenderManager::OnResize(int width, int height)
 {
 	m_Width = width;
 	m_Height = height;
+
+	for (RenderPassBase* renderPass : m_RenderPassList)
+	{
+		renderPass->SetResize(width, height);
+	}
 
 	RenderPassBase::g_Resource->OnResize(width, height);
 

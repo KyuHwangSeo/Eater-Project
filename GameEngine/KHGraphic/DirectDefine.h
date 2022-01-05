@@ -9,5 +9,7 @@
 #include <wrl.h>
 using namespace Microsoft::WRL;
 
+#include <assert.h>
+
 #include "MacroDefine.h"
 

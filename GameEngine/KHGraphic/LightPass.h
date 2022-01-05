@@ -20,27 +20,20 @@ public:
 	void Render(GlobalData* global);
 
 private:
-	BufferData* m_ScreenBuffer;
+	DrawBuffer* m_QuadBD;
 
 	VertexShader* m_LightVS;
 	PixelShader* m_LightPS; 
 	
-	DepthStencil* m_DSV;
-	ID3D11DepthStencilView* m_DepthStencilView;
-
-	ID3D11DepthStencilState* m_DepthStencilState;
-	ID3D11RasterizerState* m_RasterizerState;
-	ID3D11BlendState* m_BlendState;
-
-	RenderTarget* m_BackBuffer;
-
-	ID3D11RenderTargetView* m_BackBufferRTV;
+	ID3D11DepthStencilView* m_LightDSV;
+	ID3D11RenderTargetView* m_MainRTV;
+	ID3D11RenderTargetView* m_OitRTV;
 
 	RenderTarget* m_AlbedoRT;
 	RenderTarget* m_NormalRT;
 	RenderTarget* m_PositionRT;
 	RenderTarget* m_ShadowRT;
 
-	D3D11_VIEWPORT* m_ScreenViewport;
+	D3D11_VIEWPORT* m_ScreenVP;
 };
 

@@ -17,7 +17,7 @@
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
-#include "ShaderResourceBufferDefine.h"
+#include "ShaderResourceViewDefine.h"
 #include "DepthStencilViewDefine.h"
 #include "DepthStencilStateDefine.h"
 #include "ViewPortDefine.h"

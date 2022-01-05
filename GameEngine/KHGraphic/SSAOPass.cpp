@@ -5,11 +5,12 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
+#include "Buffer.h"
+#include "DrawBuffer.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "VertexDefine.h"
-#include "BufferData.h"
 #include "EngineData.h"
 #include "ConstantBufferDefine.h"
 #include "SSAOPass.h"
@@ -18,12 +19,12 @@
 #include "ResourceFactoryBase.h"
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
-#include "ShaderResourceBufferDefine.h"
+#include "ShaderResourceViewDefine.h"
 #include "DepthStencilStateDefine.h"
 #include "DepthStencilViewDefine.h"
 #include "RenderTargetDefine.h"
 #include "ViewPortDefine.h"
-#include "BufferDataDefine.h"
+#include "DrawBufferDefine.h"
 #include <random>
 #include <DirectXPackedVector.h>
 
@@ -73,7 +74,7 @@ void SSAOPass::Start(int width, int height)
 	m_BlurPS = g_Shader->GetShader("SSAOBlur_PS");
 
 	// Buffer 설정..
-	m_SsaoBuffer = g_Resource->GetBuffer<BD_SSAO>();
+	m_SsaoBuffer = g_Resource->GetDrawBuffer<DB_SSAO>();
 
 	// ViewPort 설정..
 	m_SsaoViewport = g_Resource->GetViewPort<VP_SSAO>()->Get();
@@ -95,18 +96,13 @@ void SSAOPass::Start(int width, int height)
 	// OffsetVector 설정..
 	SetOffsetVectors();
 
-	// RandomVectorTexture 설정..
-	SetRandomVectorTexture();
-
 	// Frustum 설정..
 	SetFrustumFarCorners(width, height);
 
 	// ShaderResource 설정..
-	ShaderResourceView* randomVecMap = g_Resource->GetShaderResourceView<gRandomVecMap>();
 	ShaderResourceView* depthMap = g_Resource->GetShaderResourceView<RT_Deffered_Depth>();
 	
 	m_SsaoPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
-	m_SsaoPS->SetShaderResourceView<gRandomVecMap>(randomVecMap->Get());
 	m_BlurPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
 }
 
@@ -125,11 +121,9 @@ void SSAOPass::OnResize(int width, int height)
 	m_SsaoBlurSRV = m_SsaoBlurRT->GetSRV()->Get();
 
 	// ShaderResource 설정..
-	ShaderResourceView* randomVecMap = g_Resource->GetShaderResourceView<gRandomVecMap>();
 	ShaderResourceView* depthMap = g_Resource->GetShaderResourceView<RT_Deffered_Depth>();
 
 	m_SsaoPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
-	m_SsaoPS->SetShaderResourceView<gRandomVecMap>(randomVecMap->Get());
 	m_BlurPS->SetShaderResourceView<gDepthMap>(depthMap->Get());
 }
 
@@ -165,8 +159,8 @@ void SSAOPass::Render(GlobalData* global)
 	m_SsaoPS->Update();
 
 	g_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_Context->IASetVertexBuffers(0, 1, m_SsaoBuffer->VB.GetAddressOf(), &m_SsaoBuffer->Stride, &m_SsaoBuffer->Offset);
-	g_Context->IASetIndexBuffer(m_SsaoBuffer->IB.Get(), DXGI_FORMAT_R16_UINT, 0);
+	g_Context->IASetVertexBuffers(0, 1, m_SsaoBuffer->VB->GetAddress(), &m_SsaoBuffer->Stride, &m_SsaoBuffer->Offset);
+	g_Context->IASetIndexBuffer(m_SsaoBuffer->IB->Get(), DXGI_FORMAT_R16_UINT, 0);
 
 	g_Context->DrawIndexed(m_SsaoBuffer->IndexCount, 0, 0);
 }
@@ -209,8 +203,8 @@ void SSAOPass::BlurRender(bool horizon)
 	m_BlurPS->Update();
 
 	g_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_Context->IASetVertexBuffers(0, 1, m_SsaoBuffer->VB.GetAddressOf(), &m_SsaoBuffer->Stride, &m_SsaoBuffer->Offset);
-	g_Context->IASetIndexBuffer(m_SsaoBuffer->IB.Get(), DXGI_FORMAT_R16_UINT, 0);
+	g_Context->IASetVertexBuffers(0, 1, m_SsaoBuffer->VB->GetAddress(), &m_SsaoBuffer->Stride, &m_SsaoBuffer->Offset);
+	g_Context->IASetIndexBuffer(m_SsaoBuffer->IB->Get(), DXGI_FORMAT_R16_UINT, 0);
 
 	g_Context->DrawIndexed(m_SsaoBuffer->IndexCount, 0, 0);
 }
@@ -259,39 +253,6 @@ void SSAOPass::SetOffsetVectors()
 
 	// SSAO Option Constant Buffer Update..
 	m_SsaoPS->ConstantBufferCopy(&option);
-}
-
-void SSAOPass::SetRandomVectorTexture()
-{
-	D3D11_TEXTURE2D_DESC texDesc;
-	texDesc.Width = 256;
-	texDesc.Height = 256;
-	texDesc.MipLevels = 1;
-	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.SampleDesc.Quality = 0;
-	texDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	texDesc.CPUAccessFlags = 0;
-	texDesc.MiscFlags = 0;
-
-	std::mt19937 randEngine;
-	randEngine.seed(std::random_device()());
-	std::uniform_real_distribution<float> randF(0.0f, 1.0f);
-
-	XMCOLOR color[256 * 256];
-	for (int i = 0; i < 256 * 256; ++i)
-	{
-		color[i] = XMCOLOR(randF(randEngine), randF(randEngine), randF(randEngine), 0.0f);
-	}
-
-	D3D11_SUBRESOURCE_DATA initData = { 0 };
-	initData.pSysMem = color;
-	initData.SysMemPitch = 256 * sizeof(XMCOLOR);
-
-	// RandomVectorMap 생성..
-	g_Factory->CreateShaderResourceView<gRandomVecMap>(&texDesc, &initData, nullptr);
 }
 
 void SSAOPass::SetFrustumFarCorners(int width, int height)

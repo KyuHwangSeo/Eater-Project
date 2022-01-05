@@ -100,12 +100,6 @@
     <Filter Include="소스 파일\RendererPass\Forward">
       <UniqueIdentifier>{b44bbdc2-e6b9-4bff-a63c-29fd6013064c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\HashTable">
-      <UniqueIdentifier>{fb58e275-a01f-4160-83c7-b3f8167dcd12}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\HashTable\HashBase">
-      <UniqueIdentifier>{eeb7f629-8fe6-421b-8d89-6879e6788f0d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Resource\Base">
       <UniqueIdentifier>{7b07810d-6638-4f15-8453-76f87c151ba8}</UniqueIdentifier>
     </Filter>
@@ -114,21 +108,6 @@
     </Filter>
     <Filter Include="소스 파일\Resource\Graphic\GraphicState">
       <UniqueIdentifier>{10b1e356-c304-4831-90ea-72b5f29b7902}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\BufferData">
-      <UniqueIdentifier>{0f03d5b0-7669-462d-9988-c2b580cec79f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\HashTable\Table">
-      <UniqueIdentifier>{fae4a005-0afb-4544-ae6e-cbc3ac02db00}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\HashTable\HashClass">
-      <UniqueIdentifier>{45ee4f1d-d59a-42e1-abed-1a9ae9b63618}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\HashTable\HashClass\ShaderResource">
-      <UniqueIdentifier>{d08157a1-f741-4559-bc7d-559abe20919c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\HashTable\HashClass\GraphicResource">
-      <UniqueIdentifier>{54986082-b5a5-4084-ac4c-dbf0bc405c28}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\Engine\Base">
       <UniqueIdentifier>{af030aa3-e2f1-487a-bc86-30a1d1a778cb}</UniqueIdentifier>
@@ -163,15 +142,6 @@
     <Filter Include="소스 파일\Shader\HLSL\SSAO\Blur">
       <UniqueIdentifier>{53483858-9f41-44ab-b9da-83fd9d2fe4df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\DepthStencil">
-      <UniqueIdentifier>{2e35856f-0892-436c-91bc-2a06f8c44cac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\RenderTarget">
-      <UniqueIdentifier>{3c520278-a6aa-4a2b-be04-fd06f30144ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\Texture2D">
-      <UniqueIdentifier>{6b01d7c4-0f13-44d1-b572-0315e335ef46}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Shader\HLSL\Render\Deffered\Terrain">
       <UniqueIdentifier>{619ed61e-c4dc-440a-a143-26a3d267f75c}</UniqueIdentifier>
     </Filter>
@@ -187,6 +157,60 @@
     <Filter Include="소스 파일\RendererPass\Alpha">
       <UniqueIdentifier>{4ebbe0d4-e8b4-49b0-83c5-aa4de10fa241}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Shader\HLSL\OIT">
+      <UniqueIdentifier>{9c11cae3-368a-4644-bbcc-3b388978ac19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\RendererPass\OIT">
+      <UniqueIdentifier>{9c007080-6faf-49ad-b7e6-16170913b4c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicResource">
+      <UniqueIdentifier>{7eba079f-f209-41db-81ec-a7370391b005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicResource\Texture2D">
+      <UniqueIdentifier>{6b01d7c4-0f13-44d1-b572-0315e335ef46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct">
+      <UniqueIdentifier>{de86fe0c-5167-475c-960b-6a1527946145}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\DepthStencil">
+      <UniqueIdentifier>{2e35856f-0892-436c-91bc-2a06f8c44cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\RenderTarget">
+      <UniqueIdentifier>{3c520278-a6aa-4a2b-be04-fd06f30144ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash">
+      <UniqueIdentifier>{fb58e275-a01f-4160-83c7-b3f8167dcd12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash\HashBase">
+      <UniqueIdentifier>{eeb7f629-8fe6-421b-8d89-6879e6788f0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash\HashClass">
+      <UniqueIdentifier>{45ee4f1d-d59a-42e1-abed-1a9ae9b63618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash\HashClass\GraphicResource">
+      <UniqueIdentifier>{54986082-b5a5-4084-ac4c-dbf0bc405c28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash\HashClass\GraphicResource\GraphicState">
+      <UniqueIdentifier>{4c9d4855-5452-490c-b52d-e3cb13ee611b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash\HashClass\GraphicResource\GraphicView">
+      <UniqueIdentifier>{f40ea735-b73e-4c59-9851-ac9ce23b12d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash\HashClass\GraphicResource\GraphicStruct">
+      <UniqueIdentifier>{5a5b33ad-4f71-4ad1-95db-69afb64d0f22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Hash\HashTable">
+      <UniqueIdentifier>{fae4a005-0afb-4544-ae6e-cbc3ac02db00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicResource\Buffer">
+      <UniqueIdentifier>{12a5c019-3947-4d4a-9b69-e4f8619cd27e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\RenderBuffer">
+      <UniqueIdentifier>{966fd5c5-fea2-45c1-99d5-a6351cdf10ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\DrawBuffer">
+      <UniqueIdentifier>{f94978e4-f848-43b8-8246-827a696561eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -200,9 +224,6 @@
     </ClInclude>
     <ClInclude Include="VertexShader.h">
       <Filter>소스 파일\Shader\ShaderClass\VertexShader</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBufferDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
     </ClInclude>
     <ClInclude Include="ComputeShader.h">
       <Filter>소스 파일\Shader\ShaderClass\ComputeShader</Filter>
@@ -273,14 +294,11 @@
     <ClInclude Include="DeferredPass.h">
       <Filter>소스 파일\RendererPass\Deferred</Filter>
     </ClInclude>
-    <ClInclude Include="RenderTarget.h">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget</Filter>
-    </ClInclude>
     <ClInclude Include="Texture2D.h">
-      <Filter>소스 파일\Resource\Graphic\Texture2D</Filter>
+      <Filter>소스 파일\Resource\Graphic\GraphicResource\Texture2D</Filter>
     </ClInclude>
     <ClInclude Include="DepthStencil.h">
-      <Filter>소스 파일\Resource\Graphic\DepthStencil</Filter>
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\DepthStencil</Filter>
     </ClInclude>
     <ClInclude Include="MathDefine.h">
       <Filter>소스 파일\Define</Filter>
@@ -291,35 +309,8 @@
     <ClInclude Include="ForwardPass.h">
       <Filter>소스 파일\RendererPass\Forward</Filter>
     </ClInclude>
-    <ClInclude Include="SamplerBufferDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderResourceBufferDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
-    </ClInclude>
-    <ClInclude Include="UnorderedAccessBufferDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\ShaderResource</Filter>
-    </ClInclude>
     <ClInclude Include="HashBase.h">
-      <Filter>소스 파일\HashTable\HashBase</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthStencilViewDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthStencilStateDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
-    </ClInclude>
-    <ClInclude Include="RasterizerStateDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
-    </ClInclude>
-    <ClInclude Include="BlendStateDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTargetDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
-    </ClInclude>
-    <ClInclude Include="ViewPortDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
+      <Filter>소스 파일\Hash\HashBase</Filter>
     </ClInclude>
     <ClInclude Include="ResourceBase.h">
       <Filter>소스 파일\Resource\Base</Filter>
@@ -327,14 +318,8 @@
     <ClInclude Include="GraphicState.h">
       <Filter>소스 파일\Resource\Graphic\GraphicState</Filter>
     </ClInclude>
-    <ClInclude Include="BufferData.h">
-      <Filter>소스 파일\Resource\Graphic\BufferData</Filter>
-    </ClInclude>
-    <ClInclude Include="BufferDataDefine.h">
-      <Filter>소스 파일\HashTable\HashClass\GraphicResource</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderResourceHashTable.h">
-      <Filter>소스 파일\HashTable\Table</Filter>
+      <Filter>소스 파일\Hash\HashTable</Filter>
     </ClInclude>
     <ClInclude Include="Export\GraphicsEngine.h">
       <Filter>소스 파일\Engine\Base</Filter>
@@ -353,6 +338,57 @@
     </ClInclude>
     <ClInclude Include="AlphaPass.h">
       <Filter>소스 파일\RendererPass\Alpha</Filter>
+    </ClInclude>
+    <ClInclude Include="OITPass.h">
+      <Filter>소스 파일\RendererPass\OIT</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawBuffer.h">
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\DrawBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>소스 파일\Resource\Graphic\GraphicResource\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="BlendStateDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicState</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilStateDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicState</Filter>
+    </ClInclude>
+    <ClInclude Include="RasterizerStateDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicState</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderResourceViewDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicView</Filter>
+    </ClInclude>
+    <ClInclude Include="UnorderedAccessViewDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicView</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilViewDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicView</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplerStateDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicState</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewPortDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicState</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawBufferDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderBufferDefine.h">
+      <Filter>소스 파일\Hash\HashClass\GraphicResource\GraphicStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderBuffer.h">
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -401,11 +437,8 @@
     <ClCompile Include="DeferredPass.cpp">
       <Filter>소스 파일\RendererPass\Deferred</Filter>
     </ClCompile>
-    <ClCompile Include="RenderTarget.cpp">
-      <Filter>소스 파일\Resource\Graphic\RenderTarget</Filter>
-    </ClCompile>
     <ClCompile Include="DepthStencil.cpp">
-      <Filter>소스 파일\Resource\Graphic\DepthStencil</Filter>
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\DepthStencil</Filter>
     </ClCompile>
     <ClCompile Include="ShaderTypes.cpp">
       <Filter>소스 파일\Shader\ShaderClass\Types</Filter>
@@ -416,17 +449,14 @@
     <ClCompile Include="GraphicState.cpp">
       <Filter>소스 파일\Resource\Graphic\GraphicState</Filter>
     </ClCompile>
-    <ClCompile Include="BufferData.cpp">
-      <Filter>소스 파일\Resource\Graphic\BufferData</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderResourceHashTable.cpp">
-      <Filter>소스 파일\HashTable\Table</Filter>
+      <Filter>소스 파일\Hash\HashTable</Filter>
     </ClCompile>
     <ClCompile Include="GraphicEngine.cpp">
       <Filter>소스 파일\Engine\Base</Filter>
     </ClCompile>
     <ClCompile Include="Texture2D.cpp">
-      <Filter>소스 파일\Resource\Graphic\Texture2D</Filter>
+      <Filter>소스 파일\Resource\Graphic\GraphicResource\Texture2D</Filter>
     </ClCompile>
     <ClCompile Include="SSAOPass.cpp">
       <Filter>소스 파일\RendererPass\SSAO</Filter>
@@ -439,6 +469,21 @@
     </ClCompile>
     <ClCompile Include="AlphaPass.cpp">
       <Filter>소스 파일\RendererPass\Alpha</Filter>
+    </ClCompile>
+    <ClCompile Include="OITPass.cpp">
+      <Filter>소스 파일\RendererPass\OIT</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawBuffer.cpp">
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\DrawBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>소스 파일\Resource\Graphic\GraphicResource\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderBuffer.cpp">
+      <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -493,5 +538,19 @@
     <FxCompile Include="..\Resources\Shader\SKH\DebugVS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Debug</Filter>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Render_PS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\OIT</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Render_VS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\OIT</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Particle_PS.hlsl">
+      <Filter>소스 파일\Shader\HLSL\OIT</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\Shader\SKH\OIT.hlsli">
+      <Filter>소스 파일\Shader\HLSL\OIT</Filter>
+    </None>
   </ItemGroup>
 </Project>

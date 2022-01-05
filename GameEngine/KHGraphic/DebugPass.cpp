@@ -5,7 +5,8 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
-#include "BufferData.h"
+#include "Buffer.h"
+#include "DrawBuffer.h"
 #include "EngineData.h"
 #include "DebugPass.h"
 
@@ -14,7 +15,7 @@
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
-#include "BufferDataDefine.h"
+#include "DrawBufferDefine.h"
 
 DebugPass::DebugPass()
 {
@@ -36,10 +37,10 @@ void DebugPass::Start(int width, int height)
 	m_DebugVS = g_Shader->GetShader("Debug_VS");
 	m_DebugPS = g_Shader->GetShader("Debug_PS");
 
-	m_QuadBuffer = g_Resource->GetBuffer<BD_Line_Quad>();
-	m_AxisBuffer = g_Resource->GetBuffer<BD_Line_Axis>();
-	m_BoxBuffer = g_Resource->GetBuffer<BD_Line_Box>();
-	m_CircleBuffer = g_Resource->GetBuffer<BD_Line_Circle>();
+	m_QuadBuffer = g_Resource->GetDrawBuffer<DB_Line_Quad>();
+	m_AxisBuffer = g_Resource->GetDrawBuffer<DB_Line_Axis>();
+	m_BoxBuffer = g_Resource->GetDrawBuffer<DB_Line_Box>();
+	m_CircleBuffer = g_Resource->GetDrawBuffer<DB_Line_Circle>();
 }
 
 void DebugPass::OnResize(int width, int height)
@@ -192,6 +193,6 @@ void DebugPass::BufferUpdate(DEBUG_TYPE type)
 	}
 
 	g_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	g_Context->IASetVertexBuffers(0, 1, m_DebugBuffer->VB.GetAddressOf(), &m_DebugBuffer->Stride, &m_DebugBuffer->Offset);
-	g_Context->IASetIndexBuffer(m_DebugBuffer->IB.Get(), DXGI_FORMAT_R32_UINT, 0);
+	g_Context->IASetVertexBuffers(0, 1, m_DebugBuffer->VB->GetAddress(), &m_DebugBuffer->Stride, &m_DebugBuffer->Offset);
+	g_Context->IASetIndexBuffer(m_DebugBuffer->IB->Get(), DXGI_FORMAT_R32_UINT, 0);
 }

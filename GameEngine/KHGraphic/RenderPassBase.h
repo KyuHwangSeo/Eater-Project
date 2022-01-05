@@ -26,6 +26,7 @@ public:
 	virtual void OnResize(int width, int height) abstract;
 	virtual void Release() abstract;
 
+	virtual void SetResize(int width, int height) {}
 	virtual void SetOption(const char* shaderName) {}
 
 public:

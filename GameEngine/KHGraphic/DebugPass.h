@@ -27,12 +27,12 @@ private:
 	VertexShader* m_DebugVS;
 	PixelShader* m_DebugPS;
 
-	BufferData* m_QuadBuffer;
-	BufferData* m_AxisBuffer;
-	BufferData* m_BoxBuffer;
-	BufferData* m_CircleBuffer;
+	DrawBuffer* m_QuadBuffer;
+	DrawBuffer* m_AxisBuffer;
+	DrawBuffer* m_BoxBuffer;
+	DrawBuffer* m_CircleBuffer;
 
-	BufferData* m_DebugBuffer;
+	DrawBuffer* m_DebugBuffer;
 
 
 };

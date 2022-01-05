@@ -21,11 +21,10 @@ public:
 
 private:
 	void SetOffsetVectors();
-	void SetRandomVectorTexture();
 	void SetFrustumFarCorners(int width, int height);
 
 private:
-	BufferData* m_SsaoBuffer;
+	DrawBuffer* m_SsaoBuffer;
 
 	VertexShader* m_SsaoVS;
 	PixelShader* m_SsaoPS;

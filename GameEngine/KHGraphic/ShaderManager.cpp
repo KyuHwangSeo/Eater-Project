@@ -75,6 +75,12 @@ void ShaderManager::CreateShader()
 	LoadShader(SHADER_TYPE::PIXEL_SHADER, "DeferredPS.hlsl", "Deferred_PS", "Deferred_PS");
 	LoadShader(SHADER_TYPE::PIXEL_SHADER, "DeferredPS.hlsl", "Deferred_PS", "Terrain_PS", terrain_macro);
 
+	// OIT Shader
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "OIT_Render_VS.hlsl", "OIT_VS", "OIT_VS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "OIT_Render_PS.hlsl", "OIT_PS", "OIT_PS");
+
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "OIT_Particle_PS.hlsl", "OIT_Particle_PS", "OIT_Particle_PS");
+
 	// Forward Shader
 	LoadShader(SHADER_TYPE::PIXEL_SHADER, "ForwardPS.hlsl", "Forward_PS", "Forward_PS");
 

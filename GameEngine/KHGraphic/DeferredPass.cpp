@@ -5,11 +5,12 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
+#include "Buffer.h"
+#include "DrawBuffer.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "VertexDefine.h"
-#include "BufferData.h"
 #include "EngineData.h"
 #include "DeferredPass.h"
 
@@ -18,14 +19,14 @@
 #include "ResourceManagerBase.h"
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
-#include "ShaderResourceBufferDefine.h"
+#include "ShaderResourceViewDefine.h"
 #include "ViewPortDefine.h"
 #include "RenderTargetDefine.h"
 #include "DepthStencilStateDefine.h"
 #include "DepthStencilViewDefine.h"
 #include "RasterizerStateDefine.h"
 #include "BlendStateDefine.h"
-#include "BufferDataDefine.h"
+#include "DrawBufferDefine.h"
 
 #define ALBEDO_MAP 0x00000001
 #define NORMAL_MAP 0x00000010

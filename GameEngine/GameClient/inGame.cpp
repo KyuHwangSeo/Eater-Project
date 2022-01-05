@@ -21,7 +21,8 @@ void InGame::Awake()
 
 	LoadMesh("IceSpikes22", SCALING | ROTATE_AXIS);
 
-	LoadMesh("Dome", SCALING);
+	//LoadMesh("Dome", SCALING);
+	//LoadMesh("Inside", SCALING);
 	LoadMesh("Player_Run");
 	LoadMesh("Player_Roll", ANIMATION_ONLY);
 	LoadMesh("Player_Idle", ANIMATION_ONLY);
@@ -79,15 +80,19 @@ void InGame::Awake()
 	terrain->SetTextureTiling(1.0f / 31.0f);
 	testobj->GetTransform()->Rotation = { 0, 0, 0 };
 
-	testobj = Instance("Player");
-	testobj->AddComponent<AnimationController>();
-	testobj->AddComponent<MeshFilter>();
-	testobj->AddComponent<Player>();
-
-	testobj = Instance("Dome");
-	testobj->AddComponent<MeshFilter>()->SetMeshName("Dome");
+	//testobj = Instance("Player");
+	//testobj->AddComponent<AnimationController>();
+	//testobj->AddComponent<MeshFilter>();
+	//testobj->AddComponent<Player>();
 
 
+	//testobj = Instance("Dome");
+	//testobj->AddComponent<MeshFilter>()->SetMeshName("Dome");
+	//
+	//testobj = Instance("Inside");
+	//testobj->AddComponent<MeshFilter>()->SetMeshName("Inside");
+
+	
 	ParticleObj = Instance();
 
 
@@ -107,7 +112,7 @@ void InGame::Awake()
 	particles0->SetMaxParticles(10);
 	particles0->SetRateOverTime(5.0f);
 	particles0->SetShapeRadius(0.0f);
-	particles0->SetStartForce(Vector3(-20, 0, 0));
+	particles0->SetStartForce(Vector3(-10, 0, 0));
 	particles0->SetLifeTimeForce(Vector3(0, 0, 0), Vector3(0, 0, 0));
 	particles0->SetLifeTimeColor(Vector4(255, 255, 0, 0), Vector4(255, 255, 255, 255), PARTICLE_LIFETIME_OPTION::UPDOWN);
 	particles0->SetLifeTimeScale(0.0f, 1.0f, PARTICLE_LIFETIME_OPTION::UP);

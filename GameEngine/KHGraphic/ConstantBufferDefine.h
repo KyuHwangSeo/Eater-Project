@@ -4,7 +4,7 @@
 #include "LightHelper.h"
 #include "EngineData.h"
 
-#define CONSTANT_BUFFER(ClassName) CREATE_HASH_CLASS(ClassName, eResourceType::CB) RESOURCE_PUSH(ClassName, eResourceType::CB)
+#define SHADER_CONSTANT_BUFFER(ClassName) CREATE_HASH_CLASS(ClassName, RESOURCE_TYPE::CB) RESOURCE_PUSH(ClassName, RESOURCE_TYPE::CB)
 
 /// <summary>
 /// ConstantBuffer Resource Struct
@@ -22,7 +22,7 @@
 // Deferred Constant Buffer
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-CONSTANT_BUFFER(cbMeshObject)
+SHADER_CONSTANT_BUFFER(cbMeshObject)
 struct CB_MeshObject : public cbMeshObject
 {
 	DirectX::SimpleMath::Matrix gWorld;
@@ -32,13 +32,13 @@ struct CB_MeshObject : public cbMeshObject
 	DirectX::SimpleMath::Matrix gShadowTransform;
 };
 
-CONSTANT_BUFFER(cbShadowMeshObject)
+SHADER_CONSTANT_BUFFER(cbShadowMeshObject)
 struct CB_ShadowMeshObject : public cbShadowMeshObject
 {
 	DirectX::SimpleMath::Matrix gWorldViewProj;
 };
 
-CONSTANT_BUFFER(cbSkinObject)
+SHADER_CONSTANT_BUFFER(cbSkinObject)
 struct CB_SkinObject : public cbSkinObject
 {
 	DirectX::SimpleMath::Matrix gWorld;
@@ -49,21 +49,21 @@ struct CB_SkinObject : public cbSkinObject
 	DirectX::SimpleMath::Matrix gBoneTransforms[96];
 };
 
-CONSTANT_BUFFER(cbShadowSkinObject)
+SHADER_CONSTANT_BUFFER(cbShadowSkinObject)
 struct CB_ShadowSkinObject : public cbShadowSkinObject
 {
 	DirectX::SimpleMath::Matrix gWorldViewProj;
 	DirectX::SimpleMath::Matrix gBoneTransforms[96];
 };
 
-CONSTANT_BUFFER(cbLightSub)
+SHADER_CONSTANT_BUFFER(cbLightSub)
 struct CB_LightSub : public cbLightSub
 {
 	DirectX::SimpleMath::Matrix gViewProjTex;
 	DirectX::SimpleMath::Vector3 gEyePosW;
 }; 
 
-CONSTANT_BUFFER(cbLight)
+SHADER_CONSTANT_BUFFER(cbLight)
 struct CB_Light : public cbLight
 {
 	DirectionalLightData gDirLights;
@@ -75,7 +75,7 @@ struct CB_Light : public cbLight
 	UINT gSpotLightCount;
 };
 
-CONSTANT_BUFFER(cbMaterial)
+SHADER_CONSTANT_BUFFER(cbMaterial)
 struct CB_Material : public cbMaterial
 {
 	DirectX::SimpleMath::Vector4 gColor = DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -88,26 +88,26 @@ struct CB_Material : public cbMaterial
 //// SSAO Constant Buffer
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-CONSTANT_BUFFER(cbBlurOption)
+SHADER_CONSTANT_BUFFER(cbBlurOption)
 struct CB_BlurOption : public cbBlurOption
 {
 	DirectX::SimpleMath::Vector2 gTexelSize;
 	bool gHorizon;
 };
 
-CONSTANT_BUFFER(cbSsaoObject)
+SHADER_CONSTANT_BUFFER(cbSsaoObject)
 struct CB_SsaoObject : public cbSsaoObject
 {
 	DirectX::SimpleMath::Matrix  gViewToTexSpace;
 };
 
-CONSTANT_BUFFER(cbSsaoFrustum)
+SHADER_CONSTANT_BUFFER(cbSsaoFrustum)
 struct CB_SsaoFrustum : public cbSsaoFrustum
 {
 	DirectX::SimpleMath::Vector4 gFrustumCorners[4];
 };
 
-CONSTANT_BUFFER(cbSsaoOption)
+SHADER_CONSTANT_BUFFER(cbSsaoOption)
 struct CB_SsaoOption : public cbSsaoOption
 {
 	DirectX::SimpleMath::Vector4 gOffsetVectors[14];
@@ -122,7 +122,7 @@ struct CB_SsaoOption : public cbSsaoOption
 //// Particle Constant Buffer
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-CONSTANT_BUFFER(cbParticleObject)
+SHADER_CONSTANT_BUFFER(cbParticleObject)
 struct CB_ParticleObject : public cbParticleObject
 {
 	DirectX::SimpleMath::Matrix  gWorld;
@@ -131,16 +131,26 @@ struct CB_ParticleObject : public cbParticleObject
 	DirectX::SimpleMath::Matrix  gTexTransform;
 };
 
-CONSTANT_BUFFER(cbParticleOption)
+SHADER_CONSTANT_BUFFER(cbParticleOption)
 struct CB_ParticleOption : public cbParticleOption
 {
 	DirectX::SimpleMath::Vector4 gColor;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//// Particle Constant Buffer
+//// OIT Constant Buffer
 /////////////////////////////////////////////////////////////////////////////////////////////
-CONSTANT_BUFFER(cbDebugObject)
+
+SHADER_CONSTANT_BUFFER(cbOitFrame)
+struct CB_OitFrame : public cbOitFrame
+{
+	UINT gFrameWidth;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//// Debug Constant Buffer
+/////////////////////////////////////////////////////////////////////////////////////////////
+SHADER_CONSTANT_BUFFER(cbDebugObject)
 struct CB_DebugObject : public cbDebugObject
 {
 	DirectX::SimpleMath::Matrix  gWorldViewProj;

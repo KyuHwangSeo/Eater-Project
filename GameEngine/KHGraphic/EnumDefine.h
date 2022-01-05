@@ -1,19 +1,38 @@
 #pragma once
 
-// ResourceType Enum Class..
-enum class eResourceType
+// ResourceType..
+typedef enum class RESOURCE_TYPE
 {
-	CB,			// Constant Buffer Resource
-	SS,			// Sampler State Resource
-	SRV,		// Shader Resource View Resource
-	UAV,		// Unordered Access View Resource
-	RTV,		// Render Target View Resource
-	DSV,		// Depth Stencil View Resource
-	DSS,		// Depth Stencil State Resource
-	RS,			// Rasterizer State Resource
-	BS,			// Blend State Resource
-	DS,			// Depth Stencil Resource
-	RT,			// RenderTarget Resource
-	VP,			// ViewPort Resource
-	BD,			// Buffer Data Resource
-};
+	SRV,		// Shader Resource View
+	UAV,		// Unordered Access View
+	RTV,		// Render Target View
+	DSV,		// Depth Stencil View
+	DSS,		// Depth Stencil State
+	SS,			// Sampler State
+	RS,			// Rasterizer State
+	BS,			// Blend State
+	DS,			// Depth Stencil
+	RT,			// Render Target
+	RB,			// Render Buffer
+	DB,			// Draw Buffer
+	CB,			// Constant Buffer
+	VP,			// ViewPort
+}RESOURCE_TYPE;
+
+// Buffer Type..
+typedef enum BUFFER_TYPE
+{
+	VERTEX_BUFFER,
+	INDEX_BUFFER,
+	CONSTANT_BUFFER,
+	STRUCTURED_BUFFER,
+	RAW_BUFFER
+}BUFFER_TYPE;
+
+// Shader Type..
+typedef enum SHADER_TYPE
+{
+	VERTEX_SHADER,
+	PIXEL_SHADER,
+	COMPUTE_SHADER
+}SHADER_TYPE;

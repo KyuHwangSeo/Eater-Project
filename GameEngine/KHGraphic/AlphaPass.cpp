@@ -20,7 +20,7 @@
 #include "DepthStencilViewDefine.h"
 #include "DepthStencilStateDefine.h"
 #include "BlendStateDefine.h"
-#include "ShaderResourceBufferDefine.h"
+#include "ShaderResourceViewDefine.h"
 #include "RenderTargetDefine.h"
 #include "RasterizerStateDefine.h"
 
@@ -37,26 +37,29 @@ AlphaPass::~AlphaPass()
 void AlphaPass::Create(int width, int height)
 {
 
+
 }
 
 void AlphaPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_ParticleVS = g_Shader->GetShader("Particle_VS");
-	m_ParticlePS = g_Shader->GetShader("Particle_PS");
+	//m_ParticlePS = g_Shader->GetShader("Particle_PS");
+	m_ParticlePS = g_Shader->GetShader("OIT_Particle_PS");
 
 	// Graphic State 설정..
-	m_BackBuffer = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
-	m_DepthStencilView = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
-	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
-	m_NoDepthStencilState = g_Resource->GetDepthStencilState<DSS_NoDepth>()->Get();
-	m_AlphaBlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
-	m_NoCullRasterizerState = g_Resource->GetRasterizerState<RS_CullNone>()->Get();
+	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
+	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
 
+	m_AlphaBlendBS = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
+	m_NoCullRS = g_Resource->GetRasterizerState<RS_NoCull>()->Get();
 }
 
 void AlphaPass::OnResize(int width, int height)
 {
+	// Graphic State 설정..
+	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
+	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
 }
 
 void AlphaPass::Release()
@@ -66,10 +69,8 @@ void AlphaPass::Release()
 
 void AlphaPass::BeginRender()
 {
-	g_Context->OMSetRenderTargets(1, &m_BackBuffer, m_DepthStencilView);
-	g_Context->RSSetState(m_NoCullRasterizerState);
-	g_Context->OMSetBlendState(m_AlphaBlendState, 0, 0xffffffff);
-	//g_Context->OMSetDepthStencilState(m_NoDepthStencilState, 0);
+	g_Context->OMSetRenderTargets(1, &m_MainRTV, m_DefaltDSV);
+	g_Context->OMSetBlendState(m_AlphaBlendBS, 0, 0xffffffff);
 }
 
 void AlphaPass::BufferUpdate(MeshData* mesh)

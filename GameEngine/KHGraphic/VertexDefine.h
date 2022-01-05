@@ -37,15 +37,20 @@ struct QuadVertex
 	DirectX::SimpleMath::Vector2 Tex;
 };
 
-struct PosNormalTexVertex
+struct PosVertex
 {
 	DirectX::SimpleMath::Vector3 Pos;
-	DirectX::SimpleMath::Vector2 Tex;
-	DirectX::SimpleMath::Vector3 Normal;
 };
 
 struct PosColorVertex
 {
 	DirectX::SimpleMath::Vector3 Pos;
 	DirectX::SimpleMath::Vector4 Color;
+};
+
+struct PosNormalTexVertex
+{
+	DirectX::SimpleMath::Vector3 Pos;
+	DirectX::SimpleMath::Vector2 Tex;
+	DirectX::SimpleMath::Vector3 Normal;
 };

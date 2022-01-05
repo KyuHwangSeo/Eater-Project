@@ -2,7 +2,7 @@
 #include "GraphicState.h"
 
 DepthStencilState::DepthStencilState(ID3D11DepthStencilState* dss)
-	:ResourceBase(eResourceType::DSS), m_DSS(dss)
+	:ResourceBase(RESOURCE_TYPE::DSS), m_DSS(dss)
 {
 }
 
@@ -32,7 +32,7 @@ ID3D11DepthStencilState** DepthStencilState::GetAddress()
 }
 
 RasterizerState::RasterizerState(ID3D11RasterizerState* rs)
-	:ResourceBase(eResourceType::RS), m_RS(rs)
+	:ResourceBase(RESOURCE_TYPE::RS), m_RS(rs)
 {
 }
 
@@ -62,7 +62,7 @@ ID3D11RasterizerState** RasterizerState::GetAddress()
 }
 
 BlendState::BlendState(ID3D11BlendState* bs)
-	:ResourceBase(eResourceType::BS), m_BS(bs)
+	:ResourceBase(RESOURCE_TYPE::BS), m_BS(bs)
 {
 }
 
@@ -92,7 +92,7 @@ ID3D11BlendState** BlendState::GetAddress()
 }
 
 SamplerState::SamplerState(ID3D11SamplerState* ss)
-	:ResourceBase(eResourceType::SS), m_SS(ss)
+	:ResourceBase(RESOURCE_TYPE::SS), m_SS(ss)
 {
 }
 
@@ -123,7 +123,7 @@ ID3D11SamplerState** SamplerState::GetAddress()
 }
 
 ViewPort::ViewPort(float ratio_offsetX, float ratio_offsetY, float ratio_sizeX, float ratio_sizeY, float width, float height)
-	:ResourceBase(eResourceType::VP)
+	:ResourceBase(RESOURCE_TYPE::VP)
 {
 	m_OffsetX = ratio_offsetX;
 	m_OffsetY = ratio_offsetY;

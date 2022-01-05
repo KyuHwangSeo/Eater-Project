@@ -112,11 +112,11 @@ PixelOut Deferred_PS(VertexIn pin)
     
     gamma = 1.0f;
 #else
-        if (gTexID & ALBEDO_MAP)
-        {
-            albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
-            gamma = 0.0f;
-        }
+    if (gTexID & ALBEDO_MAP)
+    {
+        albedo = gDiffuseMap.Sample(gSamWrapLinear, pin.Tex);
+        gamma = 0.0f;
+    }
     
     if (gTexID & NORMAL_MAP)
     {

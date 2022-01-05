@@ -1,9 +1,8 @@
 #include "DirectDefine.h"
 #include "GraphicView.h"
-#include <assert.h>
 
 DepthStencilView::DepthStencilView(ID3D11DepthStencilView* dsv)
-	:ResourceBase(eResourceType::DSV), m_DSV(dsv)
+	:ResourceBase(RESOURCE_TYPE::DSV), m_DSV(dsv)
 {
 
 }
@@ -46,7 +45,7 @@ void DepthStencilView::GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC* desc)
 }
 
 RenderTargetView::RenderTargetView(ID3D11RenderTargetView* rtv)
-	:ResourceBase(eResourceType::RTV), m_RTV(rtv)
+	:ResourceBase(RESOURCE_TYPE::RTV), m_RTV(rtv)
 {
 
 }
@@ -89,7 +88,7 @@ void RenderTargetView::GetDesc(D3D11_RENDER_TARGET_VIEW_DESC* desc)
 }
 
 ShaderResourceView::ShaderResourceView(ID3D11ShaderResourceView* srv)
-	:ResourceBase(eResourceType::SRV), m_SRV(srv)
+	:ResourceBase(RESOURCE_TYPE::SRV), m_SRV(srv)
 {
 
 }
@@ -132,7 +131,7 @@ void ShaderResourceView::GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* desc)
 }
 
 UnorderedAccessView::UnorderedAccessView(ID3D11UnorderedAccessView* uav)
-	:ResourceBase(eResourceType::UAV), m_UAV(uav)
+	:ResourceBase(RESOURCE_TYPE::UAV), m_UAV(uav)
 {
 
 }

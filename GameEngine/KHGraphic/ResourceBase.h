@@ -11,15 +11,15 @@
 class ResourceBase
 {
 public:
-	ResourceBase(eResourceType type) : m_ResourceType(type) {}
+	ResourceBase(RESOURCE_TYPE type) : m_ResourceType(type) {}
 
 public:
 	virtual void Reset() abstract;
 	virtual void Release() abstract;
 
 public:
-	eResourceType GetType() { return m_ResourceType; }
+	RESOURCE_TYPE GetType() { return m_ResourceType; }
 
 private:
-	eResourceType m_ResourceType;
+	RESOURCE_TYPE m_ResourceType;
 };
