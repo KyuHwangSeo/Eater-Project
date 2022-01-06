@@ -5,6 +5,7 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
+#include "Buffer.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
@@ -78,20 +79,20 @@ void ShadowPass::Start(int width, int height)
 	m_MeshShadowVS = g_Shader->GetShader("MeshShadow_VS");
 	m_SkinShadowVS = g_Shader->GetShader("SkinShadow_VS");
 	
-	m_ShadowDepthStencilView = g_Resource->GetDepthStencil<DS_Shadow>();
-	m_ShadowDepthStencilView->SetRatio(4.0f, 4.0f);
+	m_ShadowDS = g_Resource->GetDepthStencil<DS_Shadow>();
+	m_ShadowDS->SetRatio(4.0f, 4.0f);
 
-	m_ShadowViewport = g_Resource->GetViewPort<VP_Shadow>()->Get();
-	m_RasterizerState = g_Resource->GetRasterizerState<RS_Depth>()->Get();
+	m_ShadowVP = g_Resource->GetViewPort<VP_Shadow>()->Get();
+	m_DepthRS = g_Resource->GetRasterizerState<RS_Depth>()->Get();
 
 	// Shadow DepthStencilView 설정..
-	m_ShadowDSV = m_ShadowDepthStencilView->GetDSV()->Get();
+	m_ShadowDSV = m_ShadowDS->GetDSV()->Get();
 }
 
 void ShadowPass::OnResize(int width, int height)
 {
 	// Shadow DepthStencilView 재설정..
-	m_ShadowDSV = m_ShadowDepthStencilView->GetDSV()->Get();
+	m_ShadowDSV = m_ShadowDS->GetDSV()->Get();
 }
 
 void ShadowPass::Release()
@@ -99,7 +100,7 @@ void ShadowPass::Release()
 
 }
 
-void ShadowPass::Reset()
+void ShadowPass::SetOption(UINT renderOption)
 {
 	g_Context->ClearDepthStencilView(m_ShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
@@ -107,13 +108,13 @@ void ShadowPass::Reset()
 void ShadowPass::BeginRender()
 {
 	g_Context->OMSetBlendState(0, 0, 0xffffffff);
-	g_Context->RSSetViewports(1, m_ShadowViewport);
+	g_Context->RSSetViewports(1, m_ShadowVP);
 
 	// 그리기만 할 것이므로 null Render Target 설정..
 	// 깊이 버퍼, null Rendering 대상을 설정하면 색상 쓰기가 비활성화 된다..
 	g_Context->OMSetRenderTargets(0, nullptr, m_ShadowDSV);
 	g_Context->ClearDepthStencilView(m_ShadowDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	g_Context->RSSetState(m_RasterizerState);
+	g_Context->RSSetState(m_DepthRS);
 }
 
 void ShadowPass::Update(MeshData* mesh, GlobalData* global)

@@ -21,8 +21,10 @@ public:
 	void OnResize(int width, int height) override;
 	void Release() override;
 
+	void BeginRender();
 	void Render(MeshData* mesh, GlobalData* global);
 	void BufferUpdate(DEBUG_TYPE type);
+
 private:
 	VertexShader* m_DebugVS;
 	PixelShader* m_DebugPS;
@@ -34,6 +36,7 @@ private:
 
 	DrawBuffer* m_DebugBuffer;
 
-
+	ID3D11DepthStencilView* m_DefaltDSV;
+	ID3D11RenderTargetView* m_MainRTV;
 };
 

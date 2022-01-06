@@ -6,8 +6,8 @@
 #include "GraphicState.h"
 #include "GraphicView.h"
 #include "Buffer.h"
-#include "DrawBuffer.h"
 #include "Texture2D.h"
+#include "DrawBuffer.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "VertexDefine.h"
@@ -74,13 +74,13 @@ void SSAOPass::Start(int width, int height)
 	m_BlurPS = g_Shader->GetShader("SSAOBlur_PS");
 
 	// Buffer 설정..
-	m_SsaoBuffer = g_Resource->GetDrawBuffer<DB_SSAO>();
+	m_SsaoDB = g_Resource->GetDrawBuffer<DB_SSAO>();
 
 	// ViewPort 설정..
-	m_SsaoViewport = g_Resource->GetViewPort<VP_SSAO>()->Get();
+	m_SsaoVP = g_Resource->GetViewPort<VP_SSAO>()->Get();
 	
 	// Constant Buffer Update..
-	m_BlurOption.gTexelSize = DirectX::SimpleMath::Vector2(1.0f / m_SsaoViewport->Width, 1.0f / m_SsaoViewport->Height);
+	m_BlurOption.gTexelSize = DirectX::SimpleMath::Vector2(1.0f / m_SsaoVP->Width, 1.0f / m_SsaoVP->Height);
 
 	// RenderTarget 설정..
 	m_SsaoRT = g_Resource->GetRenderTarget<RT_SSAO_Main>();
@@ -112,7 +112,7 @@ void SSAOPass::OnResize(int width, int height)
 	SetFrustumFarCorners(width, height);
 
 	// Constant Buffer Update..
-	m_BlurOption.gTexelSize = DirectX::SimpleMath::Vector2(1.0f / m_SsaoViewport->Width, 1.0f / m_SsaoViewport->Height);
+	m_BlurOption.gTexelSize = DirectX::SimpleMath::Vector2(1.0f / m_SsaoVP->Width, 1.0f / m_SsaoVP->Height);
 
 	// RenderTarget Resource 재설정..
 	m_SsaoRTV = m_SsaoRT->GetRTV()->Get();
@@ -132,7 +132,7 @@ void SSAOPass::Release()
 
 }
 
-void SSAOPass::Reset()
+void SSAOPass::SetOption(UINT renderOption)
 {
 	g_Context->ClearRenderTargetView(m_SsaoRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
 }
@@ -142,7 +142,7 @@ void SSAOPass::BeginRender()
 	g_Context->OMSetBlendState(0, 0, 0xffffffff);
 	g_Context->OMSetRenderTargets(1, &m_SsaoRTV, 0);
 	g_Context->ClearRenderTargetView(m_SsaoRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->RSSetViewports(1, m_SsaoViewport);
+	g_Context->RSSetViewports(1, m_SsaoVP);
 }
 
 void SSAOPass::Render(GlobalData* global)
@@ -159,10 +159,10 @@ void SSAOPass::Render(GlobalData* global)
 	m_SsaoPS->Update();
 
 	g_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_Context->IASetVertexBuffers(0, 1, m_SsaoBuffer->VB->GetAddress(), &m_SsaoBuffer->Stride, &m_SsaoBuffer->Offset);
-	g_Context->IASetIndexBuffer(m_SsaoBuffer->IB->Get(), DXGI_FORMAT_R16_UINT, 0);
+	g_Context->IASetVertexBuffers(0, 1, m_SsaoDB->VB->GetAddress(), &m_SsaoDB->Stride, &m_SsaoDB->Offset);
+	g_Context->IASetIndexBuffer(m_SsaoDB->IB->Get(), DXGI_FORMAT_R16_UINT, 0);
 
-	g_Context->DrawIndexed(m_SsaoBuffer->IndexCount, 0, 0);
+	g_Context->DrawIndexed(m_SsaoDB->IndexCount, 0, 0);
 }
 
 void SSAOPass::BlurRender(int blurCount)
@@ -203,10 +203,10 @@ void SSAOPass::BlurRender(bool horizon)
 	m_BlurPS->Update();
 
 	g_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_Context->IASetVertexBuffers(0, 1, m_SsaoBuffer->VB->GetAddress(), &m_SsaoBuffer->Stride, &m_SsaoBuffer->Offset);
-	g_Context->IASetIndexBuffer(m_SsaoBuffer->IB->Get(), DXGI_FORMAT_R16_UINT, 0);
+	g_Context->IASetVertexBuffers(0, 1, m_SsaoDB->VB->GetAddress(), &m_SsaoDB->Stride, &m_SsaoDB->Offset);
+	g_Context->IASetIndexBuffer(m_SsaoDB->IB->Get(), DXGI_FORMAT_R16_UINT, 0);
 
-	g_Context->DrawIndexed(m_SsaoBuffer->IndexCount, 0, 0);
+	g_Context->DrawIndexed(m_SsaoDB->IndexCount, 0, 0);
 }
 
 void SSAOPass::SetOffsetVectors()

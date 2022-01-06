@@ -4,9 +4,8 @@
 #include "GraphicState.h"
 #include "GraphicView.h"
 #include "Buffer.h"
-#include "RenderBuffer.h"
-#include "DrawBuffer.h"
 #include "Texture2D.h"
+#include "DrawBuffer.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "ShaderBase.h"
@@ -161,7 +160,7 @@ void GraphicResourceFactory::CreateRT(std::string name, Hash_Code hash_code, D3D
 	UnorderedAccessView* newUAV = RegisterResource<UnorderedAccessView, ID3D11UnorderedAccessView>(hash_code, uav.Get());
 
 	// RenderTarget 积己..
-	RenderTarget* newResource = new RenderTarget(newTex2D, newRTV, newSRV, newUAV);
+	RenderTexture* newResource = new RenderTexture(newTex2D, newRTV, newSRV, newUAV);
 
 	// Resource 殿废..
 	m_ResourceManager->AddResource(hash_code, newResource);
@@ -178,10 +177,11 @@ void GraphicResourceFactory::CreateRT(std::string name, Hash_Code hash_code, D3D
 	RESET_COM(uav);
 }
 
-void GraphicResourceFactory::CreateRB(std::string name, Hash_Code hash_code, D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
+void GraphicResourceFactory::CreateRB(std::string name, Hash_Code hash_code, D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc)
 {
 	// 货肺款 Resource Pointer 积己..
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> uav = nullptr;
 
@@ -191,6 +191,11 @@ void GraphicResourceFactory::CreateRB(std::string name, Hash_Code hash_code, D3D
 	// Bind Resource 积己..
 	UINT bindFlag = bufferDesc->BindFlags;
 
+	if (bindFlag & D3D11_BIND_RENDER_TARGET)
+	{
+		// RenderTargetView Resource 积己..
+		m_Graphic->CreateRenderTargetView(buffer.Get(), rtvDesc, rtv.GetAddressOf());
+	}
 	if (bindFlag & D3D11_BIND_SHADER_RESOURCE)
 	{
 		// ShaderResourceView Resource 积己..
@@ -204,11 +209,12 @@ void GraphicResourceFactory::CreateRB(std::string name, Hash_Code hash_code, D3D
 
 	// Resource 积己 棺 殿废..
 	Buffer* newBuffer = new Buffer(buffer.Get());
+	RenderTargetView* newRTV = RegisterResource<RenderTargetView, ID3D11RenderTargetView>(hash_code, rtv.Get());
 	ShaderResourceView* newSRV = RegisterResource<ShaderResourceView, ID3D11ShaderResourceView>(hash_code, srv.Get());
 	UnorderedAccessView* newUAV = RegisterResource<UnorderedAccessView, ID3D11UnorderedAccessView>(hash_code, uav.Get());
 
 	// RenderTarget 积己..
-	RenderBuffer* newResource = new RenderBuffer(newBuffer, newSRV, newUAV);
+	RenderBuffer* newResource = new RenderBuffer(newBuffer, newRTV, newSRV, newUAV);
 
 	// Resource 殿废..
 	m_ResourceManager->AddResource(hash_code, newResource);
@@ -399,7 +405,7 @@ void GraphicResourceFactory::CreateMainRenderTarget(Hash_Code hash_Code, UINT wi
 	UnorderedAccessView* newUAV = RegisterResource<UnorderedAccessView, ID3D11UnorderedAccessView>(hash_Code, uav.Get());
 
 	// Main RenderTarget 积己..
-	RenderTarget* mainRenderTarget = new RenderTarget(newTex2D, newRTV, newSRV, newUAV);
+	RenderTexture* mainRenderTarget = new RenderTexture(newTex2D, newRTV, newSRV, newUAV);
 
 	// Resource 殿废..
 	m_ResourceManager->AddMainRenderTarget(mainRenderTarget);
@@ -528,7 +534,6 @@ void GraphicResourceFactory::CreateLoadBuffer<MeshVertex>(ParserData::Mesh* mesh
 {
 	if (mesh->m_VertexList.empty()) return;
 	
-
 	// 货肺款 Buffer 积己..
 	meshData->VB = new VertexBuffer();
 	meshData->IB = new IndexBuffer();
@@ -1083,7 +1088,7 @@ void GraphicResourceFactory::CreateDepthStencilViews(int width, int height)
 
 	// Defalt DepthStencilView 积己..
 	CreateDepthStencil<DS_Defalt>(&texDesc, nullptr, &descDSV);
-	CreateDepthStencil<DS_Light>(&texDesc, nullptr, &descDSV);
+	CreateDepthStencil<DS_OutPut>(&texDesc, nullptr, &descDSV);
 }
 
 void GraphicResourceFactory::CreateViewPorts(int width, int height)
@@ -1256,10 +1261,10 @@ void GraphicResourceFactory::CreateLineQuadBuffer()
 	vertices[1].Pos = Vector3(-1.0f, +1.0f, 0.0f);
 	vertices[2].Pos = Vector3(+1.0f, +1.0f, 0.0f);
 	vertices[3].Pos = Vector3(+1.0f, -1.0f, 0.0f);
-	vertices[0].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
-	vertices[1].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
-	vertices[2].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
-	vertices[3].Color = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+	vertices[0].Color = Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+	vertices[1].Color = Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+	vertices[2].Color = Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+	vertices[3].Color = Vector4(0.5f, 0.5f, 0.5f, 1.0f);
 
 	std::vector<UINT> indices(iCount);
 	indices[0] = 0; indices[1] = 1;

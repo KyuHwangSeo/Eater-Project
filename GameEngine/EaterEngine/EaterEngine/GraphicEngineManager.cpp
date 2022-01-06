@@ -27,12 +27,9 @@ void GraphicEngineManager::Initialize(HWND Hwnd, int WinSizeWidth, int WinSizeHe
 	GEngine->Initialize(Hwnd, WinSizeWidth, WinSizeHeight);
 }
 
-void GraphicEngineManager::BeginRender(UINT& renderOption)
+void GraphicEngineManager::RenderSetting(UINT& renderOption)
 {
-	if (renderOption)
-	{
-		GEngine->BeginRender(renderOption);
-	}
+	GEngine->RenderSetting(renderOption);
 }
 
 void GraphicEngineManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -78,7 +75,17 @@ void GraphicEngineManager::UIRender(std::queue<MeshData*>* meshList, GlobalData*
 
 void GraphicEngineManager::LightRender(GlobalData* global)
 {
+	//해당 엔진을 랜더링
 	GEngine->LightRender(global);
+}
+
+void GraphicEngineManager::DebugRender(std::queue<MeshData*>* meshList, GlobalData* global)
+{
+	//하나의 엔진이 끝날때마다 ReQueue는 사라짐 계속 넣어준다
+	ObjManager->CreateRenderQueue();
+	
+	//해당 엔진을 랜더링
+	GEngine->DebugRender(meshList, global);
 }
 
 void GraphicEngineManager::EndRender()

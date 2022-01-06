@@ -28,7 +28,7 @@ private:
 	ID3D11RasterizerState* m_RasterizerState;
 	ID3D11BlendState* m_BlendState;
 
-	RenderTarget* m_BackBuffer;
+	RenderTexture* m_BackBuffer;
 
 	ID3D11RenderTargetView* m_BackBufferRTV;
 	ID3D11ShaderResourceView* m_BackBufferSRV;

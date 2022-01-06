@@ -5,6 +5,7 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
+#include "Buffer.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"

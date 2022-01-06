@@ -1,8 +1,22 @@
 #pragma once
 #include "ResourceBase.h"
 
+// DirectX 11 ResourceView Class
+class ResourceView : public ResourceBase
+{
+public:
+	ResourceView(RESOURCE_TYPE type);
+	~ResourceView() = default;
+
+public:
+	void OnResize(UINT byteSize);
+
+protected:
+	UINT m_NumElements;
+};
+
 // DirectX 11 DepthStencilView Class
-class DepthStencilView : public ResourceBase
+class DepthStencilView : public ResourceView
 {
 public:
 	DepthStencilView(ID3D11DepthStencilView* dsv);
@@ -23,9 +37,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DSV;
 };
 
-
 // DirectX 11 RenderTargetView Class
-class RenderTargetView : public ResourceBase
+class RenderTargetView : public ResourceView
 {
 public:
 	RenderTargetView(ID3D11RenderTargetView* rtv);
@@ -47,7 +60,7 @@ private:
 };
 
 // DirectX 11 ShaderResourceView Class
-class ShaderResourceView : public ResourceBase
+class ShaderResourceView : public ResourceView
 {
 public:
 	ShaderResourceView(ID3D11ShaderResourceView* srv);
@@ -69,7 +82,7 @@ private:
 };
 
 // DirectX 11 UnorderedAccessView Class
-class UnorderedAccessView : public ResourceBase
+class UnorderedAccessView : public ResourceView
 {
 public:
 	UnorderedAccessView(ID3D11UnorderedAccessView* uav);

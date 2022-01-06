@@ -1,8 +1,19 @@
 #include "DirectDefine.h"
 #include "GraphicView.h"
 
+ResourceView::ResourceView(RESOURCE_TYPE type)
+	:ResourceBase(type)
+{
+
+}
+
+void ResourceView::OnResize(UINT byteSize)
+{
+	m_NumElements = byteSize;
+}
+
 DepthStencilView::DepthStencilView(ID3D11DepthStencilView* dsv)
-	:ResourceBase(RESOURCE_TYPE::DSV), m_DSV(dsv)
+	:ResourceView(RESOURCE_TYPE::DSV), m_DSV(dsv)
 {
 
 }
@@ -41,13 +52,17 @@ void DepthStencilView::GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC* desc)
 {
 	assert(m_DSV);
 
+	// Description 추출..
 	m_DSV->GetDesc(desc);
 }
 
 RenderTargetView::RenderTargetView(ID3D11RenderTargetView* rtv)
-	:ResourceBase(RESOURCE_TYPE::RTV), m_RTV(rtv)
+	:ResourceView(RESOURCE_TYPE::RTV), m_RTV(rtv)
 {
+	D3D11_RENDER_TARGET_VIEW_DESC desc;
+	rtv->GetDesc(&desc);
 
+	m_NumElements = desc.Buffer.NumElements;
 }
 
 RenderTargetView::~RenderTargetView()
@@ -84,13 +99,19 @@ void RenderTargetView::GetDesc(D3D11_RENDER_TARGET_VIEW_DESC* desc)
 {
 	assert(m_RTV);
 
+	// Description 추출..
 	m_RTV->GetDesc(desc);
+
+	desc->Buffer.NumElements = m_NumElements;
 }
 
 ShaderResourceView::ShaderResourceView(ID3D11ShaderResourceView* srv)
-	:ResourceBase(RESOURCE_TYPE::SRV), m_SRV(srv)
+	:ResourceView(RESOURCE_TYPE::SRV), m_SRV(srv)
 {
+	D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+	srv->GetDesc(&desc);
 
+	m_NumElements = desc.Buffer.NumElements;
 }
 
 ShaderResourceView::~ShaderResourceView()
@@ -127,13 +148,19 @@ void ShaderResourceView::GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* desc)
 {
 	assert(m_SRV);
 
+	// Description 추출..
 	m_SRV->GetDesc(desc);
+
+	desc->Buffer.NumElements = m_NumElements;
 }
 
 UnorderedAccessView::UnorderedAccessView(ID3D11UnorderedAccessView* uav)
-	:ResourceBase(RESOURCE_TYPE::UAV), m_UAV(uav)
+	:ResourceView(RESOURCE_TYPE::UAV), m_UAV(uav)
 {
+	D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
+	uav->GetDesc(&desc);
 
+	m_NumElements = desc.Buffer.NumElements;
 }
 
 UnorderedAccessView::~UnorderedAccessView()
@@ -170,5 +197,8 @@ void UnorderedAccessView::GetDesc(D3D11_UNORDERED_ACCESS_VIEW_DESC* desc)
 {
 	assert(m_UAV);
 
+	// Description 추출..
 	m_UAV->GetDesc(desc);
+
+	desc->Buffer.NumElements = m_NumElements;
 }

@@ -92,14 +92,14 @@ void Player::Update()
 		Move = false;
 	}
 
-	if (GetKey('Q'))
-	{
-		gameobject->transform->SetRotate(0,1,0);
-	}
-	else if (GetKey('E'))
-	{
-		gameobject->transform->SetRotate(0, 1, 0);
-	}
+	//if (GetKey('Q'))
+	//{
+	//	gameobject->transform->SetRotate(0,1,0);
+	//}
+	//else if (GetKey('E'))
+	//{
+	//	gameobject->transform->SetRotate(0, 1, 0);
+	//}
 
 
 

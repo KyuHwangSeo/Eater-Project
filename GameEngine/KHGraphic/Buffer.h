@@ -17,7 +17,6 @@ public:
 
 public:
 	void OnResize(UINT byteWidth);
-	void SetResize();
 
 	void Reset();
 	void Release();
@@ -29,12 +28,8 @@ public:
 
 	void GetDesc(D3D11_BUFFER_DESC* desc);
 
-	bool GetResize();
-
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_Buffer;
 
 	UINT m_ByteWidth;
-
-	bool m_IsResize;
 };

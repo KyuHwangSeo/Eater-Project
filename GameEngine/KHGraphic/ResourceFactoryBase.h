@@ -36,7 +36,7 @@ public:
 	// Create Graphic Struct Resource..
 	template<typename T, Enable_Check<T> = NULL> void CreateDepthStencil(D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc = nullptr, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc = nullptr);
 	template<typename T, Enable_Check<T> = NULL> void CreateRenderTarget(D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc = nullptr, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc = nullptr, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc = nullptr);
-	template<typename T, Enable_Check<T> = NULL> void CreateRenderBuffer(D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc = nullptr, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc = nullptr);
+	template<typename T, Enable_Check<T> = NULL> void CreateRenderBuffer(D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc = nullptr, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc = nullptr, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc = nullptr);
 	
 public:
 	// Create Graphic View Resource..
@@ -54,7 +54,7 @@ public:
 private:
 	virtual void CreateDS(std::string name, Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_DEPTH_STENCIL_VIEW_DESC* dsvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc) abstract;
 	virtual void CreateRT(std::string name, Hash_Code hash_code, D3D11_TEXTURE2D_DESC* texDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) abstract;
-	virtual void CreateRB(std::string name, Hash_Code hash_code, D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) abstract;
+	virtual void CreateRB(std::string name, Hash_Code hash_code, D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc) abstract;
 
 	virtual void CreateDSS(std::string name, Hash_Code hash_code, D3D11_DEPTH_STENCIL_DESC* dssDesc) abstract;
 	virtual void CreateRS(std::string name, Hash_Code hash_code, D3D11_RASTERIZER_DESC* rsDesc) abstract;
@@ -89,12 +89,12 @@ inline void IGraphicResourceFactory::CreateRenderTarget(D3D11_TEXTURE2D_DESC* te
 }
 
 template<typename T, Enable_Check<T>>
-void IGraphicResourceFactory::CreateRenderBuffer(D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc /*= nullptr*/, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc /*= nullptr*/)
+void IGraphicResourceFactory::CreateRenderBuffer(D3D11_BUFFER_DESC* bufferDesc, D3D11_SUBRESOURCE_DATA* subData, D3D11_RENDER_TARGET_VIEW_DESC* rtvDesc, D3D11_SHADER_RESOURCE_VIEW_DESC* srvDesc /*= nullptr*/, D3D11_UNORDERED_ACCESS_VIEW_DESC* uavDesc /*= nullptr*/)
 {
 	// Template Struct Resource Type Check..
 	assert(T::GetType() == RESOURCE_TYPE::RB);
 
-	CreateRB(T::GetName(), T::GetHashCode(), bufferDesc, subData, srvDesc, uavDesc);
+	CreateRB(T::GetName(), T::GetHashCode(), bufferDesc, subData, rtvDesc, srvDesc, uavDesc);
 }
 
 template<typename T, Enable_Check<T>>

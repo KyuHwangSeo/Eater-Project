@@ -8,5 +8,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 DEPTH_STENCIL_VIEW(DS_Defalt)
-DEPTH_STENCIL_VIEW(DS_Light)
+DEPTH_STENCIL_VIEW(DS_OutPut)
 DEPTH_STENCIL_VIEW(DS_Shadow)

@@ -25,8 +25,8 @@ void OIT_Particle_PS(VertexIn pIn)
     clip(texColor.a - 0.1f);
 
     // 두 픽셀을 곱하고 감마(2.2f)를 곱해준다..
-    texColor = texColor * gColor * 2.2f;
-    
+    texColor.xyz *= 2.2f;
+    texColor = texColor * gColor;
     texColor = saturate(texColor);
     
     uint pixelCount = gPieceLinkBuffer.IncrementCounter();

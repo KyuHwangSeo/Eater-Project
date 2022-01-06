@@ -2,9 +2,12 @@
 #include "Buffer.h"
 
 Buffer::Buffer(ID3D11Buffer* buffer)
-	:m_Buffer(buffer), m_IsResize(false)
+	:m_Buffer(buffer)
 {
+	D3D11_BUFFER_DESC desc;
+	buffer->GetDesc(&desc);
 
+	m_ByteWidth = desc.ByteWidth;
 }
 
 Buffer::~Buffer()
@@ -15,11 +18,6 @@ Buffer::~Buffer()
 void Buffer::OnResize(UINT byteWidth)
 {
 	m_ByteWidth = byteWidth;
-}
-
-void Buffer::SetResize()
-{
-	m_IsResize = true;
 }
 
 void Buffer::Reset()
@@ -54,9 +52,4 @@ void Buffer::GetDesc(D3D11_BUFFER_DESC* desc)
 	m_Buffer->GetDesc(desc);
 
 	desc->ByteWidth = m_ByteWidth;
-}
-
-bool Buffer::GetResize()
-{
-	return m_IsResize;
 }

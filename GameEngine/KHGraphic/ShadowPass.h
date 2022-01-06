@@ -11,7 +11,7 @@ public:
 	void OnResize(int width, int height) override;
 	void Release() override;
 
-	void Reset();
+	void SetOption(UINT renderOption) override;
 
 public:
 	void BeginRender();
@@ -22,10 +22,10 @@ private:
 	VertexShader* m_MeshShadowVS;
 	VertexShader* m_SkinShadowVS;
 
-	DepthStencil* m_ShadowDepthStencilView;
+	DepthStencil* m_ShadowDS;
 	
 	ID3D11DepthStencilView* m_ShadowDSV;
-	ID3D11RasterizerState* m_RasterizerState;
-	D3D11_VIEWPORT* m_ShadowViewport;
+	ID3D11RasterizerState* m_DepthRS;
+	D3D11_VIEWPORT* m_ShadowVP;
 };
 

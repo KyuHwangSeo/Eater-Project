@@ -12,6 +12,8 @@ public:
 	void OnResize(int width, int height) override;
 	void Release() override;
 
+	void SetOption(UINT renderOption);
+
 	void BeginRender();
 	void BufferUpdate(MeshData* mesh);
 	void RenderUpdate(MeshData* mesh, GlobalData* global);
@@ -26,19 +28,17 @@ private:
 	PixelShader* m_TerrainPS;
 	PixelShader* m_ParticlePS;
 
-	ID3D11DepthStencilView* m_DepthStencilView;
+	ID3D11DepthStencilView* m_DefaltDSV;
 	
-	ID3D11DepthStencilState* m_NoDepthStencilState;
-	ID3D11DepthStencilState* m_DepthStencilState;
-	ID3D11RasterizerState* m_RasterizerState;
-	ID3D11BlendState* m_AlphaBlendState;
-	ID3D11BlendState* m_DefaltBlendState;
+	ID3D11DepthStencilState* m_DefaltDSS;
+	ID3D11RasterizerState* m_SolidRS;
+	ID3D11BlendState* m_AlphaBlendBS;
 
-	RenderTarget* m_AlbedoRT;
-	RenderTarget* m_NormalRT;
-	RenderTarget* m_PositionRT;
-	RenderTarget* m_ShadowRT;
-	RenderTarget* m_DepthRT;
+	RenderTexture* m_AlbedoRT;
+	RenderTexture* m_NormalRT;
+	RenderTexture* m_PositionRT;
+	RenderTexture* m_ShadowRT;
+	RenderTexture* m_DepthRT;
 
 	std::vector<ID3D11ShaderResourceView*> m_SRVList;
 	std::vector<ID3D11RenderTargetView*> m_RTVList;
@@ -49,6 +49,6 @@ private:
 	UINT m_Stride;
 	UINT m_Offset;
 
-	D3D11_VIEWPORT* m_ScreenViewport;
+	D3D11_VIEWPORT* m_ScreenVP;
 };
 

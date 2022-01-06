@@ -12,7 +12,7 @@ public:
 	void OnResize(int width, int height) override;
 	void Release() override;
 
-	void SetOption(const char* shaderName) override;
+	void SetOption(UINT renderOption) override;
 
 	void Reset();
 
@@ -25,14 +25,15 @@ private:
 	VertexShader* m_LightVS;
 	PixelShader* m_LightPS; 
 	
-	ID3D11DepthStencilView* m_LightDSV;
-	ID3D11RenderTargetView* m_MainRTV;
-	ID3D11RenderTargetView* m_OitRTV;
+	ID3D11DepthStencilView* m_OutPutDSV;
+	ID3D11RenderTargetView* m_OutPutRTV;
 
-	RenderTarget* m_AlbedoRT;
-	RenderTarget* m_NormalRT;
-	RenderTarget* m_PositionRT;
-	RenderTarget* m_ShadowRT;
+	RenderTexture* m_OutPutRT;
+
+	RenderTexture* m_AlbedoRT;
+	RenderTexture* m_NormalRT;
+	RenderTexture* m_PositionRT;
+	RenderTexture* m_ShadowRT;
 
 	D3D11_VIEWPORT* m_ScreenVP;
 };

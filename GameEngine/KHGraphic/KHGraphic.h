@@ -13,13 +13,14 @@ public:
 public:
 	void Initialize(HWND hwnd, int screenWidth, int screenHeight) override;
 
-	void BeginRender(UINT& renderOption) override;
+	void RenderSetting(UINT& renderOption) override;
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void SSAORender(GlobalData* global) override;
 	void AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void LightRender(GlobalData* global) override;
+	void DebugRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void EndRender() override;
 
 	void OnReSize(int screenWidth, int screenheight) override;

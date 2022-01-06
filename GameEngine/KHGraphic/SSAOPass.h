@@ -11,7 +11,8 @@ public:
 	void Start(int width, int height) override;
 	void OnResize(int width, int height) override;
 	void Release() override;
-	void Reset();
+	
+	void SetOption(UINT renderOption) override;
 
 public:
 	void BeginRender();
@@ -24,15 +25,15 @@ private:
 	void SetFrustumFarCorners(int width, int height);
 
 private:
-	DrawBuffer* m_SsaoBuffer;
+	DrawBuffer* m_SsaoDB;
 
 	VertexShader* m_SsaoVS;
 	PixelShader* m_SsaoPS;
 	VertexShader* m_BlurVS;
 	PixelShader* m_BlurPS;
 
-	RenderTarget* m_SsaoRT;
-	RenderTarget* m_SsaoBlurRT;
+	RenderTexture* m_SsaoRT;
+	RenderTexture* m_SsaoBlurRT;
 
 	ID3D11RenderTargetView* m_SsaoRTV;
 	ID3D11RenderTargetView* m_SsaoBlurRTV;
@@ -44,5 +45,5 @@ private:
 
 
 
-	D3D11_VIEWPORT* m_SsaoViewport;
+	D3D11_VIEWPORT* m_SsaoVP;
 };

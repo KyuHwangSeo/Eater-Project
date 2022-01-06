@@ -44,63 +44,58 @@ void ShaderManager::Release()
 
 void ShaderManager::CreateShader()
 {
-	// Shader Macro
-	D3D_SHADER_MACRO light0_macro[] = { {"GAMMA_CORRECTION"}, {"SHADOW"}, {"SSAO"}, {NULL, NULL} };
-	D3D_SHADER_MACRO light1_macro[] = { {"SHADOW"}, {"SSAO"}, {NULL, NULL} };
-	D3D_SHADER_MACRO light2_macro[] = { {"GAMMA_CORRECTION"}, {"SSAO"}, {NULL, NULL} };
-	D3D_SHADER_MACRO light3_macro[] = { {"GAMMA_CORRECTION"}, {"SHADOW"}, {NULL, NULL} };
-	D3D_SHADER_MACRO light4_macro[] = { {"GAMMA_CORRECTION"}, {NULL, NULL} };
-	D3D_SHADER_MACRO light5_macro[] = { {"SHADOW"}, {NULL, NULL} };
-	D3D_SHADER_MACRO light6_macro[] = { {"SSAO"}, {NULL, NULL} };
+	// Light Shader Macro
+	D3D_SHADER_MACRO light1_macro[] = { {"SHADOW"}, {NULL, NULL} };
+	D3D_SHADER_MACRO light2_macro[] = { {"SSAO"}, {NULL, NULL} };
+	D3D_SHADER_MACRO light3_macro[] = { {"SHADOW"}, {"SSAO"}, {NULL, NULL} };
 
 	// Light Shader
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "LightVS.hlsl", "Light_VS", "Light_VS");
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option0" ,light0_macro);
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option1" ,light1_macro);
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option2" ,light2_macro);
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option3" ,light3_macro);
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option4" ,light4_macro);
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option5" ,light5_macro);
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option6" ,light6_macro);
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "LightPS.hlsl", "Light_PS", "Light_PS_Option7");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Light_VS.hlsl", "Light_VS", "Light_VS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Light_PS.hlsl", "Light_PS", "Light_PS_Option0");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Light_PS.hlsl", "Light_PS", "Light_PS_Option1", light1_macro);
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Light_PS.hlsl", "Light_PS", "Light_PS_Option2", light2_macro);
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Light_PS.hlsl", "Light_PS", "Light_PS_Option3", light3_macro);
 
-	D3D_SHADER_MACRO terrain_macro[] = { {"TERRAIN_MESH"}, {NULL, NULL} };
+	// Deferred Shader Macro
+	D3D_SHADER_MACRO deferred_macro1[] = { {"TERRAIN_MESH"}, {NULL, NULL} };
+	D3D_SHADER_MACRO deferred_macro2[] = { {"GAMMA_CORRECTION"}, {NULL, NULL} };
+	D3D_SHADER_MACRO deferred_macro3[] = { {"GAMMA_CORRECTION"}, {"TERRAIN_MESH"}, {NULL, NULL} };
 
-	// Object Shader
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "ObjectVS.hlsl", "Mesh_VS", "Mesh_VS");
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "ObjectVS.hlsl", "Skin_VS", "Skin_VS");
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "ObjectVS.hlsl", "Mesh_VS", "Terrain_VS", terrain_macro);
-
-	// Deffered Shader
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "DeferredPS.hlsl", "Deferred_PS", "Deferred_PS");
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "DeferredPS.hlsl", "Deferred_PS", "Terrain_PS", terrain_macro);
+	// Deferred Shader
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Object_VS.hlsl", "Mesh_VS", "Mesh_VS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Object_VS.hlsl", "Skin_VS", "Skin_VS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Object_VS.hlsl", "Mesh_VS", "Terrain_VS", deferred_macro1);
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Deferred_PS.hlsl", "Deferred_PS", "Deferred_PS_Option0");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Deferred_PS.hlsl", "Deferred_PS", "Deferred_PS_Option1", deferred_macro2);
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Deferred_PS.hlsl", "Deferred_PS", "Terrain_PS_Option0", deferred_macro1);
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Deferred_PS.hlsl", "Deferred_PS", "Terrain_PS_Option1", deferred_macro3);
 
 	// OIT Shader
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "OIT_Render_VS.hlsl", "OIT_VS", "OIT_VS");
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "OIT_Render_PS.hlsl", "OIT_PS", "OIT_PS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "OIT_Blend_VS.hlsl", "OIT_VS", "OIT_VS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "OIT_Blend_PS.hlsl", "OIT_PS", "OIT_PS");
 
 	LoadShader(SHADER_TYPE::PIXEL_SHADER, "OIT_Particle_PS.hlsl", "OIT_Particle_PS", "OIT_Particle_PS");
 
 	// Forward Shader
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "ForwardPS.hlsl", "Forward_PS", "Forward_PS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Forward_PS.hlsl", "Forward_PS", "Forward_PS");
 
 	// Shadow Shader
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "ShadowVS.hlsl", "MeshShadow_VS", "MeshShadow_VS");
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "ShadowVS.hlsl", "SkinShadow_VS", "SkinShadow_VS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Shadow_VS.hlsl", "MeshShadow_VS", "MeshShadow_VS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Shadow_VS.hlsl", "SkinShadow_VS", "SkinShadow_VS");
 
 	// SSAO Shader
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "SSAOVS.hlsl", "SSAO_VS", "SSAO_VS");
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "SSAOPS.hlsl", "SSAO_PS", "SSAO_PS");
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "SSAOBlurVS.hlsl", "SSAOBlur_VS", "SSAOBlur_VS");
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "SSAOBlurPS.hlsl", "SSAOBlur_PS", "SSAOBlur_PS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "SSAO_VS.hlsl", "SSAO_VS", "SSAO_VS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "SSAO_PS.hlsl", "SSAO_PS", "SSAO_PS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "SSAO_Blur_VS.hlsl", "SSAOBlur_VS", "SSAOBlur_VS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "SSAO_Blur_PS.hlsl", "SSAOBlur_PS", "SSAOBlur_PS");
 
 	// Particle Shader
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "ParticleVS.hlsl", "Particle_VS", "Particle_VS");
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "ParticlePS.hlsl", "Particle_PS", "Particle_PS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Particle_VS.hlsl", "Particle_VS", "Particle_VS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Particle_PS.hlsl", "Particle_PS", "Particle_PS");
 
 	// Debug Shader
-	LoadShader(SHADER_TYPE::VERTEX_SHADER, "DebugVS.hlsl", "Debug_VS", "Debug_VS");
-	LoadShader(SHADER_TYPE::PIXEL_SHADER, "DebugPS.hlsl", "Debug_PS", "Debug_PS");
+	LoadShader(SHADER_TYPE::VERTEX_SHADER, "Debug_VS.hlsl", "Debug_VS", "Debug_VS");
+	LoadShader(SHADER_TYPE::PIXEL_SHADER, "Debug_PS.hlsl", "Debug_PS", "Debug_PS");
 }
 
 void ShaderManager::AddSampler(Hash_Code hash_code, ID3D11SamplerState* sampler)

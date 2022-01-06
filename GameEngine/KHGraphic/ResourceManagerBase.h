@@ -5,7 +5,7 @@
 
 typedef size_t Hash_Code;
 
-class RenderTarget;
+class RenderTexture;
 class RenderBuffer;
 class DepthStencil;
 
@@ -41,15 +41,15 @@ public:
 
 public:
 	// BackBuffer RenderTarget Get Function
-	virtual RenderTarget* GetMainRenderTarget() abstract;
+	virtual RenderTexture* GetMainRenderTarget() abstract;
 	// BackBuffer RenderTarget Add Function
-	virtual void AddMainRenderTarget(RenderTarget* rtv) abstract;
+	virtual void AddMainRenderTarget(RenderTexture* rtv) abstract;
 
 public:
 	// DepthStencil Get Function
 	template<typename T, Enable_Check<T> = NULL> DepthStencil* GetDepthStencil();
 	// RenderTarget Get Function
-	template<typename T, Enable_Check<T> = NULL> RenderTarget* GetRenderTarget();
+	template<typename T, Enable_Check<T> = NULL> RenderTexture* GetRenderTarget();
 	// RenderBuffer Get Function
 	template<typename T, Enable_Check<T> = NULL> RenderBuffer* GetRenderBuffer();
 	// DrawBuffer Get Function
@@ -82,7 +82,7 @@ public:
 private:
 	// Graphic Struct Resource Getter..
 	virtual DepthStencil* GetDepthStencil(Hash_Code hash_code) abstract;
-	virtual RenderTarget* GetRenderTarget(Hash_Code hash_code) abstract;
+	virtual RenderTexture* GetRenderTarget(Hash_Code hash_code) abstract;
 	virtual RenderBuffer* GetRenderBuffer(Hash_Code hash_code) abstract;
 	virtual DrawBuffer* GetDrawBuffer(Hash_Code hash_code) abstract;
 
@@ -114,7 +114,7 @@ inline DepthStencil* IGraphicResourceManager::GetDepthStencil()
 }
 
 template<typename T, Enable_Check<T>>
-inline RenderTarget* IGraphicResourceManager::GetRenderTarget()
+inline RenderTexture* IGraphicResourceManager::GetRenderTarget()
 {
 	// Template Struct Resource Type Check..
 	assert(T::GetType() == RESOURCE_TYPE::RT);

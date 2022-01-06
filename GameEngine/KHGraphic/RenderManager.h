@@ -19,13 +19,14 @@ public:
 	void Initialize(int width, int height) override;
 	void Release() override;
 
-	void BeginRender(UINT& renderOption) override;
+	void RenderSetting(UINT& renderOption) override;
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global) override; 
 	void SSAORender(GlobalData* global) override;
 	void AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void LightRender(GlobalData* global) override;
+	void DebugRender(std::queue<MeshData*>* meshList, GlobalData* global) override;
 	void EndRender() override;
 
 	void OnResize(int width, int height) override;
@@ -36,7 +37,6 @@ private:
 private:
 	std::vector<RenderPassBase*> m_RenderPassList;
 
-	int m_Width, m_Height;
 	UINT m_RenderOption = 0;
 
 	DeferredPass* m_Deferred;

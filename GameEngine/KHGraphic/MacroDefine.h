@@ -31,15 +31,16 @@
 // Convenience macro for releasing COM objects.
 //---------------------------------------------------------------------------------------
 
+#define RESET_COM(x) { if(x != nullptr) {x.Reset();} }
 #define RELEASE_COM(x) { if(x != nullptr){ x->Release(); x = nullptr; } }
-#define SAFE_RELEASE(x) { if(x != nullptr){ x->Release(); delete x; x = nullptr; } }
 
 //---------------------------------------------------------------------------------------
 // Convenience macro for deleting objects.
 //---------------------------------------------------------------------------------------
 
+#define SAFE_RESET(x) { if(x != nullptr) {x->Reset();} }
+#define SAFE_RELEASE(x) { if(x != nullptr){ x->Release(); delete x; x = nullptr; } }
 #define SAFE_DELETE(x) { if(x != nullptr) {delete x; x = nullptr;} }
-#define RESET_COM(x) { if(x != nullptr) {x.Reset();} }
 
 #if defined(_DEBUG) || defined(DEBUG)
 inline void GRAPHIC_DEBUG_NAME(ID3D11Device * pObj, const CHAR * pstrName)

@@ -6,8 +6,8 @@
 #include "GraphicState.h"
 #include "GraphicView.h"
 #include "Buffer.h"
-#include "DrawBuffer.h"
 #include "Texture2D.h"
+#include "DrawBuffer.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "VertexDefine.h"
@@ -44,21 +44,16 @@ void LightPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_LightVS = g_Shader->GetShader("Light_VS");
-	//m_LightPS = g_Shader->GetShader("Light_PS_Option0");
-	m_LightPS = g_Shader->GetShader("Light_PS_Option4");
+	m_LightPS = g_Shader->GetShader("Light_PS_Option3");
 
 	// Buffer 설정..
 	m_QuadBD = g_Resource->GetDrawBuffer<DB_Quad>();
-
-	// BackBuffer 설정..
-	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
-	m_OitRTV = g_Resource->GetRenderTarget<RT_OIT>()->GetRTV()->Get();
 
 	// ViewPort 설정..
 	m_ScreenVP = g_Resource->GetViewPort<VP_FullScreen>()->Get();
 
 	// DepthStencilView 설정..
-	m_LightDSV = g_Resource->GetDepthStencilView<DS_Light>()->Get();
+	m_OutPutDSV = g_Resource->GetDepthStencilView<DS_OutPut>()->Get();
 
 	// Multi RenderTarget 설정..
 	m_AlbedoRT = g_Resource->GetRenderTarget<RT_Deffered_Albedo>();
@@ -83,13 +78,12 @@ void LightPass::Start(int width, int height)
 
 void LightPass::OnResize(int width, int height)
 {
-	// BackBuffer RenderTargetView 재설정..
-	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
-	m_OitRTV = g_Resource->GetRenderTarget<RT_OIT>()->GetRTV()->Get();
-
 	// DepthStencilView 재설정..
-	m_LightDSV = g_Resource->GetDepthStencilView<DS_Light>()->Get();
-	
+	m_OutPutDSV = g_Resource->GetDepthStencilView<DS_OutPut>()->Get();
+
+	// 현재 RenderTargetView 재설정..
+	m_OutPutRTV = m_OutPutRT->GetRTV()->Get();
+
 	// ShaderResource 재설정..
 	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
 	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV()->Get());
@@ -109,17 +103,41 @@ void LightPass::Release()
 
 }
 
-void LightPass::SetOption(const char* shaderName)
+void LightPass::SetOption(UINT renderOption)
 {
-	m_LightPS = g_Shader->GetShader(shaderName);
+	switch (renderOption & ~( RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_OIT ))
+	{
+	case RENDER_SHADOW:
+		m_LightPS = g_Shader->GetShader("Light_PS_Option1");
+		break;
+	case RENDER_SSAO:
+		m_LightPS = g_Shader->GetShader("Light_PS_Option2");
+		break;
+	case RENDER_SHADOW | RENDER_SSAO:
+		m_LightPS = g_Shader->GetShader("Light_PS_Option3");
+		break;
+	default:
+		m_LightPS = g_Shader->GetShader("Light_PS_Option0");
+		break;
+	}
+
+	if (renderOption & RENDER_OIT)
+	{
+		m_OutPutRT = g_Resource->GetRenderTarget<RT_OutPut>();
+	}
+	else
+	{
+		m_OutPutRT = g_Resource->GetMainRenderTarget();
+	}
+
+	// 현재 RenderTargetView 설정..
+	m_OutPutRTV = m_OutPutRT->GetRTV()->Get();
 
 	Reset();
 }
 
 void LightPass::Reset()
 {
-	g_Context->ClearRenderTargetView(m_MainRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-
 	// ShaderResource 재설정..
 	m_LightPS->SetShaderResourceView<gAlbedoRT>(m_AlbedoRT->GetSRV()->Get());
 	m_LightPS->SetShaderResourceView<gNormalRT>(m_NormalRT->GetSRV()->Get());
@@ -136,11 +154,9 @@ void LightPass::Reset()
 
 void LightPass::BeginRender()
 {
-	//g_Context->OMSetRenderTargets(1, &m_MainRTV, m_LightDSV);
-	g_Context->OMSetRenderTargets(1, &m_OitRTV, m_LightDSV);
-	g_Context->ClearDepthStencilView(m_LightDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//g_Context->ClearRenderTargetView(m_MainRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->ClearRenderTargetView(m_OitRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+	g_Context->OMSetRenderTargets(1, &m_OutPutRTV, m_OutPutDSV);
+	g_Context->ClearRenderTargetView(m_OutPutRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
+	g_Context->ClearDepthStencilView(m_OutPutDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	g_Context->RSSetViewports(1, m_ScreenVP);
 }
 
@@ -186,5 +202,4 @@ void LightPass::Render(GlobalData* global)
 	g_Context->IASetIndexBuffer(m_QuadBD->IB->Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	g_Context->DrawIndexed(m_QuadBD->IndexCount, 0, 0);
-	g_Context->ClearDepthStencilView(m_LightDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

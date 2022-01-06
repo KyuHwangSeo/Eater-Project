@@ -6,9 +6,8 @@
 #include "GraphicState.h"
 #include "GraphicView.h"
 #include "Buffer.h"
-#include "DrawBuffer.h"
-#include "RenderBuffer.h"
 #include "Texture2D.h"
+#include "DrawBuffer.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "MathDefine.h"
@@ -32,7 +31,7 @@
 
 OITPass::OITPass()
 {
-
+	m_Multiple = 4;
 }
 
 OITPass::~OITPass()
@@ -66,11 +65,11 @@ void OITPass::Create(int width, int height)
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = 1;
 
-	g_Factory->CreateRenderTarget<RT_OIT>(&texDesc, nullptr, &rtvDesc, &srvDesc);
+	g_Factory->CreateRenderTarget<RT_OutPut>(&texDesc, nullptr, &rtvDesc, &srvDesc);
 
 	D3D11_BUFFER_DESC structbufferDesc;
 	structbufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	structbufferDesc.ByteWidth = width * height * 12 * 4;
+	structbufferDesc.ByteWidth = width * height * m_Multiple * 12;
 	structbufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	structbufferDesc.CPUAccessFlags = 0;
 	structbufferDesc.StructureByteStride = 12;
@@ -78,7 +77,7 @@ void OITPass::Create(int width, int height)
 
 	D3D11_BUFFER_DESC rawbufferDesc;
 	rawbufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	rawbufferDesc.ByteWidth = width * height * 4;
+	rawbufferDesc.ByteWidth = width * height * m_Multiple;
 	rawbufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	rawbufferDesc.CPUAccessFlags = 0;
 	rawbufferDesc.StructureByteStride = 0;
@@ -88,7 +87,7 @@ void OITPass::Create(int width, int height)
 	structsrvDesc.Format = DXGI_FORMAT_UNKNOWN;
 	structsrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	structsrvDesc.Buffer.FirstElement = 0;
-	structsrvDesc.Buffer.NumElements = width * height * 4;
+	structsrvDesc.Buffer.NumElements = width * height * m_Multiple;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC rawsrvDesc;
 	rawsrvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
@@ -101,7 +100,7 @@ void OITPass::Create(int width, int height)
 	structuavDesc.Format = DXGI_FORMAT_UNKNOWN;
 	structuavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 	structuavDesc.Buffer.FirstElement = 0;
-	structuavDesc.Buffer.NumElements = width * height * 4;
+	structuavDesc.Buffer.NumElements = width * height * m_Multiple;
 	structuavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC rawuavDesc;
@@ -111,8 +110,8 @@ void OITPass::Create(int width, int height)
 	rawuavDesc.Buffer.NumElements = width * height;
 	rawuavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_RAW;
 
-	g_Factory->CreateRenderBuffer<RB_PieceLink>(&structbufferDesc, nullptr, &structsrvDesc, &structuavDesc);
-	g_Factory->CreateRenderBuffer<RB_FirstOffset>(&rawbufferDesc, nullptr, &rawsrvDesc, &rawuavDesc);
+	g_Factory->CreateRenderBuffer<RB_PieceLink>(&structbufferDesc, nullptr, nullptr, &structsrvDesc, &structuavDesc);
+	g_Factory->CreateRenderBuffer<RB_FirstOffset>(&rawbufferDesc, nullptr, nullptr, &rawsrvDesc, &rawuavDesc);
 }
 
 void OITPass::Start(int width, int height)
@@ -128,12 +127,9 @@ void OITPass::Start(int width, int height)
 	// BackBuffer 설정..
 	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
 
-	/// Alpha RT
-	m_OitRT = g_Resource->GetRenderTarget<RT_OIT>();
-	m_OitRTV = m_OitRT->GetRTV()->Get();
-
-
+	// DepthStencilView 설정..
 	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
+	m_OutputDSV = g_Resource->GetDepthStencilView<DS_OutPut>()->Get();
 
 	// Render Buffer 설정..
 	m_PieceLinkRB = g_Resource->GetRenderBuffer<RB_PieceLink>();
@@ -141,6 +137,7 @@ void OITPass::Start(int width, int height)
 	m_FirstOffsetRB = g_Resource->GetRenderBuffer<RB_FirstOffset>();
 	m_FirstOffsetRB->SetResize();
 
+	// UnorderedAccessView 설정..
 	m_PieceLinkUAV = m_PieceLinkRB->GetUAV()->Get();
 	m_FirstOffsetUAV = m_FirstOffsetRB->GetUAV()->Get();
 
@@ -154,9 +151,11 @@ void OITPass::Start(int width, int height)
 	m_OITRenderPS->ConstantBufferCopy<CB_OitFrame>(&oitBuf);
 	m_OITParticlePS->ConstantBufferCopy<CB_OitFrame>(&oitBuf);
 
+	ShaderResourceView* backGround = g_Resource->GetShaderResourceView<RT_OutPut>();
+	
 	m_OITRenderPS->SetShaderResourceView<gPieceLinkBuffer>(m_PieceLinkRB->GetSRV()->Get());
 	m_OITRenderPS->SetShaderResourceView<gFirstOffsetBuffer>(m_FirstOffsetRB->GetSRV()->Get());
-	m_OITRenderPS->SetShaderResourceView<gBackGround>(m_OitRT->GetSRV()->Get());
+	m_OITRenderPS->SetShaderResourceView<gBackGround>(backGround->Get());
 }
 
 void OITPass::OnResize(int width, int height)
@@ -164,22 +163,25 @@ void OITPass::OnResize(int width, int height)
 	// BackBuffer 설정..
 	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
 
-	m_OitRTV = m_OitRT->GetRTV()->Get();
-
+	// UnorderedAccessView 설정..
 	m_PieceLinkUAV = m_PieceLinkRB->GetUAV()->Get();
 	m_FirstOffsetUAV = m_FirstOffsetRB->GetUAV()->Get();
 
+	// DepthStencilView 설정..
 	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
-	
+	m_OutputDSV = g_Resource->GetDepthStencilView<DS_OutPut>()->Get();
+
 	// Shader Resource 설정..
 	CB_OitFrame oitBuf;
 	oitBuf.gFrameWidth = width;
 	m_OITRenderPS->ConstantBufferCopy<CB_OitFrame>(&oitBuf);
 	m_OITParticlePS->ConstantBufferCopy<CB_OitFrame>(&oitBuf);
 
+	ShaderResourceView* backGround = g_Resource->GetShaderResourceView<RT_OutPut>();
+
 	m_OITRenderPS->SetShaderResourceView<gPieceLinkBuffer>(m_PieceLinkRB->GetSRV()->Get());
 	m_OITRenderPS->SetShaderResourceView<gFirstOffsetBuffer>(m_FirstOffsetRB->GetSRV()->Get());
-	m_OITRenderPS->SetShaderResourceView<gBackGround>(m_OitRT->GetSRV()->Get());
+	m_OITRenderPS->SetShaderResourceView<gBackGround>(backGround->Get());
 }
 
 void OITPass::Release()
@@ -189,14 +191,16 @@ void OITPass::Release()
 
 void OITPass::SetResize(int width, int height)
 {
-	m_PieceLinkRB->OnResize(width * height * 12 * 4);
-	m_FirstOffsetRB->OnResize(width * height * 4);
+	m_PieceLinkRB->OnResize(width * height * m_Multiple * 12, width * height * m_Multiple);
+	m_FirstOffsetRB->OnResize(width * height * m_Multiple, width * height);
 }
 
 void OITPass::BeginRender()
 {
 	g_Context->RSSetState(m_NoCullRS);
 	g_Context->OMSetDepthStencilState(m_NoDepthStencilDSS, 0);
+	g_Context->OMSetRenderTargets(0, 0, m_DefaltDSV);
+	g_Context->OMSetBlendState(0, 0, 0xffffffff);
 
 	UINT magicValue[1] = { 0xffffffff };
 	g_Context->ClearUnorderedAccessViewUint(m_PieceLinkUAV, magicValue);
@@ -211,9 +215,9 @@ void OITPass::BeginRender()
 void OITPass::RenderUpdate()
 {
 	g_Context->ClearRenderTargetView(m_MainRTV, reinterpret_cast<const float*>(&DXColors::DeepDarkGray));
-	g_Context->OMSetRenderTargets(1, &m_MainRTV, m_DefaltDSV);
+	g_Context->ClearDepthStencilView(m_OutputDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	g_Context->OMSetRenderTargets(1, &m_MainRTV, m_OutputDSV);
 	g_Context->OMSetDepthStencilState(nullptr, 0);
-	g_Context->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
 
 	m_OITRenderVS->Update();
 	m_OITRenderPS->Update();

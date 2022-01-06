@@ -12,6 +12,8 @@ public:
 	void OnResize(int width, int height) override;
 	void Release() override;
 
+	void SetOption(UINT renderOption) override;
+
 	void BeginRender();
 	void BufferUpdate(MeshData* mesh);
 	void RenderUpdate(MeshData* mesh, GlobalData* global);

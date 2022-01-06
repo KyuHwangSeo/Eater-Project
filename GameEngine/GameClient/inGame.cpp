@@ -80,10 +80,10 @@ void InGame::Awake()
 	terrain->SetTextureTiling(1.0f / 31.0f);
 	testobj->GetTransform()->Rotation = { 0, 0, 0 };
 
-	//testobj = Instance("Player");
-	//testobj->AddComponent<AnimationController>();
-	//testobj->AddComponent<MeshFilter>();
-	//testobj->AddComponent<Player>();
+	testobj = Instance("Player");
+	testobj->AddComponent<AnimationController>();
+	testobj->AddComponent<MeshFilter>();
+	testobj->AddComponent<Player>();
 
 
 	//testobj = Instance("Dome");
@@ -112,7 +112,7 @@ void InGame::Awake()
 	particles0->SetMaxParticles(10);
 	particles0->SetRateOverTime(5.0f);
 	particles0->SetShapeRadius(0.0f);
-	particles0->SetStartForce(Vector3(-10, 0, 0));
+	particles0->SetStartForce(Vector3(-20, 0, 0));
 	particles0->SetLifeTimeForce(Vector3(0, 0, 0), Vector3(0, 0, 0));
 	particles0->SetLifeTimeColor(Vector4(255, 255, 0, 0), Vector4(255, 255, 255, 255), PARTICLE_LIFETIME_OPTION::UPDOWN);
 	particles0->SetLifeTimeScale(0.0f, 1.0f, PARTICLE_LIFETIME_OPTION::UP);
@@ -169,6 +169,25 @@ void InGame::Awake()
 	particles->SetNextParticle(particles0);
 	particles->SetNextParticle(particles1);
 	ParticleList.push_back(particles);
+
+	testobj = InstanceParticle("Particle12");
+
+	particles = testobj->GetComponent<ParticleSystem>();
+	particles->SetMeshName("Quad");
+	particles->SetRenderType(PARTICLE_RENDER_OPTION::VERTICAL_BILLBOARD);
+	particles->SetDiffuseName("Particle_hotCloud");
+	particles->SetStartLifeTime(1.5f, 1.8f);
+	particles->SetStartScale(4.0f, 7.0f);
+	particles->SetStartRotation(-360, 360);
+	particles->SetStartColor(Vector4(255, 174, 73, 255), Vector4(255, 111, 53, 255));
+	particles->SetMaxParticles(60);
+	particles->SetRateOverTime(25.0f);
+	particles->SetShapeRadius(0.1875f);
+	particles->SetStartForce(Vector3(0, 10, 0));
+	particles->SetLifeTimeRotation(-15.0f, 15.0f);
+	particles->SetTextureTiling(8, 8);
+	particles->SetPlayTime(1.0f);
+	particles->Play(true);
 }
 
 void InGame::Start()
@@ -203,20 +222,20 @@ void InGame::Update()
 	//	}
 	//}
 
-	if (GetKeyUp(VK_F1))
-	{
-		particles->Play();
-	}
-
-	if (GetKeyUp(VK_F2))
-	{
-		for (ParticleSystem* p : ParticleList)
-		{
-			p->Play();
-		}
-	}
-
-	if (GetKeyUp(VK_F3))
+	//if (GetKeyUp(VK_F1))
+	//{
+	//	particles->Play();
+	//}
+	//
+	//if (GetKeyUp(VK_F2))
+	//{
+	//	for (ParticleSystem* p : ParticleList)
+	//	{
+	//		p->Play();
+	//	}
+	//}
+	
+	if (GetKeyUp(VK_F9))
 	{
 		for (ParticleSystem* p : ParticleList)
 		{

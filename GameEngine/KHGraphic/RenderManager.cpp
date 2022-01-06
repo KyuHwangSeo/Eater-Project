@@ -51,9 +51,6 @@ RenderManager::RenderManager(ID3D11Graphic* graphic, IGraphicResourceFactory* fa
 	m_RenderPassList.push_back(m_Alpha);
 	m_RenderPassList.push_back(m_OIT);
 	m_RenderPassList.push_back(m_Debug);
-
-	//m_RenderOption = RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO;
-	m_RenderOption = RENDER_GAMMA_CORRECTION;
 }
 
 RenderManager::~RenderManager()
@@ -63,9 +60,6 @@ RenderManager::~RenderManager()
 
 void RenderManager::Initialize(int width, int height)
 {
-	m_Width = width;
-	m_Height = height;
-
 	// Render Pass Resource Create..
 	for (RenderPassBase* renderPass : m_RenderPassList)
 	{
@@ -77,6 +71,10 @@ void RenderManager::Initialize(int width, int height)
 	{
 		renderPass->Start(width, height);
 	}
+
+	// Render Option 초기 설정..
+	UINT startOption = RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO | RENDER_OIT;
+	RenderSetting(startOption);
 }
 
 void RenderManager::Release()
@@ -89,63 +87,17 @@ void RenderManager::Release()
 	m_RenderPassList.clear();
 }
 
-void RenderManager::BeginRender(UINT& renderOption)
+void RenderManager::RenderSetting(UINT& renderOption)
 {
-	UINT mask = 1;
-	while (renderOption)
-	{
-		switch (renderOption & mask)
-		{
-		case RENDER_DEBUG:
-			m_RenderOption ^= RENDER_DEBUG;
-			break;
-		case RENDER_GAMMA_CORRECTION:
-			m_RenderOption ^= RENDER_GAMMA_CORRECTION;
-			break;
-		case RENDER_SHADOW:
-			m_RenderOption ^= RENDER_SHADOW;
-			m_Shadow->Reset();
-			break;
-		case RENDER_SSAO:
-			m_RenderOption ^= RENDER_SSAO;
-			m_SSAO->Reset();
-			break;
-		default:
-			break;
-		}
-		renderOption &= ~mask;
-		mask <<= 4;
-	}
+	// 이전 프레임 기준 옵션이 바뀌지 않았다면 처리하지 않는다..
+	if (renderOption == m_RenderOption) return;
 
-	// Debug Option 제외한 Option Check..
-	mask = m_RenderOption & ~RENDER_DEBUG;
+	m_RenderOption = renderOption;
 
-	switch (mask)
+	// Render Option에 따른 Render Setting..
+	for (RenderPassBase* renderPass : m_RenderPassList)
 	{
-	case RENDER_GAMMA_CORRECTION:
-		m_Light->SetOption("Light_PS_Option4");
-		break;
-	case RENDER_SHADOW:
-		m_Light->SetOption("Light_PS_Option5");
-		break;
-	case RENDER_SSAO:
-		m_Light->SetOption("Light_PS_Option6");
-		break;
-	case RENDER_GAMMA_CORRECTION | RENDER_SHADOW:
-		m_Light->SetOption("Light_PS_Option3");
-		break;
-	case RENDER_GAMMA_CORRECTION | RENDER_SSAO:
-		m_Light->SetOption("Light_PS_Option2");
-		break;
-	case RENDER_SHADOW | RENDER_SSAO:
-		m_Light->SetOption("Light_PS_Option1");
-		break;
-	case RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO:
-		m_Light->SetOption("Light_PS_Option0");
-		break;
-	default:
-		m_Light->SetOption("Light_PS_Option7");
-		break;
+		renderPass->SetOption(renderOption);
 	}
 }
 
@@ -166,19 +118,6 @@ void RenderManager::Render(std::queue<MeshData*>* meshList, GlobalData* global)
 		case OBJECT_TYPE::PARTICLE:
 			m_Deferred->RenderUpdate(mesh, global);
 			break;
-		}
-
-		if (m_RenderOption & RENDER_DEBUG)
-		{
-			switch (mesh->ObjType)
-			{
-			case OBJECT_TYPE::BASE:
-			case OBJECT_TYPE::SKINNING:
-			case OBJECT_TYPE::TERRAIN:
-			case OBJECT_TYPE::BONE:
-				m_Debug->Render(mesh, global);
-			break;
-			}
 		}
 
 		meshList->pop();
@@ -212,19 +151,25 @@ void RenderManager::ShadowRender(std::queue<MeshData*>* meshList, GlobalData* gl
 
 void RenderManager::SSAORender(GlobalData* global)
 {
-	//if (m_RenderOption & RENDER_SSAO)
-	//{
-	//	m_SSAO->BeginRender();
-	//
-	//	m_SSAO->Render(global);
-	//	m_SSAO->BlurRender(4);
-	//}
+	if (m_RenderOption & RENDER_SSAO)
+	{
+		m_SSAO->BeginRender();
+
+		m_SSAO->Render(global);
+		m_SSAO->BlurRender(4);
+	}
 }
 
 void RenderManager::AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global)
 {
-	//m_Alpha->BeginRender();
-	m_OIT->BeginRender();
+	if (m_RenderOption & RENDER_OIT)
+	{
+		m_OIT->BeginRender();
+	}
+	else
+	{
+		m_Alpha->BeginRender();
+	}
 
 	while (meshList->size() != 0)
 	{
@@ -237,20 +182,13 @@ void RenderManager::AlphaRender(std::queue<MeshData*>* meshList, GlobalData* glo
 			break;
 		}
 
-		//if (m_RenderOption & RENDER_DEBUG)
-		//{
-		//	switch (mesh->ObjType)
-		//	{
-		//	case OBJECT_TYPE::PARTICLE:
-		//		m_Debug->Render(mesh, global);
-		//		break;
-		//	}
-		//}
-
 		meshList->pop();
 	}
 
-	m_OIT->RenderUpdate();
+	if (m_RenderOption & RENDER_OIT)
+	{
+		m_OIT->RenderUpdate();
+	}
 }
 
 void RenderManager::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -264,6 +202,32 @@ void RenderManager::LightRender(GlobalData* global)
 	m_Light->Render(global);
 }
 
+void RenderManager::DebugRender(std::queue<MeshData*>* meshList, GlobalData* global)
+{
+	if (m_RenderOption & RENDER_DEBUG)
+	{
+		m_Debug->BeginRender();
+
+		while (meshList->size() != 0)
+		{
+			MeshData* mesh = meshList->front();
+
+			switch (mesh->ObjType)
+			{
+			case OBJECT_TYPE::PARTICLE:
+			case OBJECT_TYPE::BASE:
+			case OBJECT_TYPE::SKINNING:
+			case OBJECT_TYPE::TERRAIN:
+			case OBJECT_TYPE::BONE:
+				m_Debug->Render(mesh, global);
+				break;
+			}
+
+			meshList->pop();
+		}
+	}
+}
+
 void RenderManager::EndRender()
 {
 	// Graphic State Reset..
@@ -275,9 +239,6 @@ void RenderManager::EndRender()
 
 void RenderManager::OnResize(int width, int height)
 {
-	m_Width = width;
-	m_Height = height;
-
 	for (RenderPassBase* renderPass : m_RenderPassList)
 	{
 		renderPass->SetResize(width, height);

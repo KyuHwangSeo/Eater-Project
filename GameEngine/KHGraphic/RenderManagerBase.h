@@ -20,7 +20,7 @@ public:
 	virtual void Release() abstract;
 
 	// Render Option Pass..
-	virtual void BeginRender(UINT& renderOption) abstract;
+	virtual void RenderSetting(UINT& renderOption) abstract;
 	// Main Render Pass..
 	virtual void Render(std::queue<MeshData*>* meshList, GlobalData* global) abstract;
 	// Shader Render Pass..
@@ -33,6 +33,8 @@ public:
 	virtual void UIRender(std::queue<MeshData*>* meshList, GlobalData* global) abstract;
 	// Light Render Pass..
 	virtual void LightRender(GlobalData* global) abstract;
+	// Debug Render Pass..
+	virtual void DebugRender(std::queue<MeshData*>* meshList, GlobalData* global) abstract;
 	// End Render Pass..
 	virtual void EndRender() abstract; 
 

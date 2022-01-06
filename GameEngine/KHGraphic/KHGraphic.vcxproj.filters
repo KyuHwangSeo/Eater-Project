@@ -175,9 +175,6 @@
     <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\DepthStencil">
       <UniqueIdentifier>{2e35856f-0892-436c-91bc-2a06f8c44cac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\RenderTarget">
-      <UniqueIdentifier>{3c520278-a6aa-4a2b-be04-fd06f30144ec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Hash">
       <UniqueIdentifier>{fb58e275-a01f-4160-83c7-b3f8167dcd12}</UniqueIdentifier>
     </Filter>
@@ -205,11 +202,11 @@
     <Filter Include="소스 파일\Resource\Graphic\GraphicResource\Buffer">
       <UniqueIdentifier>{12a5c019-3947-4d4a-9b69-e4f8619cd27e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\RenderBuffer">
-      <UniqueIdentifier>{966fd5c5-fea2-45c1-99d5-a6351cdf10ec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\DrawBuffer">
       <UniqueIdentifier>{f94978e4-f848-43b8-8246-827a696561eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Graphic\GraphicStruct\RenderTarget">
+      <UniqueIdentifier>{3c520278-a6aa-4a2b-be04-fd06f30144ec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -387,9 +384,6 @@
     <ClInclude Include="RenderTarget.h">
       <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderTarget</Filter>
     </ClInclude>
-    <ClInclude Include="RenderBuffer.h">
-      <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderBuffer</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Graphic.cpp">
@@ -482,42 +476,39 @@
     <ClCompile Include="RenderTarget.cpp">
       <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderTarget</Filter>
     </ClCompile>
-    <ClCompile Include="RenderBuffer.cpp">
-      <Filter>소스 파일\Resource\Graphic\GraphicStruct\RenderBuffer</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resources\Shader\SKH\ForwardPS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Forward_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Forward</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ShadowVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Shadow_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Shadow</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ObjectVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Object_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Object</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\LightHelper.fx">
       <Filter>소스 파일\Shader\FX</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\LightPS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Light_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\LightVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Light_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered\Light</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\SSAOPS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\SSAO_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\SSAO</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\SSAOVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\SSAO_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\SSAO</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\SSAOBlurPS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\SSAO_Blur_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\SSAO\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\SSAOBlurVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\SSAO_Blur_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\SSAO\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DeferredPS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Deferred_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\TerrainPS.hlsl">
@@ -526,22 +517,22 @@
     <FxCompile Include="..\Resources\Shader\SKH\TerrainVS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Render\Deffered\Terrain</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ParticlePS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Particle_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Particle</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\ParticleVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Particle_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Particle</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DebugPS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Debug_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Debug</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\DebugVS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\Debug_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\Debug</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\OIT_Render_PS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Blend_PS.hlsl">
       <Filter>소스 파일\Shader\HLSL\OIT</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\SKH\OIT_Render_VS.hlsl">
+    <FxCompile Include="..\Resources\Shader\SKH\OIT_Blend_VS.hlsl">
       <Filter>소스 파일\Shader\HLSL\OIT</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\SKH\OIT_Particle_PS.hlsl">

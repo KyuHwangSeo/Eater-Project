@@ -32,26 +32,28 @@
 
 GameEngine::GameEngine()
 {
-	mDebugManager	= nullptr;
-	mLoadManager	= nullptr;
-	mObjectManager	= nullptr;
-	mSceneManager	= nullptr;
-	mKeyManager		= nullptr;
-	mPhysManager	= nullptr;
-	mLightManager	= nullptr;
+	mDebugManager = nullptr;
+	mLoadManager = nullptr;
+	mObjectManager = nullptr;
+	mSceneManager = nullptr;
+	mKeyManager = nullptr;
+	mPhysManager = nullptr;
+	mLightManager = nullptr;
 	mMaterialManager = nullptr;
-	mTimeManager	= nullptr;
+	mTimeManager = nullptr;
 	mGraphicManager = nullptr;
 	mNetworkManager = nullptr;
 
 	//기본 윈도우 사이즈 설정
-	WinSizeWidth	= 1920;
-	WinSizeHeight	= 1080;
+	WinSizeWidth = 1920;
+	WinSizeHeight = 1080;
 
 	//윈도우 핸들
 	mHwnd = NULL;
 
 	ConsoleDebug = true;
+
+	m_RenderOption = RENDER_DEBUG | RENDER_GAMMA_CORRECTION | RENDER_SHADOW | RENDER_SSAO | RENDER_OIT;
 }
 
 GameEngine::~GameEngine()
@@ -66,23 +68,23 @@ void GameEngine::Initialize(HWND Hwnd, bool mConsoleDebug)
 	mHwnd = Hwnd;
 
 	//매니저들 생성
-	mKeyManager			= new KeyinputManager();
-	mLoadManager		= new LoadManager();
-	mObjectManager		= new ObjectManager();
-	mSceneManager		= new SceneManager();
-	mDebugManager		= new DebugManager();
-	mGraphicManager		= new GraphicEngineManager();
-	mTimeManager		= new TimeManager();
-	mMaterialManager	= new MaterialManager();
-	mLightManager		= new LightManager();
-	mPhysManager		= new PhysManager();
-	mNetworkManager		= new NetworkManager();
+	mKeyManager = new KeyinputManager();
+	mLoadManager = new LoadManager();
+	mObjectManager = new ObjectManager();
+	mSceneManager = new SceneManager();
+	mDebugManager = new DebugManager();
+	mGraphicManager = new GraphicEngineManager();
+	mTimeManager = new TimeManager();
+	mMaterialManager = new MaterialManager();
+	mLightManager = new LightManager();
+	mPhysManager = new PhysManager();
+	mNetworkManager = new NetworkManager();
 
 	//매니저들 초기화
 	BaseManager::Initialize();
-	mGraphicManager->Initialize(Hwnd, WinSizeWidth, WinSizeHeight, mObjectManager); 
+	mGraphicManager->Initialize(Hwnd, WinSizeWidth, WinSizeHeight, mObjectManager);
 	mKeyManager->Initialize(mHwnd);
-	mDebugManager->Initialize(mKeyManager,mConsoleDebug);
+	mDebugManager->Initialize(mKeyManager, mConsoleDebug);
 	mSceneManager->Initialize();
 	mObjectManager->Initialize(mHwnd);
 	mLoadManager->Initialize(mGraphicManager);
@@ -122,19 +124,25 @@ void GameEngine::Update()
 	BaseManager::UpdateGlobalData();
 
 	//컨퍼넌트 업데이트 끝
-	
+
 	// 현재 랜더링 옵션 설정..
 	RenderOptionCheck();
-	
+
 
 	//랜더큐 넘겨줌
-	mGraphicManager->BeginRender(m_RenderOption);
+	mGraphicManager->RenderSetting(m_RenderOption);
 	mGraphicManager->ShadowRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->Render(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->SSAORender(mObjectManager->GetGlobalData());
 	mGraphicManager->UIRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
 	mGraphicManager->LightRender(mObjectManager->GetGlobalData());
 	mGraphicManager->AlphaRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
+
+	if (m_RenderOption & RENDER_DEBUG)
+	{
+		mGraphicManager->DebugRender(mObjectManager->GetRenderQueue(), mObjectManager->GetGlobalData());
+	}
+
 	mGraphicManager->EndRender();
 
 
@@ -161,8 +169,8 @@ void GameEngine::OnResize(int Change_Width, int Change_Height)
 	if (mGraphicManager == nullptr) return;
 
 	//윈도우 크기 재설정
-	WinSizeWidth	= Change_Width;
-	WinSizeHeight	= Change_Height;
+	WinSizeWidth = Change_Width;
+	WinSizeHeight = Change_Height;
 
 	DebugManager::Print(std::to_string(Change_Width).c_str());
 	DebugManager::Print(std::to_string(Change_Height).c_str());
@@ -177,7 +185,7 @@ void GameEngine::OnResize(int Change_Width, int Change_Height)
 
 	std::string Width = std::to_string(Change_Width);
 	std::string Height = std::to_string(Change_Height);;
-	std::string temp = "윈도우 사이즈 변경:"+ Width+","+ Height;
+	std::string temp = "윈도우 사이즈 변경:" + Width + "," + Height;
 	Camera::g_MainCam->SetSize(Change_Width, Change_Height);
 }
 
@@ -241,13 +249,13 @@ void GameEngine::Destroy(GameObject* obj)
 void GameEngine::PushScene(Scene* mScene, std::string name)
 {
 	std::string mStr = "씬 생성 :" + name;
-	mSceneManager->PushScene(mScene,name);
+	mSceneManager->PushScene(mScene, name);
 }
 
 void GameEngine::ChoiceScene(std::string name)
 {
 	std::string mStr = "현재 씬 선택 :" + name;
-	
+
 	//씬 선택후 이전 씬 의 정보들을 모두지움
 	mObjectManager->AllDeleteObject();
 	mObjectManager->ClearFunctionList();
@@ -351,24 +359,29 @@ void GameEngine::CreateObject()
 
 void GameEngine::RenderOptionCheck()
 {
-	if (mKeyManager->GetKeyUp(VK_F9))
+	if (mKeyManager->GetKeyUp(VK_F1))
 	{
 		// Debug On/Off
-		m_RenderOption |= RENDER_DEBUG;
+		m_RenderOption ^= RENDER_DEBUG;
 	}
-	//if (mKeyManager->GetKeyUp(VK_F2))
-	//{
-	//	// Gamma Correction On/Off
-	//	m_RenderOption |= RENDER_GAMMA_CORRECTION;
-	//}
-	//if (mKeyManager->GetKeyUp(VK_F3))
-	//{
-	//	// Shadow On/Off
-	//	m_RenderOption |= RENDER_SHADOW;
-	//}
+	if (mKeyManager->GetKeyUp(VK_F2))
+	{
+		// Gamma Correction On/Off
+		m_RenderOption ^= RENDER_GAMMA_CORRECTION;
+	}
+	if (mKeyManager->GetKeyUp(VK_F3))
+	{
+		// Shadow On/Off
+		m_RenderOption ^= RENDER_SHADOW;
+	}
 	if (mKeyManager->GetKeyUp(VK_F4))
 	{
 		// SSAO On/Off
-		m_RenderOption |= RENDER_SSAO;
+		m_RenderOption ^= RENDER_SSAO;
+	}
+	if (mKeyManager->GetKeyUp(VK_F5))
+	{
+		// OIT On/Off
+		m_RenderOption ^= RENDER_OIT;
 	}
 }

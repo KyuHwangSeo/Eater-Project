@@ -17,12 +17,12 @@ public:
 	void Release() override;
 
 public:
-	RenderTarget* GetMainRenderTarget() override;
-	void AddMainRenderTarget(RenderTarget* rtv) override;
+	RenderTexture* GetMainRenderTarget() override;
+	void AddMainRenderTarget(RenderTexture* rtv) override;
 
 public:
 	DepthStencil* GetDepthStencil(Hash_Code hash_code) override;
-	RenderTarget* GetRenderTarget(Hash_Code hash_code) override;
+	RenderTexture* GetRenderTarget(Hash_Code hash_code) override;
 	RenderBuffer* GetRenderBuffer(Hash_Code hash_code) override;
 	DrawBuffer* GetDrawBuffer(Hash_Code hash_code) override;
 
@@ -52,9 +52,9 @@ private:
 	// Graphic Struct Resource List
 	/////////////////////////////////////////////////////////////////////////////////////////
 
-	RenderTarget* m_BackBuffer;
+	RenderTexture* m_BackBuffer;
 	std::unordered_map<Hash_Code, DepthStencil*> m_DepthStencilList;
-	std::unordered_map<Hash_Code, RenderTarget*> m_RenderTargetList;
+	std::unordered_map<Hash_Code, RenderTexture*> m_RenderTargetList;
 	std::unordered_map<Hash_Code, RenderBuffer*> m_RenderBufferList;
 	std::unordered_map<Hash_Code, DrawBuffer*> m_DrawBufferList;
 

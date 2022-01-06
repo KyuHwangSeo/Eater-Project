@@ -6,8 +6,8 @@
 #include "GraphicState.h"
 #include "GraphicView.h"
 #include "Buffer.h"
-#include "DrawBuffer.h"
 #include "Texture2D.h"
+#include "DrawBuffer.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 #include "VertexDefine.h"
@@ -118,22 +118,20 @@ void DeferredPass::Start(int width, int height)
 	m_TerrainVS = g_Shader->GetShader("Terrain_VS");
 	m_ParticleVS = g_Shader->GetShader("Particle_VS");
 
-	m_DeferredPS = g_Shader->GetShader("Deferred_PS");
-	m_TerrainPS = g_Shader->GetShader("Terrain_PS");
+	m_DeferredPS = g_Shader->GetShader("Deferred_PS_Option1");
+	m_TerrainPS = g_Shader->GetShader("Terrain_PS_Option1");
 	m_ParticlePS = g_Shader->GetShader("Particle_PS");
 
 	// DepthStencilView 설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
+	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
 
 	// Graphic State 설정..
-	m_DepthStencilState = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
-	m_NoDepthStencilState = g_Resource->GetDepthStencilState<DSS_NoDepth>()->Get();
-	m_RasterizerState = g_Resource->GetRasterizerState<RS_Solid>()->Get();
-	m_AlphaBlendState = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
-	m_DefaltBlendState = g_Resource->GetBlendState<BS_Defalt>()->Get();
+	m_DefaltDSS = g_Resource->GetDepthStencilState<DSS_Defalt>()->Get();
+	m_SolidRS = g_Resource->GetRasterizerState<RS_Solid>()->Get();
+	m_AlphaBlendBS = g_Resource->GetBlendState<BS_AlphaBlend>()->Get();
 
 	// ViewPort 설정..
-	m_ScreenViewport = g_Resource->GetViewPort<VP_FullScreen>()->Get();
+	m_ScreenVP = g_Resource->GetViewPort<VP_FullScreen>()->Get();
 
 	// RenderTarget 설정..
 	m_AlbedoRT = g_Resource->GetRenderTarget<RT_Deffered_Albedo>();
@@ -162,7 +160,7 @@ void DeferredPass::Start(int width, int height)
 void DeferredPass::OnResize(int width, int height)
 {
 	// DepthStencilView 재설정..
-	m_DepthStencilView = g_Resource->GetDepthStencil<DS_Defalt>()->GetDSV()->Get();
+	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
 
 	// ShaderResourceView List 재설정..
 	m_SRVList[0] = m_AlbedoRT->GetSRV()->Get();
@@ -184,9 +182,23 @@ void DeferredPass::Release()
 
 }
 
+void DeferredPass::SetOption(UINT renderOption)
+{
+	if (renderOption & RENDER_GAMMA_CORRECTION)
+	{
+		m_DeferredPS = g_Shader->GetShader("Deferred_PS_Option1");
+		m_TerrainPS = g_Shader->GetShader("Terrain_PS_Option1");
+	}
+	else
+	{
+		m_DeferredPS = g_Shader->GetShader("Deferred_PS_Option0");
+		m_TerrainPS = g_Shader->GetShader("Terrain_PS_Option0");
+	}
+}
+
 void DeferredPass::BeginRender()
 {
-	g_Context->OMSetRenderTargets(5, &m_RTVList[0], m_DepthStencilView);
+	g_Context->OMSetRenderTargets(5, &m_RTVList[0], m_DefaltDSV);
 
 	// RenderTarget 초기화..
 	g_Context->ClearRenderTargetView(m_RTVList[0], reinterpret_cast<const float*>(&DXColors::Black));
@@ -195,11 +207,13 @@ void DeferredPass::BeginRender()
 	g_Context->ClearRenderTargetView(m_RTVList[3], reinterpret_cast<const float*>(&DXColors::Black));
 	g_Context->ClearRenderTargetView(m_RTVList[4], reinterpret_cast<const float*>(&DXColors::Black));
 
-	g_Context->RSSetViewports(1, m_ScreenViewport);
-	g_Context->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	g_Context->OMSetDepthStencilState(m_DepthStencilState, 0);
-	g_Context->OMSetBlendState(m_AlphaBlendState, 0, 0xffffffff);
-	g_Context->RSSetState(m_RasterizerState);
+	g_Context->ClearDepthStencilView(m_DefaltDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
+	g_Context->OMSetDepthStencilState(m_DefaltDSS, 0);
+	g_Context->OMSetBlendState(m_AlphaBlendBS, 0, 0xffffffff);
+	
+	g_Context->RSSetViewports(1, m_ScreenVP);
+	g_Context->RSSetState(m_SolidRS);
 }
 
 void DeferredPass::BufferUpdate(MeshData* mesh)

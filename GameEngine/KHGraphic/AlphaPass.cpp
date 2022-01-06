@@ -5,6 +5,7 @@
 #include "PixelShader.h"
 #include "GraphicState.h"
 #include "GraphicView.h"
+#include "Buffer.h"
 #include "Texture2D.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
@@ -44,8 +45,7 @@ void AlphaPass::Start(int width, int height)
 {
 	// Shader 설정..
 	m_ParticleVS = g_Shader->GetShader("Particle_VS");
-	//m_ParticlePS = g_Shader->GetShader("Particle_PS");
-	m_ParticlePS = g_Shader->GetShader("OIT_Particle_PS");
+	m_ParticlePS = g_Shader->GetShader("Particle_PS");
 
 	// Graphic State 설정..
 	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
@@ -65,6 +65,18 @@ void AlphaPass::OnResize(int width, int height)
 void AlphaPass::Release()
 {
 
+}
+
+void AlphaPass::SetOption(UINT renderOption)
+{
+	if (renderOption & RENDER_OIT)
+	{
+		m_ParticlePS = g_Shader->GetShader("OIT_Particle_PS");
+	}
+	else
+	{
+		m_ParticlePS = g_Shader->GetShader("Particle_PS");
+	}
 }
 
 void AlphaPass::BeginRender()

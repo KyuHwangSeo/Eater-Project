@@ -48,9 +48,9 @@ void KHGraphic::Initialize(HWND hwnd, int screenWidth, int screenHeight)
 	m_RenderManager = renderer;
 }
 
-void KHGraphic::BeginRender(UINT& renderOption)
+void KHGraphic::RenderSetting(UINT& renderOption)
 {
-	m_RenderManager->BeginRender(renderOption);
+	m_RenderManager->RenderSetting(renderOption);
 }
 
 void KHGraphic::Render(std::queue<MeshData*>* meshList, GlobalData* global)
@@ -81,6 +81,11 @@ void KHGraphic::UIRender(std::queue<MeshData*>* meshList, GlobalData* global)
 void KHGraphic::LightRender(GlobalData* global)
 {
 	m_RenderManager->LightRender(global);
+}
+
+void KHGraphic::DebugRender(std::queue<MeshData*>* meshList, GlobalData* global)
+{
+	m_RenderManager->DebugRender(meshList, global);
 }
 
 void KHGraphic::EndRender()

@@ -33,13 +33,14 @@ public:
 	void Initialize(HWND Hwnd, int WinSizeWidth, int WinSizeHeight,ObjectManager* GM);
 
 	//선택한 그래픽엔진 랜더링
-	void BeginRender(UINT& renderOption);
+	void RenderSetting(UINT& renderOption);
 	void Render(std::queue<MeshData*>* meshList, GlobalData* global);
 	void ShadowRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void SSAORender(GlobalData* global);
 	void AlphaRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void UIRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void LightRender(GlobalData* global);
+	void DebugRender(std::queue<MeshData*>* meshList, GlobalData* global);
 	void EndRender();
 
 	//선택한 그래픽엔진으로 인덱스버퍼를 생성함

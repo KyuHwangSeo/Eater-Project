@@ -6,7 +6,9 @@
 #include "GraphicState.h"
 #include "GraphicView.h"
 #include "Buffer.h"
+#include "Texture2D.h"
 #include "DrawBuffer.h"
+#include "RenderTarget.h"
 #include "EngineData.h"
 #include "DebugPass.h"
 
@@ -16,6 +18,7 @@
 #include "ShaderManagerBase.h"
 #include "ConstantBufferDefine.h"
 #include "DrawBufferDefine.h"
+#include "DepthStencilViewDefine.h"
 
 DebugPass::DebugPass()
 {
@@ -41,11 +44,17 @@ void DebugPass::Start(int width, int height)
 	m_AxisBuffer = g_Resource->GetDrawBuffer<DB_Line_Axis>();
 	m_BoxBuffer = g_Resource->GetDrawBuffer<DB_Line_Box>();
 	m_CircleBuffer = g_Resource->GetDrawBuffer<DB_Line_Circle>();
+
+	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
+
+	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
 }
 
 void DebugPass::OnResize(int width, int height)
 {
+	m_MainRTV = g_Resource->GetMainRenderTarget()->GetRTV()->Get();
 
+	m_DefaltDSV = g_Resource->GetDepthStencilView<DS_Defalt>()->Get();
 }
 
 void DebugPass::Release()
@@ -53,15 +62,25 @@ void DebugPass::Release()
 
 }
 
+void DebugPass::BeginRender()
+{
+	g_Context->RSSetState(0);
+	g_Context->OMSetRenderTargets(1, &m_MainRTV, m_DefaltDSV);
+}
+
 void DebugPass::Render(MeshData* mesh, GlobalData* global)
 {
 	CB_DebugObject object;
-	object.gWorldViewProj = mesh->mWorld * global->mCamVP;
+	Matrix world = mesh->mWorld;
+	Matrix invView = global->mCamInvView;
+	Matrix viewproj = global->mCamVP;
 
 	switch (mesh->ObjType)
 	{
 	case OBJECT_TYPE::BASE:
 	{
+		object.gWorldViewProj = world * viewproj;
+		
 		m_DebugVS->ConstantBufferCopy(&object);
 
 		m_DebugVS->Update();
@@ -75,7 +94,7 @@ void DebugPass::Render(MeshData* mesh, GlobalData* global)
 		break;
 	case OBJECT_TYPE::BONE:
 	{
-		object.gWorldViewProj = Matrix::CreateScale(0.1f) * mesh->mWorld * global->mCamVP;
+		object.gWorldViewProj = world * viewproj;
 
 		m_DebugVS->ConstantBufferCopy(&object);
 
@@ -88,6 +107,12 @@ void DebugPass::Render(MeshData* mesh, GlobalData* global)
 		g_Context->DrawIndexed(m_DebugBuffer->IndexCount, 0, 0);
 
 		BufferUpdate(DEBUG_TYPE::DEBUG_BOX);
+
+		object.gWorldViewProj = Matrix::CreateScale(0.05f) * world * viewproj;
+
+		m_DebugVS->ConstantBufferCopy(&object);
+
+		m_DebugVS->Update();
 
 		g_Context->DrawIndexed(m_DebugBuffer->IndexCount, 0, 0);
 	}
@@ -99,10 +124,10 @@ void DebugPass::Render(MeshData* mesh, GlobalData* global)
 		ParticleData* particles = mesh->Particle_Data;
 
 		Vector3 radius = particles->Area_Radius;
-		Matrix world = mesh->mWorld;
+		
 		world._11 = radius.x; world._22 = radius.y; world._33 = radius.z;
 
-		object.gWorldViewProj = world * global->mCamVP;
+		object.gWorldViewProj = world * viewproj;
 
 		m_DebugVS->ConstantBufferCopy(&object);
 
@@ -110,14 +135,12 @@ void DebugPass::Render(MeshData* mesh, GlobalData* global)
 
 		m_DebugPS->Update();
 
-		BufferUpdate(DEBUG_TYPE::DEBUG_BOX);
+		BufferUpdate(DEBUG_TYPE::DEBUG_CIRCLE);
 		g_Context->DrawIndexed(m_DebugBuffer->IndexCount, 0, 0);
 
 		BufferUpdate(DEBUG_TYPE::DEBUG_AXIS);
 		g_Context->DrawIndexed(m_DebugBuffer->IndexCount, 0, 0);
 
-		Matrix invView = global->mCamInvView;
-		Matrix viewproj = global->mCamVP;
 
 		Matrix converseTM = Matrix::Identity;
 		switch (particles->RenderType)
